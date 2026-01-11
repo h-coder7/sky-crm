@@ -1,0 +1,155 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+
+export default function SideMenu() {
+    return (
+        <aside className="sidemenu">
+
+            <div className="top-cont">
+
+                <div className="logo-wrapper">
+                    <Link href="/" className="logo ">
+                        <Image
+                            src="/images/sky-logo.png"
+                            alt="Logo"
+                            width={40}
+                            height={40}
+                            className="img-contain"
+                        />
+                    </Link>
+                </div>
+
+                <div className="sidemenu-links pt-4">
+                    {/* <div className="sub-title text mt-4 mb-2">
+                        Main Menu
+                    </div> */}
+
+                    <ul className="links">
+                        <li>
+                            <Link href="/dashboard" className="lnk active">
+                                <span className="icon">
+                                    <i className="fal fa-home"></i>
+                                </span>
+                                <span className="txt">Home</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/dashboard/admins" className="lnk">
+                                <span className="icon">
+                                    <i className="fal fa-user-tie"></i>
+                                </span>
+                                <span className="txt">Admins</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/dashboard/categories" className="lnk">
+                                <span className="icon">
+                                    <i className="fal fa-grid-2"></i>
+                                </span>
+                                <span className="txt">Categories</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/dashboard/about" className="lnk">
+                                <span className="icon">
+                                    <i className="fal fa-bell"></i>
+                                </span>
+                                <span className="txt">about</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/tasks" className="lnk">
+                                <span className="icon">
+                                    <i className="fal fa-square-check"></i>
+                                </span>
+                                <span className="txt">Tasks</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/sectors" className="lnk">
+                                <span className="icon">
+                                    <i className="fal fa-tire"></i>
+                                </span>
+                                <span className="txt">Sectors</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/companies" className="lnk">
+                                <span className="icon">
+                                    <i className="fal fa-city"></i>
+                                </span>
+                                <span className="txt">Companies</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/contacts" className="lnk">
+                                <span className="icon">
+                                    <i className="fal fa-id-badge"></i>
+                                </span>
+                                <span className="txt">Contacts</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div className="btm-cont">
+                <div className="sidemenu-links">
+                    <ul className="links">
+                        <li>
+                            <Link href="/invite-team" className="lnk">
+                                <span className="icon">
+                                    <i className="fal fa-user-plus"></i>
+                                </span>
+                                <span className="txt">Invite Team</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/integration" className="lnk">
+                                <span className="icon">
+                                    <i className="fal fa-grid-2"></i>
+                                </span>
+                                <span className="txt">Integration</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/help" className="lnk">
+                                <span className="icon">
+                                    <i className="fal fa-headphones"></i>
+                                </span>
+                                <span className="txt">Help & First step</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </div>
+
+                <div className="user-wrapper">
+                    <div className="avatar">
+                        <Image
+                            src="/images/av2.png"
+                            alt="User Avatar"
+                            width={40}
+                            height={40}
+                        />
+                    </div>
+
+                    <div className="inf">
+                        <h6>Yasmin Ali</h6>
+                        <small>YasminAli@gmail.com</small>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    );
+}
