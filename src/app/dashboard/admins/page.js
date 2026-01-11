@@ -27,21 +27,27 @@ export default function AdminsPage() {
         onFilterChange={(field, checked) =>
           console.log("Filter:", field, checked)
         }
-        actions={[
-          {
-            label: "Add Admin",
-            icon: "fal fa-plus",
-            className: "alert-success",
-            onClick: () => console.log("Add Admin"),
-          },
-          {
-            label: "Delete",
-            icon: "fal fa-trash",
-            className: "alert-danger",
-            onClick: () => console.log("Delete"),
-          },
-        ]}
-      />
+      >
+        {/* Add Button */}
+        <button
+          type="button"
+          className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
+          onClick={() => console.log("Add Admin")}
+        >
+          <i className="fal fa-plus"></i>
+          <span className="txt ms-2">Add Admin</span>
+        </button>
+
+        {/* Delete Button */}
+        <button
+          type="button"
+          className="alert alert-danger rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
+          onClick={() => console.log("Delete")}
+        >
+          <i className="fal fa-trash"></i>
+          <span className="txt ms-2">Delete</span>
+        </button>
+      </PageHeader>
 
       {/* Page Content */}
       <div className="mt-4">

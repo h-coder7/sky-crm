@@ -3,7 +3,7 @@
 export default function PageHeader({
   title,
   onFilterChange,
-  actions = []
+  children
 }) {
   return (
     <div className="page-header pt-15 pb-15 px-4 border-bottom">
@@ -19,7 +19,7 @@ export default function PageHeader({
           <div className="nav-butns d-flex flex-wrap justify-content-lg-end mt-3 mt-lg-0 align-items-center">
 
             {/* Filter Dropdown */}
-            <div className="dropdown ms-2">
+            {/* <div className="dropdown ms-2">
               <button
                 className="butn-st2 line-butn py-2 px-3 dropdown-toggle"
                 data-bs-toggle="dropdown"
@@ -49,20 +49,10 @@ export default function PageHeader({
                   </li>
                 ))}
               </ul>
-            </div>
+            </div> */}
 
             {/* Actions Buttons */}
-            {actions.map((action, index) => (
-              <button
-                key={index}
-                type="button"
-                className={`alert ${action.className} rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0`}
-                onClick={action.onClick}
-              >
-                <i className={action.icon}></i>
-                <span className="txt ms-2">{action.label}</span>
-              </button>
-            ))}
+            {children}
 
           </div>
         </div>

@@ -1,91 +1,100 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import api from "@/app/api/api";
+import { DateRange } from "react-date-range";
+// import api from "@/app/api/api"; // 🔌 API READY (enable when backend is ready)
 
-/* ================= Mock Fallback ================= */
-const MOCK_USERS = [
-  {
-    id: 1,
-    name: "Leanne Graham",
-    phone: "1-770-736-8031 x56442",
-    website: "hildegard.org",
-    company: { name: "Romaguera-Crona" },
-  },
-  {
-    id: 2,
-    name: "Ervin Howell",
-    phone: "010-692-6593 x09125",
-    website: "anastasia.net",
-    company: { name: "Deckow-Crist" },
-  },
-];
+// 🔌 API READY (enable when backend is ready)
 
-export default function CategoriesTable({ onEdit, onDelete }) {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+
+export default function CategoriesTable({ data = [], onEdit, onDelete }) {
   const [selected, setSelected] = useState([]);
-  const [filters, setFilters] = useState({ name: "", phone: "", company: "" });
+  const [filters, setFilters] = useState({
+    title: "",
+    start_price: "",
+  });
 
-  /* ================= Fetch Users ================= */
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      // JSON Placeholder
-      const res = await api.get("/users");
 
-      if (res.data) setUsers(res.data);
-      else setUsers(MOCK_USERS);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      setUsers(MOCK_USERS);
-    } finally {
-      setLoading(false);
+  /* ================= Date Range ================= */
+  const [dateRange, setDateRange] = useState([
+    { startDate: null, endDate: null, key: "selection" },
+  ]);
+  const [tempRange, setTempRange] = useState([
+    { startDate: null, endDate: null, key: "selection" },
+  ]);
+  const [showModal, setShowModal] = useState(false);
+
+  /* ================= Select ================= */
+
+
+  /* ================= Filtering ================= */
+  const filteredCategories = useMemo(() => {
+    return data.filter((cat) => {
+      const title = cat.title || "";
+      const startPrice = cat.start_price?.toString() || "";
+      const createdAt = new Date(cat.created_at);
+
+      const start = dateRange[0].startDate;
+      const end = dateRange[0].endDate;
+      const dateMatch =
+        !start || !end ? true : createdAt >= start && createdAt <= end;
+
+      return (
+        title.toLowerCase().includes(filters.title.toLowerCase()) &&
+        startPrice.includes(filters.start_price) &&
+        dateMatch
+      );
+    });
+  }, [data, filters, dateRange]);
+
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
+
+  /* ================= Select ================= */
+  const isAllSelected =
+    filteredCategories.length > 0 &&
+    filteredCategories.every((c) => selected.includes(c.id));
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      const visibleIds = filteredCategories.map((c) => c.id);
+      setSelected((prev) => prev.filter((id) => !visibleIds.includes(id)));
+    } else {
+      const visibleIds = filteredCategories.map((c) => c.id);
+      setSelected((prev) => [...new Set([...prev, ...visibleIds])]);
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  /* ================= Select All ================= */
-  const isAllSelected = users.length > 0 && selected.length === users.length;
-  const toggleSelectAll = () => {
-    if (isAllSelected) setSelected([]);
-    else setSelected(users.map((u) => u.id));
-  };
   const toggleSelectRow = (id) => {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
-  /* ================= Filtering ================= */
-  const filteredUsers = useMemo(() => {
-    return users.filter((user) => {
-      return (
-        user.name.toLowerCase().includes(filters.name.toLowerCase()) &&
-        (!filters.phone || user.phone.includes(filters.phone)) &&
-        (!filters.company ||
-          (user.company?.name || "").toLowerCase().includes(filters.company.toLowerCase()))
-      );
-    });
-  }, [filters, users]);
-
-  const handleFilterChange = (field, value) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
+  /* ================= Date Helpers ================= */
+  const formatDateRange = () => {
+    const { startDate, endDate } = dateRange[0];
+    if (!startDate || !endDate) return "";
+    return `${startDate.toISOString().split("T")[0]} to ${endDate
+      .toISOString()
+      .split("T")[0]}`;
   };
 
-  /* ================= Add / Edit / Delete ================= */
+  const confirmDateRange = () => {
+    setDateRange(tempRange);
+    setShowModal(false);
+  };
+
+  /* ================= Actions ================= */
   const handleEdit = (id) => onEdit?.(id);
+
   const handleDelete = (id) => {
     onDelete?.(id);
-    setUsers((prev) => prev.filter((u) => u.id !== id));
   };
 
   return (
     <div className="table-responsive position-relative">
-      {loading && <p className="text-center">Loading...</p>}
 
       <table className="table table-hover align-middle">
         <thead>
@@ -98,13 +107,11 @@ export default function CategoriesTable({ onEdit, onDelete }) {
                   checked={isAllSelected}
                   onChange={toggleSelectAll}
                 />
-                <span>Name</span>
+                <span>Title</span>
               </div>
             </th>
-            <th>Phone</th>
-            <th>Website</th>
-            <th>Company</th>
-            <th>Actions</th>
+            <th>Start Price</th>
+            <th colSpan={3}>Added On</th>
           </tr>
 
           {/* Search Row */}
@@ -112,47 +119,60 @@ export default function CategoriesTable({ onEdit, onDelete }) {
             <td>
               <input
                 className="form-control"
-                placeholder="Name"
-                value={filters.name}
-                onChange={(e) => handleFilterChange("name", e.target.value)}
+                placeholder="Title"
+                value={filters.title}
+                onChange={(e) =>
+                  handleFilterChange("title", e.target.value)
+                }
               />
             </td>
             <td>
               <input
                 className="form-control"
-                placeholder="Phone"
-                value={filters.phone}
-                onChange={(e) => handleFilterChange("phone", e.target.value)}
+                placeholder="Start Price"
+                value={filters.start_price}
+                onChange={(e) =>
+                  handleFilterChange("start_price", e.target.value)
+                }
               />
             </td>
-            <td></td>
-            <td>
+            <td colSpan={3}>
               <input
                 className="form-control"
-                placeholder="Company"
-                value={filters.company}
-                onChange={(e) => handleFilterChange("company", e.target.value)}
+                placeholder="Select Date Range"
+                readOnly
+                value={formatDateRange()}
+                onClick={() => setShowModal(true)}
               />
             </td>
-            <td></td>
+            {/* <td></td> */}
           </tr>
         </thead>
 
         <tbody>
-          {!filteredUsers.length && (
+          {!filteredCategories.length && (
             <tr>
               <td colSpan={5} className="text-center text-muted py-4">
-                No users found
+                No categories found
               </td>
             </tr>
           )}
 
-          {filteredUsers.map((user) => (
-            <tr key={user.id}>
-              <td>{user.name}</td>
-              <td>{user.phone}</td>
-              <td>{user.website}</td>
-              <td>{user.company?.name}</td>
+          {filteredCategories.map((cat) => (
+            <tr key={cat.id}>
+              <td>
+                <div className="d-flex align-items-center gap-2">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={selected.includes(cat.id)}
+                    onChange={() => toggleSelectRow(cat.id)}
+                  />
+                  <span>{cat.title}</span>
+                </div>
+              </td>
+              <td>{cat.start_price}</td>
+              <td colSpan={2}>{cat.created_at}</td>
               <td>
                 <div className="dropdown">
                   <button
@@ -162,10 +182,16 @@ export default function CategoriesTable({ onEdit, onDelete }) {
                     <i className="fas fa-ellipsis"></i>
                   </button>
                   <ul className="dropdown-menu">
-                    <button className="dropdown-item" onClick={() => handleEdit(user.id)}>
+                    <button
+                      className="dropdown-item"
+                      onClick={() => handleEdit(cat.id)}
+                    >
                       <i className="fal fa-pen me-2"></i> Edit
                     </button>
-                    <button className="dropdown-item text-danger" onClick={() => handleDelete(user.id)}>
+                    <button
+                      className="dropdown-item text-danger"
+                      onClick={() => handleDelete(cat.id)}
+                    >
                       <i className="fal fa-trash me-2"></i> Delete
                     </button>
                   </ul>
@@ -175,6 +201,49 @@ export default function CategoriesTable({ onEdit, onDelete }) {
           ))}
         </tbody>
       </table>
+
+      {/* Modal Backdrop */}
+      {showModal && <div className="modal-backdrop fade show"></div>}
+
+      {/* Date Range Modal */}
+      <div className={`modal fade ${showModal ? "show d-block" : ""}`}>
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Select Date Range</h5>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setShowModal(false)}
+              ></button>
+            </div>
+            <div className="modal-body">
+              <DateRange
+                ranges={tempRange}
+                onChange={(ranges) =>
+                  setTempRange([ranges.selection])
+                }
+                editableDateInputs
+                moveRangeOnFirstSelection={false}
+              />
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={confirmDateRange}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
