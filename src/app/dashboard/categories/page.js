@@ -5,6 +5,7 @@ import PageHeader from "@/components/layout/PageHeader";
 import CategoriesTable from "@/components/dashboard/categories/CategoriesTable";
 import CategoryModal from "@/components/dashboard/categories/CategoryModal";
 import TrashModal from "@/components/dashboard/categories/TrashModal";
+import { confirmAction } from "@/utils/confirm";
 
 const MOCK_CATEGORIES = [
   { id: 1, title: "Electronics", start_price: 100, created_at: "2025-08-12" },
@@ -16,6 +17,7 @@ export default function CategoriesPage() {
   const [categories, setCategories] = useState(MOCK_CATEGORIES);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
   
   const [trashCategories, setTrashCategories] = useState([]);
   const [showTrashModal, setShowTrashModal] = useState(false);
@@ -53,13 +55,18 @@ export default function CategoriesPage() {
   };
 
   const handleDelete = (id) => {
-    if (confirm("Move this category to trash?")) {
-      const categoryToDelete = categories.find((c) => c.id === id);
-      if (categoryToDelete) {
-        setTrashCategories((prev) => [categoryToDelete, ...prev]);
-        setCategories((prev) => prev.filter((c) => c.id !== id));
+    confirmAction({
+      title: "Move to Trash?",
+      message: "This category will be moved to the recycle bin.",
+      confirmLabel: "Yes, Move it",
+      onConfirm: () => {
+        const categoryToDelete = categories.find((c) => c.id === id);
+        if (categoryToDelete) {
+          setTrashCategories((prev) => [categoryToDelete, ...prev]);
+          setCategories((prev) => prev.filter((c) => c.id !== id));
+        }
       }
-    }
+    });
   };
 
   const handleRestore = (id) => {
@@ -100,12 +107,22 @@ export default function CategoriesPage() {
           type="button"
           className="alert alert-danger rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
           onClick={() => {
-            console.log("Delete Selected Categories");
-            // 🔜 Bulk delete logic
+             if (selectedIds.length === 0) return;
+             confirmAction({
+              title: "Delete Selected Items?",
+              message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
+              confirmLabel: "Yes, Delete",
+              onConfirm: () => {
+                const itemsToDelete = categories.filter(c => selectedIds.includes(c.id));
+                setTrashCategories(prev => [...itemsToDelete, ...prev]);
+                setCategories(prev => prev.filter(c => !selectedIds.includes(c.id)));
+                setSelectedIds([]);
+              }
+             });
           }}
         >
           <i className="fal fa-trash"></i>
-          <span className="txt ms-2">Delete</span>
+          <span className="txt ms-2">Delete ({selectedIds.length})</span>
         </button>
 
         {/* View Trash Button */}
@@ -123,6 +140,8 @@ export default function CategoriesPage() {
       <div className="mt-4">
         <CategoriesTable
           data={categories}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />

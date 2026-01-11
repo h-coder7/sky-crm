@@ -1,4 +1,5 @@
 "use client";
+import { confirmAction } from "@/utils/confirm";
 
 export default function TrashModal({
   show,
@@ -55,13 +56,12 @@ export default function TrashModal({
                             <button
                               className="btn btn-sm btn-danger"
                               onClick={() => {
-                                if (
-                                  confirm(
-                                    "Delete permanently? This action cannot be undone."
-                                  )
-                                ) {
-                                  onPermanentDelete(cat.id);
-                                }
+                                confirmAction({
+                                  title: "Delete Permanently?",
+                                  message: "This action cannot be undone. Are you sure?",
+                                  confirmLabel: "Delete Forever",
+                                  onConfirm: () => onPermanentDelete(cat.id),
+                                });
                               }}
                               title="Delete Permanently"
                             >

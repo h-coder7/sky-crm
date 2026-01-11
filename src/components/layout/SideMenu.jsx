@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { confirmAction } from "@/utils/confirm";
 
 export default function SideMenu() {
     return (
@@ -148,6 +149,24 @@ export default function SideMenu() {
                         <h6>Yasmin Ali</h6>
                         <small>YasminAli@gmail.com</small>
                     </div>
+
+                    <button
+                        className="btn border-0 p-0 ms-auto text-danger"
+                        onClick={() => {
+                            confirmAction({
+                                title: "Logout?",
+                                message: "Are you sure you want to logout?",
+                                confirmLabel: "Logout",
+                                onConfirm: () => {
+                                    console.log("Logged out");
+                                    // 🔜 Logout logic (e.g. redirect to login)
+                                },
+                            });
+                        }}
+                        title="Logout"
+                    >
+                        <i className="fal fa-sign-out fa-lg"></i>
+                    </button>
                 </div>
             </div>
         </aside>
