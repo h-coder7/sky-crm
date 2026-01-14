@@ -1,4 +1,6 @@
 "use client";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { confirmAction } from "@/utils/confirm";
 
 export default function TrashModal({
@@ -8,12 +10,27 @@ export default function TrashModal({
   onRestore,
   onPermanentDelete,
 }) {
-  if (!show) return null;
+  const [isMounted, setIsMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!show || !isMounted) return null;
+
+  return createPortal(
     <>
-      <div className="modal-backdrop fade show"></div>
-      <div className="modal fade show d-block" tabIndex="-1">
+      <div 
+        className="modal-backdrop fade show" 
+        style={{ zIndex: 1060 }}
+        onClick={onClose}
+      ></div>
+      <div 
+        className="modal fade show d-block" 
+        tabIndex="-1" 
+        style={{ zIndex: 1061 }}
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+      >
         <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content">
             <div className="modal-header">
@@ -87,6 +104,7 @@ export default function TrashModal({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }

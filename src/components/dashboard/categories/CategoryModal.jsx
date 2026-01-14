@@ -1,12 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 export default function CategoryModal({ show, onClose, onSave, category = null }) {
+  const [isMounted, setIsMounted] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     start_price: "",
   });
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (category) {
@@ -32,12 +38,21 @@ export default function CategoryModal({ show, onClose, onSave, category = null }
     onSave(formData);
   };
 
-  if (!show) return null;
+  if (!show || !isMounted) return null;
 
-  return (
+  return createPortal(
     <>
-      <div className="modal-backdrop fade show"></div>
-      <div className="modal fade show d-block" tabIndex="-1">
+      <div 
+        className="modal-backdrop fade show" 
+        style={{ zIndex: 1060 }}
+        onClick={onClose}
+      ></div>
+      <div 
+        className="modal fade show d-block" 
+        tabIndex="-1" 
+        style={{ zIndex: 1061 }}
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+      >
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
@@ -97,6 +112,7 @@ export default function CategoryModal({ show, onClose, onSave, category = null }
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
