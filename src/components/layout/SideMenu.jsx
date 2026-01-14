@@ -31,9 +31,9 @@ export default function SideMenu() {
                         <li>
                             <Link href="/dashboard" className="lnk active">
                                 <span className="icon">
-                                    <i className="fal fa-home"></i>
+                                    <i className="fal fa-chart-simple"></i>
                                 </span>
-                                <span className="txt">Home</span>
+                                <span className="txt">Dashboard</span>
                             </Link>
                         </li>
 

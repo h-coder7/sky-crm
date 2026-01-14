@@ -24,7 +24,7 @@ export default function TrashModal({
                 onClick={onClose}
               ></button>
             </div>
-            <div className="modal-body p-0">
+            <div className="modal-body">
               {trashCategories.length === 0 ? (
                 <div className="text-center py-5 text-muted">
                   <i className="fal fa-trash-alt fa-3x mb-3"></i>
@@ -47,14 +47,14 @@ export default function TrashModal({
                           <td>{cat.start_price}</td>
                           <td>
                             <button
-                              className="btn btn-sm btn-success me-2"
+                              className="butn-st2 butn-md blue-butn py-2 me-2"
                               onClick={() => onRestore(cat.id)}
                               title="Restore"
                             >
                               <i className="fal fa-trash-undo"></i> Restore
                             </button>
                             <button
-                              className="btn btn-sm btn-danger"
+                              className="butn-st2 butn-md bg-danger py-2 px-3"
                               onClick={() => {
                                 confirmAction({
                                   title: "Delete Permanently?",
@@ -75,15 +75,15 @@ export default function TrashModal({
                 </div>
               )}
             </div>
-            <div className="modal-footer">
+            {/* <div className="modal-footer">
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="butn-st2 butn-md line-butn"
                 onClick={onClose}
               >
                 Close
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

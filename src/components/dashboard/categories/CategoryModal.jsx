@@ -84,12 +84,12 @@ export default function CategoryModal({ show, onClose, onSave, category = null }
               <div className="modal-footer">
                 <button
                   type="button"
-                  className="btn btn-secondary"
+                  className="butn-st2 butn-md line-butn"
                   onClick={onClose}
                 >
                   Close
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="butn-st2 butn-md">
                   {category ? "Update" : "Save"}
                 </button>
               </div>

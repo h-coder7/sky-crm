@@ -153,7 +153,7 @@ export default function CategoriesTable({ data = [], selectedIds = [], onSelecti
                                 </div>
                                 <div className="dropdown">
                                     <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fas fa-ellipsis-v"></i>
+                                        <i className="fat fa-sort"></i>
                                     </button>
                                     <ul className="dropdown-menu">
                                         <button className="dropdown-item" onClick={() => handleSort('title', 'asc')}>
@@ -171,7 +171,7 @@ export default function CategoriesTable({ data = [], selectedIds = [], onSelecti
                                 <div className="txt"> Start Price </div>
                                 <div className="dropdown">
                                     <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fas fa-ellipsis-v"></i>
+                                        <i className="fat fa-sort"></i>
                                     </button>
                                     <ul className="dropdown-menu">
                                         <button className="dropdown-item" onClick={() => handleSort('start_price', 'asc')}>
@@ -189,7 +189,7 @@ export default function CategoriesTable({ data = [], selectedIds = [], onSelecti
                                 <div className="txt"> Added On </div>
                                 <div className="dropdown">
                                     <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fas fa-ellipsis-v"></i>
+                                        <i className="fat fa-sort"></i>
                                     </button>
                                     <ul className="dropdown-menu">
                                         <button className="dropdown-item" onClick={() => handleSort('created_at', 'asc')}>

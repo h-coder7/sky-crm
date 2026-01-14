@@ -17,15 +17,15 @@ export default function Home() {
   };
 
   return (
-    <div className="login-page d-flex align-items-center justify-content-center vh-100 bg-light">
+    <div className="login-page position-relative znd-10 d-flex align-items-center justify-content-center vh-100 bg-light">
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-10">
-            <div className="card border-0 shadow-lg overflow-hidden rounded-4">
+            <div className="card border-0 overflow-hidden rounded-4">
               <div className="row g-0">
                 {/* Left Side - Image/Branding */}
-                <div className="col-md-6 d-none d-md-block p-5 d-flex flex-column justify-content-center align-items-center position-relative">
-                   <div className="position-absolute w-100 h-100 start-0 top-0 opacity-10" style={{backgroundImage: 'url(/images/pattern.png)', backgroundSize: 'cover'}}></div> 
+                <div className="col-md-6 d-none d-md-block p-5 d-flex flex-column justify-content-center align-items-center position-relative border-end">
+                   <div className="position-absolute w-100 h-100 start-0 top-0 opacity-10"></div> 
                    <div className="z-1 text-center">
                     <div className="logo icon-100 mx-auto mb-4">
                       <Image
@@ -37,7 +37,7 @@ export default function Home() {
                       />
                     </div>
                       <h2 className="fw-bold mb-2">Welcome Back!</h2>
-                      <p className="lead">Manage your business with ease using Sky CRM.</p>
+                      <p className="lead opacity-50 mt-20 col-lg-10 mx-auto">Manage your business with ease using Sky CRM.</p>
                    </div>
                 </div>
 
@@ -83,12 +83,12 @@ export default function Home() {
                           Remember me
                         </label>
                       </div>
-                      <a href="#" className="text-primary text-decoration-none sm-text">Forgot Password?</a>
+                      <a href="#" className="text-decoration-underline">Forgot Password?</a>
                     </div>
 
                     <button 
                         type="submit" 
-                        className="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow-sm"
+                        className="butn-st2 w-100"
                         disabled={loading}
                     >
                       {loading ? (
@@ -104,7 +104,7 @@ export default function Home() {
                   
                   <div className="text-center mt-4">
                     <small className="text-muted">
-                        Don't have an account? <a href="#" className="text-primary text-decoration-none">Contact Admin</a>
+                        Don't have an account? <a href="#" className="text-decoration-underline">Contact Admin</a>
                     </small>
                   </div>
                 </div>

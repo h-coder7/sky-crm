@@ -24,7 +24,7 @@ export default function TrashModal({
                 onClick={onClose}
               ></button>
             </div>
-            <div className="modal-body p-0">
+            <div className="modal-body">
               {trashAdmins.length === 0 ? (
                 <div className="text-center py-5 text-muted">
                   <i className="fal fa-trash-alt fa-3x mb-3"></i>
@@ -37,7 +37,7 @@ export default function TrashModal({
                       <tr>
                         <th>Name</th>
                         <th>Role</th>
-                        <th>Actions</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -55,23 +55,23 @@ export default function TrashModal({
                             </div>
                           </td>
                           <td>
-                             <span className={`badge ${
-                                    admin.role === 'Super Admin' ? 'bg-danger' : 
-                                    admin.role === 'Admin' ? 'bg-primary' : 'bg-info'
+                             <span className={`alert rounded-pill py-1 px-3 fsz-12 ms-2 border-0 mb-0 ${
+                                    admin.role === 'Super Admin' ? 'alert-danger' : 
+                                    admin.role === 'Admin' ? 'alert-primary' : 'alert-info'
                                 }`}>
                                     {admin.role}
                             </span>
                           </td>
                           <td>
                             <button
-                              className="btn btn-sm btn-success me-2"
+                              className="butn-st2 butn-md blue-butn py-2 me-2"
                               onClick={() => onRestore(admin.id)}
                               title="Restore"
                             >
                               <i className="fal fa-trash-undo"></i> Restore
                             </button>
                             <button
-                              className="btn btn-sm btn-danger"
+                              className="butn-st2 butn-md bg-danger py-2 px-3"
                               onClick={() => {
                                 confirmAction({
                                   title: "Delete Permanently?",
@@ -92,15 +92,15 @@ export default function TrashModal({
                 </div>
               )}
             </div>
-            <div className="modal-footer">
+            {/* <div className="modal-footer">
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="butn-st2 butn-md line-butn"
                 onClick={onClose}
               >
                 Close
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

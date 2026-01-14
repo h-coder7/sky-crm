@@ -15,7 +15,7 @@ const MOCK_ADMINS = [
     phone: "+1234567890", 
     role: "Super Admin", 
     created_at: "2025-01-15",
-    image: "https://placehold.co/60x60" 
+    image: "/images/profile.svg"
   },
   { 
     id: 2, 
@@ -24,7 +24,7 @@ const MOCK_ADMINS = [
     phone: "+1987654321", 
     role: "Admin", 
     created_at: "2025-02-20",
-    image: "https://placehold.co/60x60" 
+    image: "/images/profile.svg" 
   },
   { 
     id: 3, 
@@ -33,7 +33,7 @@ const MOCK_ADMINS = [
     phone: "+1122334455", 
     role: "Sub Admin", 
     created_at: "2025-03-10",
-    image: "https://placehold.co/60x60" 
+    image: "/images/profile.svg"
   },
 ];
 

@@ -145,7 +145,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                 </div>
                                 <div className="dropdown">
                                     <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fas fa-ellipsis-v"></i>
+                                        <i className="fat fa-sort"></i>
                                     </button>
                                     <ul className="dropdown-menu">
                                         <button className="dropdown-item" onClick={() => handleSort('name', 'asc')}>
@@ -163,7 +163,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                 <div className="txt"> Email </div>
                                 <div className="dropdown">
                                     <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fas fa-ellipsis-v"></i>
+                                        <i className="fat fa-sort"></i>
                                     </button>
                                     <ul className="dropdown-menu">
                                         <button className="dropdown-item" onClick={() => handleSort('email', 'asc')}>
@@ -181,7 +181,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                 <div className="txt"> Phone </div>
                                 <div className="dropdown">
                                     <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fas fa-ellipsis-v"></i>
+                                        <i className="fat fa-sort"></i>
                                     </button>
                                     <ul className="dropdown-menu">
                                         <button className="dropdown-item" onClick={() => handleSort('phone', 'asc')}>
@@ -199,7 +199,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                 <div className="txt"> Role </div>
                                 <div className="dropdown">
                                     <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fas fa-ellipsis-v"></i>
+                                        <i className="fat fa-sort"></i>
                                     </button>
                                     <ul className="dropdown-menu">
                                         <button className="dropdown-item" onClick={() => handleSort('role', 'asc')}>
@@ -212,12 +212,12 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                 </div>
                             </div>
                         </th>
-                        <th>
+                        <th colSpan={2}>
                             <div className="d-flex justify-content-between align-items-center">
                                 <div className="txt"> Added On </div>
                                 <div className="dropdown">
                                     <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fas fa-ellipsis-v"></i>
+                                        <i className="fat fa-sort"></i>
                                     </button>
                                     <ul className="dropdown-menu">
                                         <button className="dropdown-item" onClick={() => handleSort('created_at', 'asc')}>
@@ -230,7 +230,6 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                 </div>
                             </div>
                         </th>
-                        <th>Actions</th>
                     </tr>
 
                     {/* Search Row */}
@@ -267,7 +266,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                         </td>
                         <td>
                             <select
-                                className="form-select"
+                                className="form-control form-select"
                                 value={filters.role}
                                 onChange={(e) => handleFilterChange("role", e.target.value)}
                             >
@@ -277,7 +276,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                 <option value="Sub Admin">Sub Admin</option>
                             </select>
                         </td>
-                        <td>
+                        <td colSpan={2}>
                             <input
                                 className="form-control"
                                 placeholder="Select Date Range"
@@ -286,7 +285,6 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                 onClick={() => setShowModal(true)}
                             />
                         </td>
-                        <td></td>
                     </tr>
                 </thead>
 
@@ -303,7 +301,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                         <tr key={admin.id}>
                             <td>
                                 <div className="d-flex align-items-center">
-                                    <div className="form-check me-3">
+                                    <div className="form-check me-2">
                                         <input
                                             className="form-check-input"
                                             type="checkbox"
@@ -313,10 +311,10 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                         />
                                     </div>
                                     <img 
-                                        src={admin.image || "https://placehold.co/60x60"} 
+                                        src={admin.image || "https://placehold.co/40x40"} 
                                         alt={admin.name}
                                         className="rounded-circle me-2"
-                                        style={{ width: "60px", height: "60px", objectFit: "cover" }}
+                                        style={{ width: "35px", height: "35px", objectFit: "cover" }}
                                     />
                                     <label className="form-check-label mb-0 cursor-pointer" htmlFor={admin.id}>
                                         {admin.name}
@@ -326,9 +324,9 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                             <td>{admin.email}</td>
                             <td>{admin.phone}</td>
                             <td>
-                                <span className={`badge ${
-                                    admin.role === 'Super Admin' ? 'bg-danger' : 
-                                    admin.role === 'Admin' ? 'bg-primary' : 'bg-info'
+                                <span className={`alert rounded-pill py-1 px-3 fsz-12 ms-2 border-0 mb-0 ${
+                                    admin.role === 'Super Admin' ? 'alert-danger' : 
+                                    admin.role === 'Admin' ? 'alert-primary' : 'alert-info'
                                 }`}>
                                     {admin.role}
                                 </span>
