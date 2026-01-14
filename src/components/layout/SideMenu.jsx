@@ -2,9 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { confirmAction } from "@/utils/confirm";
 
 export default function SideMenu() {
+    const pathname = usePathname();
+
+    const isActive = (path) => pathname === path;
+
     return (
         <aside className="sidemenu">
 
@@ -29,7 +34,7 @@ export default function SideMenu() {
 
                     <ul className="links">
                         <li>
-                            <Link href="/dashboard" className="lnk active">
+                            <Link href="/dashboard" className={`lnk ${isActive("/dashboard") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-chart-simple"></i>
                                 </span>
@@ -38,7 +43,7 @@ export default function SideMenu() {
                         </li>
 
                         <li>
-                            <Link href="/dashboard/admins" className="lnk">
+                            <Link href="/dashboard/admins" className={`lnk ${isActive("/dashboard/admins") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-user-tie"></i>
                                 </span>
@@ -47,7 +52,7 @@ export default function SideMenu() {
                         </li>
 
                         <li>
-                            <Link href="/dashboard/categories" className="lnk">
+                            <Link href="/dashboard/categories" className={`lnk ${isActive("/dashboard/categories") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-grid-2"></i>
                                 </span>
@@ -56,7 +61,7 @@ export default function SideMenu() {
                         </li>
 
                         <li>
-                            <Link href="/dashboard/about" className="lnk">
+                            <Link href="/dashboard/about" className={`lnk ${isActive("/dashboard/about") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-bell"></i>
                                 </span>
@@ -65,7 +70,7 @@ export default function SideMenu() {
                         </li>
 
                         <li>
-                            <Link href="/tasks" className="lnk">
+                            <Link href="/tasks" className={`lnk ${isActive("/tasks") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-square-check"></i>
                                 </span>
@@ -74,7 +79,7 @@ export default function SideMenu() {
                         </li>
 
                         <li>
-                            <Link href="/sectors" className="lnk">
+                            <Link href="/sectors" className={`lnk ${isActive("/sectors") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-tire"></i>
                                 </span>
@@ -83,7 +88,7 @@ export default function SideMenu() {
                         </li>
 
                         <li>
-                            <Link href="/companies" className="lnk">
+                            <Link href="/companies" className={`lnk ${isActive("/companies") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-city"></i>
                                 </span>
@@ -92,7 +97,7 @@ export default function SideMenu() {
                         </li>
 
                         <li>
-                            <Link href="/contacts" className="lnk">
+                            <Link href="/contacts" className={`lnk ${isActive("/contacts") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-id-badge"></i>
                                 </span>
@@ -107,7 +112,7 @@ export default function SideMenu() {
                 <div className="sidemenu-links">
                     <ul className="links">
                         <li>
-                            <Link href="/invite-team" className="lnk">
+                            <Link href="/invite-team" className={`lnk ${isActive("/invite-team") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-user-plus"></i>
                                 </span>
@@ -116,7 +121,7 @@ export default function SideMenu() {
                         </li>
 
                         <li>
-                            <Link href="/integration" className="lnk">
+                            <Link href="/integration" className={`lnk ${isActive("/integration") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-grid-2"></i>
                                 </span>
@@ -125,7 +130,7 @@ export default function SideMenu() {
                         </li>
 
                         <li>
-                            <Link href="/help" className="lnk">
+                            <Link href="/help" className={`lnk ${isActive("/help") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-headphones"></i>
                                 </span>

@@ -76,7 +76,7 @@ export default function EmployeesTable() {
         <>
         <h5 className="mb-3 mt-5"> Activity Breakdown per Employee </h5>
         <div className="table-responsive position-relative">
-            <table className="table table-hover align-middle">
+            <table className="table align-middle">
                 <thead>
                     <tr>
                         <th>Employee</th>

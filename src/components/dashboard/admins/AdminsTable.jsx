@@ -132,7 +132,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
     return (
         <div className="table-responsive position-relative">
 
-            <table className="table table-hover align-middle">
+            <table className="table align-middle">
                 <thead>
                     <tr>
                         <th>
@@ -309,16 +309,16 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                             onChange={() => toggleSelectRow(admin.id)}
                                             id={admin.id}
                                         />
-                                    </div>
                                     <img 
                                         src={admin.image || "https://placehold.co/40x40"} 
                                         alt={admin.name}
                                         className="rounded-circle me-2"
                                         style={{ width: "35px", height: "35px", objectFit: "cover" }}
                                     />
-                                    <label className="form-check-label mb-0 cursor-pointer" htmlFor={admin.id}>
+                                    <label className="form-check-label mb-0" htmlFor={admin.id}>
                                         {admin.name}
                                     </label>
+                                    </div>
                                 </div>
                             </td>
                             <td>{admin.email}</td>

@@ -32,7 +32,7 @@ export default function TrashModal({
                 </div>
               ) : (
                 <div className="table-responsive">
-                  <table className="table table-hover align-middle mb-0">
+                  <table className="table align-middle mb-0">
                     <thead className="bg-light">
                       <tr>
                         <th>Name</th>

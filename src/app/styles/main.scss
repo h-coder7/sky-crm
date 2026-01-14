@@ -357,7 +357,7 @@ small.text {
     position: relative;
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 12px;
+    border-spacing: 0 5px;
     color: #000;
     .dropdown-toggle::after {
         display: none;
@@ -365,15 +365,18 @@ small.text {
     th,td {
         padding: 15px;
         vertical-align: middle;
-        border-top: 1px solid #dee2e6;
-        border-bottom: 1px solid #dee2e6;
+        // border-top: 1px solid #dee2e6;
+        // border-bottom: 1px solid #dee2e6;
+        border: 0 !important;
         min-width: max-content;
         white-space: nowrap;
         font-size: 13px;
+        background-color: #fff;
     }
     thead {
+        background-image: linear-gradient(45deg, #2DD97511, #0F044311);
         th {
-            background-color: #F5F7FA;
+            background: transparent !important;
             font-weight: 500;
             &:first-of-type {
                 border-inline-start: 1px solid #dee2e6;
@@ -407,9 +410,15 @@ small.text {
     }
 
     .search-tr {
+        background-color: #f9f9f9;
+        .form-control {
+            background-color: transparent;
+            // border: 0;
+        }
         td {
             padding: 0 6px;
             border: 0;
+            background-color: transparent;
             &:first-of-type {
                 border-inline-start: 0;
                 padding-inline-start: 0;
@@ -442,18 +451,25 @@ small.text {
 
     .form-check {
         margin-bottom: 0;
+        min-height: max-content;
+        display: flex;
+        align-items: center;
         .form-check-input {
             width: 15px;
             height: 15px;
             // border-radius: 50%;
             border: 1px solid #dee2e6;
             margin-inline-end: 10px;
-            margin-top: 2px;
+            // margin-top: 2px;
+            margin-top: -2px;
         }
         &.align-items-center {
             .form-check-input {
-                margin-top: 3px;
+                // margin-top: 3px;
             }
+        }
+        .form-check-label {
+            cursor: pointer;
         }
     }
     .tag {
@@ -925,19 +941,20 @@ section {
         position: relative;
         display: flex;
         color: #666D80;
+        background-color: #f7f7f7;
 
         .sidemenu {
             position: relative;
             width: 270px;
             flex-shrink: 0;
             padding: 15px 0;
-            border-inline-end: 1px solid #dee2e6;
+            // border-inline-end: 1px solid #dee2e6;
             // height: 100%;
             min-height: 100vh;
             display: flex;
             justify-content: space-between;
             flex-direction: column;
-            background-color: #f9f9f9;
+            background-color: #fff;
             .logo-wrapper {
                 position: relative;
                 padding: 0 15px;
@@ -989,6 +1006,7 @@ section {
                         &.active {
                             color: #000;
                             background-color: #f0f0f0;
+                            padding-inline-start: 15px;
                             .icon {
                                 color: #3D2E84;
                             }
@@ -1070,6 +1088,8 @@ section {
                 }
                 .form-control {
                     min-height: 45px;
+                    border: 0;
+                    border-radius: 10px;
                 }
             }
 
@@ -1102,7 +1122,8 @@ section {
                 position: relative;
                 margin-top: 30px;
                 padding: 20px;
-                border: 1px solid #dee2e6;
+                // border: 1px solid #dee2e6;
+                background-color: #fff;
                 border-radius: 10px;
                 .icon {
                     width: 35px;
@@ -3339,6 +3360,11 @@ section {
             border-radius: 10px;
         }
     }
+
+}
+
+/* --------------- login page --------------- */
+.login-page {
 
 }
 

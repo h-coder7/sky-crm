@@ -140,7 +140,7 @@ export default function CategoriesTable({ data = [], selectedIds = [], onSelecti
     return (
         <div className="table-responsive position-relative">
 
-            <table className="table table-hover align-middle">
+            <table className="table align-middle">
                 <thead>
                     <tr>
                         <th>
