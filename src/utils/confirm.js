@@ -12,7 +12,7 @@ export const confirmAction = ({
   confirmAlert({
     customUI: ({ onClose }) => {
       return (
-        <div className="custom-ui-confirm p-4 bg-white rounded shadow-lg text-center" style={{ maxWidth: '400px', margin: '0 auto' }}>
+        <div className="custom-ui-confirm py-5 px-4 bg-white rounded shadow-lg text-center col-lg-4 mx-auto radius-30" style={{}}>
           <div className="mb-3">
              <i className="fal fa-exclamation-triangle fa-3x text-warning"></i>
           </div>
@@ -20,7 +20,7 @@ export const confirmAction = ({
           <p className="text-muted mb-4">{message}</p>
           <div className="d-flex justify-content-center gap-2">
             <button
-              className="btn btn-secondary"
+              className="alert alert-secondary radius-10 py-2 px-3 fsz-14 ms-2 border-0 mb-0"
               onClick={() => {
                 onCancel?.();
                 onClose();
@@ -29,7 +29,7 @@ export const confirmAction = ({
               {cancelLabel}
             </button>
             <button
-              className="btn btn-danger"
+              className="alert alert-danger radius-10 py-2 px-3 fsz-14 ms-2 border-0 mb-0"
               onClick={() => {
                 onConfirm();
                 onClose();

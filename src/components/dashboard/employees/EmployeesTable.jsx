@@ -1,96 +1,283 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { DateRange } from "react-date-range";
+import { createPortal } from "react-dom";
+import {
+    useReactTable,
+    getCoreRowModel,
+    getSortedRowModel,
+    getFilteredRowModel,
+} from "@tanstack/react-table";
+import EmployeesFilter from "./EmployeesFilter";
 
-export default function EmployeesTable() {
-    // Static data - replace with API data when endpoint is ready
-    const staticData = [
-        {
-            id: 1,
-            employee: "Christina Skentos",
-            phone_call: 3,
-            zoom_meeting: 2,
-            face_to_face: 1,
-            email: 2,
-            linkedin_message: 0,
-            acquaintance: 0
+export default function EmployeesTable({ data = [], selectedIds = [], onSelectionChange, onEdit, onDelete }) {
+    const [sorting, setSorting] = useState([]);
+    const [columnFilters, setColumnFilters] = useState([]);
+    const [rowSelection, setRowSelection] = useState({});
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    const columns = useMemo(
+        () => [
+            {
+                id: "name",
+                accessorKey: "name",
+            },
+            {
+                id: "email",
+                accessorKey: "email",
+            },
+            {
+                id: "phone",
+                accessorKey: "phone",
+            },
+            {
+                id: "role",
+                accessorKey: "role",
+                filterFn: "equals",
+            },
+            {
+                id: "sector",
+                accessorKey: "sector",
+            },
+            {
+                id: "created_at",
+                accessorKey: "created_at",
+                filterFn: (row, columnId, filterValue) => {
+                    if (!filterValue || !filterValue[0] || !filterValue[1]) return true;
+                    const rowDate = new Date(row.getValue(columnId));
+                    const [start, end] = filterValue;
+                    return rowDate >= start && rowDate <= end;
+                },
+            },
+        ],
+        []
+    );
+
+    const table = useReactTable({
+        data,
+        columns,
+        state: { sorting, columnFilters, rowSelection },
+        enableRowSelection: true,
+        onRowSelectionChange: (updater) => {
+            const nextSelection = typeof updater === "function" ? updater(rowSelection) : updater;
+            setRowSelection(nextSelection);
+            
+            const selectedIdsList = Object.keys(nextSelection)
+                .filter(key => nextSelection[key])
+                .map(index => data[index]?.id)
+                .filter(Boolean);
+
+            onSelectionChange?.(selectedIdsList);
         },
-        {
-            id: 2,
-            employee: "Moustafa Sayed",
-            phone_call: 0,
-            zoom_meeting: 0,
-            face_to_face: 0,
-            email: 0,
-            linkedin_message: 0,
-            acquaintance: 0
-        },
-        {
-            id: 3,
-            employee: "Nourel Moulay",
-            phone_call: 0,
-            zoom_meeting: 0,
-            face_to_face: 0,
-            email: 0,
-            linkedin_message: 0,
-            acquaintance: 0
-        },
-        {
-            id: 4,
-            employee: "Pretti Nayak",
-            phone_call: 0,
-            zoom_meeting: 0,
-            face_to_face: 1,
-            email: 0,
-            linkedin_message: 1,
-            acquaintance: 0
-        },
-        {
-            id: 5,
-            employee: "Sedra Quraid",
-            phone_call: 0,
-            zoom_meeting: 0,
-            face_to_face: 1,
-            email: 0,
-            linkedin_message: 0,
-            acquaintance: 0
+        onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+    });
+
+    useEffect(() => {
+        const newSelection = {};
+        selectedIds.forEach((id) => {
+            const index = data.findIndex((item) => item.id === id);
+            if (index !== -1) newSelection[index] = true;
+        });
+        setRowSelection(newSelection);
+    }, [selectedIds, data]);
+
+    /* ================= Date Range ================= */
+    const [dateRange, setDateRange] = useState([
+        { startDate: null, endDate: null, key: "selection" },
+    ]);
+    const [tempRange, setTempRange] = useState([
+        { startDate: null, endDate: null, key: "selection" },
+    ]);
+    const [showModal, setShowModal] = useState(false);
+
+    const formatDateRangeDisplay = () => {
+        const { startDate, endDate } = dateRange[0];
+        if (!startDate || !endDate) return "";
+        return `${startDate.toISOString().split("T")[0]} to ${endDate.toISOString().split("T")[0]}`;
+    };
+
+    const confirmDateRange = () => {
+        setDateRange(tempRange);
+        setShowModal(false);
+
+        if (tempRange[0].startDate && tempRange[0].endDate) {
+            table.getColumn("created_at")?.setFilterValue([
+                tempRange[0].startDate,
+                tempRange[0].endDate,
+            ]);
+        } else {
+            table.getColumn("created_at")?.setFilterValue(undefined);
         }
-    ];
-
-    const [data] = useState(staticData);
-
-    // TODO: Uncomment when API endpoint is ready
-    // useEffect(() => {
-    //     const fetchEmployees = async () => {
-    //         try {
-    //             const response = await axios.get('/api/employees');
-    //             setData(response.data);
-    //         } catch (error) {
-    //             console.error('Error fetching employees:', error);
-    //         }
-    //     };
-    //     fetchEmployees();
-    // }, []);
+    };
 
     return (
-        <>
-        <h5 className="mb-3 mt-5"> Activity Breakdown per Employee </h5>
         <div className="table-responsive position-relative">
             <table className="table align-middle">
                 <thead>
                     <tr>
-                        <th>Employee</th>
-                        <th>Phone call</th>
-                        <th>Zoom meeting</th>
-                        <th>Face to face</th>
-                        <th>Email</th>
-                        <th>Linkedin message</th>
-                        <th>Acquaintance</th>
+                        <th>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="form-check">
+                                    <input 
+                                        className="form-check-input" 
+                                        id="select-all-employees" 
+                                        type="checkbox" 
+                                        checked={table.getIsAllPageRowsSelected()}
+                                        onChange={table.getToggleAllPageRowsSelectedHandler()}
+                                    />
+                                    <label className="form-check-label" htmlFor="select-all-employees">
+                                        Name
+                                    </label>
+                                </div>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("name")?.toggleSorting(false)}>
+                                                <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("name")?.toggleSorting(true)}>
+                                                <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="txt"> Email </div>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("email")?.toggleSorting(false)}>
+                                                <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("email")?.toggleSorting(true)}>
+                                                <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="txt"> Phone </div>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("phone")?.toggleSorting(false)}>
+                                                <i className="fal fa-sort-numeric-up me-2"></i> (1 → 9)
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("phone")?.toggleSorting(true)}>
+                                                <i className="fal fa-sort-numeric-down me-2"></i> (9 → 1)
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="txt"> Role </div>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("role")?.toggleSorting(false)}>
+                                                <i className="fal fa-sort-alpha-up me-2"></i> A → Z
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("role")?.toggleSorting(true)}>
+                                                <i className="fal fa-sort-alpha-down me-2"></i> Z → A
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="txt"> Sector </div>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("sector")?.toggleSorting(false)}>
+                                                <i className="fal fa-sort-alpha-up me-2"></i> A → Z
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("sector")?.toggleSorting(true)}>
+                                                <i className="fal fa-sort-alpha-down me-2"></i> Z → A
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th colSpan={2}>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="txt"> Added On </div>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("created_at")?.toggleSorting(false)}>
+                                                <i className="fal fa-sort-amount-up me-2"></i> Oldest First
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button className="dropdown-item" onClick={() => table.getColumn("created_at")?.toggleSorting(true)}>
+                                                <i className="fal fa-sort-amount-down me-2"></i> Newest First
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
                     </tr>
+
+                    <EmployeesFilter 
+                        table={table}
+                        dateRangeValue={formatDateRangeDisplay()}
+                        onOpenModal={() => setShowModal(true)}
+                    />
                 </thead>
 
                 <tbody>
-                    {!data.length && (
+                    {!table.getRowModel().rows.length && (
                         <tr>
                             <td colSpan={7} className="text-center text-muted py-4">
                                 No employees found
@@ -98,24 +285,129 @@ export default function EmployeesTable() {
                         </tr>
                     )}
 
-                    {data.map((employee) => (
-                        <tr key={employee.id}>
-                            <td>
-                                <div className="d-flex align-items-center">
-                                    <span>{employee.employee}</span>
-                                </div>
-                            </td>
-                            <td>{employee.phone_call}</td>
-                            <td>{employee.zoom_meeting}</td>
-                            <td>{employee.face_to_face}</td>
-                            <td>{employee.email}</td>
-                            <td>{employee.linkedin_message}</td>
-                            <td>{employee.acquaintance}</td>
-                        </tr>
-                    ))}
+                    {table.getRowModel().rows.map((row) => {
+                        const employee = row.original;
+                        return (
+                            <tr key={row.id}>
+                                <td>
+                                    <div className="d-flex align-items-center">
+                                        <div className="form-check me-2">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                checked={row.getIsSelected()}
+                                                onChange={row.getToggleSelectedHandler()}
+                                                id={`employee-${employee.id}`}
+                                            />
+                                        </div>
+                                        <label className="form-check-label mb-0" htmlFor={`employee-${employee.id}`}>
+                                            {employee.name}
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>{employee.email}</td>
+                                <td>{employee.phone}</td>
+                                <td>
+                                    {(() => {
+                                        const getRoleBadgeClass = (role) => {
+                                            switch (role) {
+                                                case "Head Department": return "alert-warning";
+                                                case "Senior Business Development Manager": return "alert-success";
+                                                case "Business Development Manager": return "alert-secondary";
+                                                case "Senior Business Development Executive": return "role-purple";
+                                                case "Business Development Executive": return "role-teal";
+                                                default: return "alert-primary";
+                                            }
+                                        };
+                                        return (
+                                            <span className={`alert rounded-pill py-1 px-3 fsz-10 border-0 mb-0 ${getRoleBadgeClass(employee.role)}`}>
+                                                {employee.role}
+                                            </span>
+                                        );
+                                    })()}
+                                </td>
+                                <td>
+                                    <div className="text-pop fsz-12">
+                                        {employee.sector?.length > 20 ? employee.sector.slice(0, 20) + "..." : employee.sector}
+                                        <span className="tooltip-text">{employee.sector}</span>
+                                    </div>
+                                </td>
+                                <td>{employee.created_at}</td>
+                                <td>
+                                    <div className="dropdown">
+                                        <button
+                                            className="btn bg-transparent border-0 p-0 dropdown-toggle"
+                                            data-bs-toggle="dropdown"
+                                        >
+                                            <i className="fas fa-ellipsis"></i>
+                                        </button>
+                                        <ul className="dropdown-menu">
+                                            <li>
+                                                <button
+                                                    className="dropdown-item"
+                                                    onClick={() => onEdit?.(employee.id)}
+                                                >
+                                                    <i className="fal fa-pen me-2"></i> Edit
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button
+                                                    className="dropdown-item text-danger"
+                                                    onClick={() => onDelete?.(employee.id)}
+                                                >
+                                                    <i className="fal fa-trash me-2"></i> Delete
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
+
+            {isMounted && showModal && createPortal(
+                <>
+                    <div 
+                        className="modal-backdrop fade show" 
+                        style={{ zIndex: 1060 }}
+                        onClick={() => setShowModal(false)}
+                    ></div>
+                    <div 
+                        className="modal fade show d-block" 
+                        tabIndex="-1" 
+                        style={{ zIndex: 1061 }}
+                        onClick={(e) => e.target === e.currentTarget && setShowModal(false)}
+                    >
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content border-0" style={{ borderRadius: "15px" }}>
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Select Date Range</h5>
+                                    <button className="btn-close" onClick={() => setShowModal(false)} />
+                                </div>
+                                <div className="modal-body bg-light">
+                                    <DateRange
+                                        ranges={tempRange}
+                                        onChange={(ranges) => setTempRange([ranges.selection])}
+                                        editableDateInputs
+                                        moveRangeOnFirstSelection={false}
+                                    />
+                                </div>
+                                <div className="modal-footer">
+                                    <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                                        Cancel
+                                    </button>
+                                    <button className="btn btn-primary" onClick={confirmDateRange}>
+                                        Confirm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>,
+                document.body
+            )}
         </div>
-        </>
     );
 }

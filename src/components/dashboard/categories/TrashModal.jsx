@@ -64,14 +64,14 @@ export default function TrashModal({
                           <td>{cat.start_price}</td>
                           <td>
                             <button
-                              className="butn-st2 butn-md blue-butn py-2 me-2"
+                              className="btn btn-sm btn-outline-success me-2"
                               onClick={() => onRestore(cat.id)}
                               title="Restore"
                             >
-                              <i className="fal fa-trash-undo"></i> Restore
+                              <i className="fal fa-trash-undo"></i>
                             </button>
                             <button
-                              className="butn-st2 butn-md bg-danger py-2 px-3"
+                              className="btn btn-sm btn-outline-danger"
                               onClick={() => {
                                 confirmAction({
                                   title: "Delete Permanently?",
@@ -82,7 +82,7 @@ export default function TrashModal({
                               }}
                               title="Delete Permanently"
                             >
-                              <i className="fal fa-times"></i>
+                              <i className="fal fa-trash-alt"></i>
                             </button>
                           </td>
                         </tr>

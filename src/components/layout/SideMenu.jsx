@@ -52,6 +52,15 @@ export default function SideMenu() {
                         </li>
 
                         <li>
+                            <Link href="/dashboard/employees" className={`lnk ${isActive("/dashboard/employees") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-users"></i>
+                                </span>
+                                <span className="txt">Employees</span>
+                            </Link>
+                        </li>
+
+                        <li>
                             <Link href="/dashboard/categories" className={`lnk ${isActive("/dashboard/categories") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-grid-2"></i>

@@ -244,9 +244,10 @@ small.text {
         // border: 1px solid #dee2e6;
         text-transform: capitalize;
         .dropdown-item {
-            font-size: 13px;
+            font-size: 12px;
             padding: 0.5rem 1rem;
             border-radius: 10px;
+            cursor: pointer;
         }
     }
 }
@@ -370,7 +371,7 @@ small.text {
         border: 0 !important;
         min-width: max-content;
         white-space: nowrap;
-        font-size: 13px;
+        font-size: 12px;
         background-color: #fff;
     }
     thead {
@@ -409,10 +410,41 @@ small.text {
         }
     }
 
+    .text-pop {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        .tooltip-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: max-content;
+            text-wrap: wrap;
+            font-size: 11px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 10px 10px 30px #0001, -10px -10px 30px #0001;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        &:hover {
+            .tooltip-text {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+    }
+
     .search-tr {
         background-color: #f9f9f9;
         .form-control {
-            background-color: transparent;
+            // background-color: transparent;
             // border: 0;
         }
         td {
@@ -445,8 +477,11 @@ small.text {
 
     .form-control {
         padding: 10px 15px;
-        font-size: 13px;
         min-height: 40px;
+        font-size: 12px;
+        width: 150px;
+        overflow: hidden !important;
+        min-width: 100%;
     }
 
     .form-check {
@@ -509,6 +544,28 @@ small.text {
         background-color: #cff4fc88;
     }
 
+    .alert-warning {
+        background-color: #fff3cd88;
+    }
+
+    .alert-secondary {
+        background-color: #e2e3e588;
+    }
+
+    .alert-success {
+        background-color: #d1e7dd88;
+    }
+
+    .role-purple {
+        background-color: #e2d9f388;
+        color: #6f42c1;
+    }
+
+    .role-teal {
+        background-color: #d2f4ea88;
+        color: #087990;
+    }
+
 }
 
 .form-check-input:checked {
@@ -528,7 +585,7 @@ small.text {
     .form-control {
         position: relative;
         min-height: 40px;
-        font-size: 13px;
+        font-size: 12px;
         box-shadow: none !important;
         border-radius: 10px;
     }
@@ -753,10 +810,12 @@ section {
 }
 
 .form-control {
+    min-height: 45px;
+    font-size: 12px;
     position: relative;
-    min-height: 50px;
-    font-size: 14px;
     box-shadow: none !important;
+    border: 0;
+    border-radius: 10px;
     &:focus {
         border-color: #000;
     }
@@ -767,6 +826,10 @@ section {
         min-height: 40px;
         font-size: 13px;
     }
+}
+
+.table-responsive {
+    min-height: 400px;
 }
 
 .show_hide_password {
@@ -1120,7 +1183,7 @@ section {
         .statics {
             .item {
                 position: relative;
-                margin-top: 30px;
+                margin-top: 24px;
                 padding: 20px;
                 // border: 1px solid #dee2e6;
                 background-color: #fff;
@@ -3043,8 +3106,9 @@ section {
 .modal {
     .modal-content {
         border: 0;
-        border-radius: 15px;
+        border-radius: 30px;
         background-color: #f7f7f7;
+        padding: 15px;
     }
     .modal-form {
         
@@ -3307,6 +3371,10 @@ section {
     .rdrMonth {
         width: 100%;
     }
+}
+
+.react-confirm-alert {
+    width: 100%;
 }
 
 .react-confirm-alert-overlay {

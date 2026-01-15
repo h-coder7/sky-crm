@@ -3,77 +3,102 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 
-export default function AdminModal({ show, onClose, onSave, admin = null }) {
+const SECTORS = [
+    "Manufacturing",
+    "Banking. Insurance & FinTech",
+    "Telecomm, Media & Entertainment",
+    "Beauty, Cosmetics & BeautyTech",
+    "Defense & Security",
+    "FMCGs, F&B, Foodtech & Aggregators",
+    "Aviation, Hospitality & TravelTech",
+    "Real Estate & Proptech",
+    "Luxury, Fashion & RetailTech",
+    "Renewable Energy, Oil & Gas",
+    "Business Services, Auditing & Consultancy",
+    "Government",
+    "Automotive & Autotech",
+    "Tech & Cybersecurity",
+    "Pharmaceutical, Medical & MedTech"
+];
+
+export default function EmployeeModal({ show, onClose, onSave, employee = null }) {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         phone: "",
-        role: "Admin",
-        image: "",
+        role: "Business Development Executive",
+        sector: [],
     });
 
-    const [imagePreview, setImagePreview] = useState("");
-
     useEffect(() => {
-        if (admin) {
+        if (employee) {
+            // Intelligent parsing of the sector string by matching against known sectors
+            const savedSectors = typeof employee.sector === "string" 
+                ? SECTORS.filter(s => employee.sector.includes(s))
+                : (Array.isArray(employee.sector) ? employee.sector : []);
+
             setFormData({
-                name: admin.name || "",
-                email: admin.email || "",
-                phone: admin.phone || "",
-                role: admin.role || "Admin",
-                image: admin.image || "",
+                name: employee.name || "",
+                email: employee.email || "",
+                phone: employee.phone || "",
+                role: employee.role || "Business Development Executive",
+                sector: savedSectors,
             });
-            setImagePreview(admin.image || "");
         } else {
             setFormData({
                 name: "",
                 email: "",
                 phone: "",
-                role: "Admin",
-                image: "",
+                role: "Business Development Executive",
+                sector: [],
             });
-            setImagePreview("");
         }
-    }, [admin, show]);
+    }, [employee, show]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            // Create a temporary URL for preview
-            const previewUrl = URL.createObjectURL(file);
-            setImagePreview(previewUrl);
+    const handleSectorChange = (sector) => {
+        setFormData((prev) => {
+            const currentSectors = Array.isArray(prev.sector) ? prev.sector : [];
+            const newSectors = currentSectors.includes(sector)
+                ? currentSectors.filter((s) => s !== sector)
+                : [...currentSectors, sector];
+            return { ...prev, sector: newSectors };
+        });
+    };
 
-            // Update formData with the previewUrl so it shows in the table
-            setFormData((prev) => ({ ...prev, image: previewUrl }));
+    const handleSelectAllSectors = (e) => {
+        if (e.target.checked) {
+            setFormData((prev) => ({ ...prev, sector: [...SECTORS] }));
+        } else {
+            setFormData((prev) => ({ ...prev, sector: [] }));
         }
     };
 
-    // Cleanup object URL to avoid memory leaks
-    useEffect(() => {
-        return () => {
-            if (imagePreview && imagePreview.startsWith("blob:")) {
-                URL.revokeObjectURL(imagePreview);
-            }
-        };
-    }, [imagePreview]);
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+        // Join sectors with a distinct delimiter for saving/displaying
+        // Using "; " to avoid confusion with commas inside names
+        const submissionData = {
+            ...formData,
+            sector: formData.sector.join(", ")
+        };
+        onSave(submissionData);
     };
 
-const [isMounted, setIsMounted] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
     if (!show || !isMounted) return null;
+
+    const selectedSectors = Array.isArray(formData.sector) ? formData.sector : [];
+    const isAllSelected = selectedSectors.length === SECTORS.length;
 
     return createPortal(
         <>
@@ -89,10 +114,10 @@ const [isMounted, setIsMounted] = useState(false);
                 onClick={(e) => e.target === e.currentTarget && onClose()}
             >
                 <div className="modal-dialog modal-dialog-centered modal-lg">
-                    <div className="modal-content">
+                    <div className="modal-content border-0" style={{ borderRadius: "15px" }}>
                         <div className="modal-header">
                             <h5 className="modal-title">
-                                {admin ? "Edit Admin" : "Add New Admin"}
+                                {employee ? "Edit Employee" : "Add New Employee"}
                             </h5>
                             <button
                                 type="button"
@@ -164,47 +189,54 @@ const [isMounted, setIsMounted] = useState(false);
                                                 onChange={handleChange}
                                                 required
                                             >
-                                                <option value="Admin">Admin</option>
-                                                <option value="Super Admin">Super Admin</option>
-                                                <option value="Sub Admin">Sub Admin</option>
+                                                <option value="Head Department">Head Department</option>
+                                                <option value="Senior Business Development Manager">Senior Business Development Manager</option>
+                                                <option value="Business Development Manager">Business Development Manager</option>
+                                                <option value="Senior Business Development Executive">Senior Business Development Executive</option>
+                                                <option value="Business Development Executive">Business Development Executive</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div className="col-lg-12">
-                                        <div className="form-group mb-3 upload-comp">
-                                            <label htmlFor="image" className="form-label">
-                                                Admin Image
-                                            </label>
-                                            <div className="upload-content">
-                                                <div className="row">
-                                                    <div className="col-4">
-                                                        <div className="inpt-cont">
-                                                            <input
-                                                                type="file"
-                                                                className="form-control"
-                                                                id="image"
-                                                                name="image"
-                                                                accept="image/*"
-                                                                onChange={handleImageChange}
+                                        <div className="form-group mb-3">
+                                            <label className="form-label d-block mb-3">Sector</label>
+                                            
+                                            <div className="form-check mb-3">
+                                                <input 
+                                                    className="form-check-input" 
+                                                    type="checkbox" 
+                                                    id="selectAllSectors"
+                                                    checked={isAllSelected}
+                                                    onChange={handleSelectAllSectors}
+                                                />
+                                                <label className="form-check-label fsz-13" htmlFor="selectAllSectors">
+                                                    Select All Sectors
+                                                </label>
+                                            </div>
+
+                                            <hr className="mb-4 text-muted opacity-25" />
+
+                                            <div className="row g-3">
+                                                {SECTORS.map((sector, index) => (
+                                                    <div className="col-md-3 col-sm-6" key={index}>
+                                                        <div className="form-check">
+                                                            <input 
+                                                                className="form-check-input" 
+                                                                type="checkbox" 
+                                                                id={`sector-${index}`}
+                                                                checked={selectedSectors.includes(sector)}
+                                                                onChange={() => handleSectorChange(sector)}
                                                             />
-                                                            <div className="float-txt">
-                                                                <i className="fal fa-upload"></i>
-                                                                <span className="d-block text-center">Upload Image</span>
-                                                            </div>
+                                                            <label 
+                                                                className="form-check-label fsz-12" 
+                                                                htmlFor={`sector-${index}`}
+                                                                style={{ cursor: "pointer", whiteSpace: "normal" }}
+                                                            >
+                                                                {sector}
+                                                            </label>
                                                         </div>
                                                     </div>
-                                                    <div className="col-4">
-                                                        {imagePreview && (
-                                                            <div className="img-prev">
-                                                                <img src={imagePreview}
-                                                                    alt="Preview"
-                                                                    className=""
-                                                                    style={{}}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>
@@ -219,7 +251,7 @@ const [isMounted, setIsMounted] = useState(false);
                                     Close
                                 </button>
                                 <button type="submit" className="butn-st2 butn-md">
-                                    {admin ? "Update" : "Save"}
+                                    {employee ? "Update" : "Save"}
                                 </button>
                             </div>
                         </form>

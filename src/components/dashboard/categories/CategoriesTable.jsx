@@ -174,13 +174,13 @@ export default function CategoriesTable({
                                             className="dropdown-item cursor-pointer"
                                             onClick={() => table.getColumn("title").toggleSorting(false)}
                                         >
-                                            <i className="fal fa-sort-alpha-up me-2"></i> Ascending
+                                            <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
                                         </li>
                                         <li
                                             className="dropdown-item cursor-pointer"
                                             onClick={() => table.getColumn("title").toggleSorting(true)}
                                         >
-                                            <i className="fal fa-sort-alpha-down me-2"></i> Descending
+                                            <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
                                         </li>
                                     </ul>
                                 </div>
