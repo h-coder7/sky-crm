@@ -360,10 +360,10 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                     />
                                 </div>
                                 <div className="modal-footer">
-                                    <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                                    <button className="alert alert-light rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0" onClick={() => setShowModal(false)}>
                                         Cancel
                                     </button>
-                                    <button className="btn btn-primary" onClick={confirmDateRange}>
+                                    <button className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0" onClick={confirmDateRange}>
                                         Confirm
                                     </button>
                                 </div>
