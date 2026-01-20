@@ -53,14 +53,6 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
         }
     };
 
-    // Cleanup object URL to avoid memory leaks
-    useEffect(() => {
-        return () => {
-            if (imagePreview && imagePreview.startsWith("blob:")) {
-                URL.revokeObjectURL(imagePreview);
-            }
-        };
-    }, [imagePreview]);
 
     const handleSubmit = (e) => {
         e.preventDefault();

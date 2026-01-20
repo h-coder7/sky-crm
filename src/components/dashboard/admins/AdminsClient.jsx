@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import PageHeader from "@/components/layout/PageHeader";
-import CategoriesTable from "@/components/dashboard/categories/CategoriesTable";
+import AdminsTable from "@/components/dashboard/admins/AdminsTable";
 import api from "@/app/api/api"; // 🔌 Import axios instance
-import CategoryModal from "@/components/dashboard/categories/CategoryModal";
-import TrashModal from "@/components/dashboard/categories/TrashModal";
+import AdminModal from "@/components/dashboard/admins/AdminModal";
+import TrashModal from "@/components/dashboard/admins/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 
 /**
- * 🎯 Client Component for Categories Page
+ * 🎯 Client Component for Admins Page
  * 
  * Handles all interactive logic:
  * - State management
@@ -19,153 +19,147 @@ import { confirmAction } from "@/utils/confirm";
  * 
  * Receives initial data from Server Component via props
  */
-export default function CategoriesClient({ initialCategories = [] }) {
+export default function AdminsClient({ initialAdmins = [] }) {
   // State Management
-  const [categories, setCategories] = useState(initialCategories);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [admins, setAdmins] = useState(initialAdmins);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   
-  const [trashCategories, setTrashCategories] = useState([]);
+  const [trashAdmins, setTrashAdmins] = useState([]);
   const [showTrashModal, setShowTrashModal] = useState(false);
 
   /* ======================================================================
      CRUD Handlers (Ready for API Integration)
      ====================================================================== */
 
-
   const handleSave = async (data) => {
     /*
     try {
-      if (selectedCategory) {
+      if (selectedAdmin) {
         // Update existing
-        const res = await api.put(`/categories/${selectedCategory.id}`, data);
-        const updatedCategory = res.data;
+        const res = await api.put(`/admins/${selectedAdmin.id}`, data);
+        const updatedAdmin = res.data;
 
-        setCategories((prev) =>
-          prev.map((cat) => (cat.id === updatedCategory.id ? updatedCategory : cat))
+        setAdmins((prev) =>
+          prev.map((admin) => (admin.id === updatedAdmin.id ? updatedAdmin : admin))
         );
       } else {
         // Create new
-        const res = await api.post('/categories', data);
-        const newCategory = res.data;
+        const res = await api.post('/admins', data);
+        const newAdmin = res.data;
 
-        setCategories((prev) => [newCategory, ...prev]);
+        setAdmins((prev) => [newAdmin, ...prev]);
       }
       setShowModal(false);
-      setSelectedCategory(null);
+      setSelectedAdmin(null);
     } catch (error) {
-      console.error("Failed to save category:", error);
+      console.error("Failed to save admin:", error);
       // Handle error (e.g., show toast)
     }
     */
     
     // 👇 TEMP: Local State Logic (Remove when API is ready)
-    if (selectedCategory) {
+    if (selectedAdmin) {
       // Update existing
-      setCategories((prev) =>
-        prev.map((cat) =>
-          cat.id === selectedCategory.id
-            ? { ...cat, ...data, start_price: Number(data.start_price) }
-            : cat
+      setAdmins((prev) =>
+        prev.map((admin) =>
+          admin.id === selectedAdmin.id
+            ? { ...admin, ...data }
+            : admin
         )
       );
     } else {
       // Create new
-      const newCategory = {
+      const newAdmin = {
         id: Date.now(),
-        title: data.title,
-        start_price: Number(data.start_price),
+        ...data,
         created_at: new Date().toISOString().split("T")[0],
       };
-      setCategories((prev) => [newCategory, ...prev]);
+      setAdmins((prev) => [newAdmin, ...prev]);
     }
     setShowModal(false);
-    setSelectedCategory(null);
+    setSelectedAdmin(null);
   };
 
   /**
-   * Open edit modal with selected category
+   * Open edit modal with selected admin
    */
   const handleEdit = (id) => {
-    const category = categories.find((c) => c.id === id);
-    if (category) {
-      setSelectedCategory(category);
+    const admin = admins.find((a) => a.id === id);
+    if (admin) {
+      setSelectedAdmin(admin);
       setShowModal(true);
     }
   };
 
-
   const handleDelete = (id) => {
     confirmAction({
       title: "Move to Trash?",
-      message: "This category will be moved to the recycle bin.",
+      message: "This admin will be moved to the recycle bin.",
       confirmLabel: "Yes, Move it",
       onConfirm: async () => {
         /*
         try {
-           await api.delete(`/categories/${id}`); // Assuming delete moves to trash
+           await api.delete(`/admins/${id}`); // Assuming delete moves to trash
            
            // If backend returns the deleted item or we need to refetch:
-           // const categoryToDelete = categories.find((c) => c.id === id);
-           // setTrashCategories((prev) => [categoryToDelete, ...prev]); // optimistic update if needed
+           // const adminToDelete = admins.find((a) => a.id === id);
+           // setTrashAdmins((prev) => [adminToDelete, ...prev]); // optimistic update if needed
            
-           setCategories((prev) => prev.filter((c) => c.id !== id));
+           setAdmins((prev) => prev.filter((a) => a.id !== id));
         } catch (error) {
-           console.error("Failed to delete category:", error);
+           console.error("Failed to delete admin:", error);
         }
         */
 
         // 👇 TEMP: Local State Logic
-        const categoryToDelete = categories.find((c) => c.id === id);
-        if (categoryToDelete) {
-          setTrashCategories((prev) => [categoryToDelete, ...prev]);
-          setCategories((prev) => prev.filter((c) => c.id !== id));
+        const adminToDelete = admins.find((a) => a.id === id);
+        if (adminToDelete) {
+          setTrashAdmins((prev) => [adminToDelete, ...prev]);
+          setAdmins((prev) => prev.filter((a) => a.id !== id));
         }
       }
     });
   };
 
-
   const handleRestore = async (id) => {
     /*
     try {
-      await api.patch(`/categories/${id}/restore`); 
+      await api.patch(`/admins/${id}/restore`); 
       
-      const categoryToRestore = trashCategories.find((c) => c.id === id);
-      if (categoryToRestore) {
-        setCategories((prev) => [categoryToRestore, ...prev]);
-        setTrashCategories((prev) => prev.filter((c) => c.id !== id));
+      const adminToRestore = trashAdmins.find((a) => a.id === id);
+      if (adminToRestore) {
+        setAdmins((prev) => [adminToRestore, ...prev]);
+        setTrashAdmins((prev) => prev.filter((a) => a.id !== id));
       }
     } catch (error) {
-      console.error("Failed to restore category:", error);
+      console.error("Failed to restore admin:", error);
     }
     */
     
     // 👇 TEMP: Local State Logic
-    const categoryToRestore = trashCategories.find((c) => c.id === id);
-    if (categoryToRestore) {
-      setCategories((prev) => [categoryToRestore, ...prev]);
-      setTrashCategories((prev) => prev.filter((c) => c.id !== id));
+    const adminToRestore = trashAdmins.find((a) => a.id === id);
+    if (adminToRestore) {
+      setAdmins((prev) => [adminToRestore, ...prev]);
+      setTrashAdmins((prev) => prev.filter((a) => a.id !== id));
     }
   };
-
 
   const handlePermanentDelete = async (id) => {
     /*
     try {
-      await api.delete(`/categories/${id}/permanent`);
-      setTrashCategories((prev) => prev.filter((c) => c.id !== id));
+      await api.delete(`/admins/${id}/permanent`);
+      setTrashAdmins((prev) => prev.filter((a) => a.id !== id));
     } catch (error) {
-       console.error("Failed to permanently delete category:", error);
+       console.error("Failed to permanently delete admin:", error);
     }
     */
 
     // 👇 TEMP: Local State Logic
-    setTrashCategories((prev) => prev.filter((c) => c.id !== id));
+    setTrashAdmins((prev) => prev.filter((a) => a.id !== id));
   };
   
-
   const handleBulkDelete = () => {
     if (selectedIds.length === 0) return;
     
@@ -176,11 +170,11 @@ export default function CategoriesClient({ initialCategories = [] }) {
       onConfirm: async () => {
         /*
         try {
-          await api.post('/categories/bulk-delete', { ids: selectedIds });
+          await api.post('/admins/bulk-delete', { ids: selectedIds });
           
-          const itemsToDelete = categories.filter(c => selectedIds.includes(c.id));
-          setTrashCategories(prev => [...itemsToDelete, ...prev]);
-          setCategories(prev => prev.filter(c => !selectedIds.includes(c.id)));
+          const itemsToDelete = admins.filter(a => selectedIds.includes(a.id));
+          setTrashAdmins(prev => [...itemsToDelete, ...prev]);
+          setAdmins(prev => prev.filter(a => !selectedIds.includes(a.id)));
           setSelectedIds([]);
         } catch (error) {
           console.error("Failed to bulk delete:", error);
@@ -188,9 +182,9 @@ export default function CategoriesClient({ initialCategories = [] }) {
         */
         
         // 👇 TEMP: Local State Logic
-        const itemsToDelete = categories.filter(c => selectedIds.includes(c.id));
-        setTrashCategories(prev => [...itemsToDelete, ...prev]);
-        setCategories(prev => prev.filter(c => !selectedIds.includes(c.id)));
+        const itemsToDelete = admins.filter(a => selectedIds.includes(a.id));
+        setTrashAdmins(prev => [...itemsToDelete, ...prev]);
+        setAdmins(prev => prev.filter(a => !selectedIds.includes(a.id)));
         setSelectedIds([]);
       }
     });
@@ -203,7 +197,7 @@ export default function CategoriesClient({ initialCategories = [] }) {
   return (
     <>
       <PageHeader
-        title="Categories"
+        title="Admins"
         onFilterChange={(field, checked) =>
           console.log("Filter:", field, checked)
         }
@@ -213,12 +207,12 @@ export default function CategoriesClient({ initialCategories = [] }) {
           type="button"
           className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
           onClick={() => {
-            setSelectedCategory(null);
+            setSelectedAdmin(null);
             setShowModal(true);
           }}
         >
           <i className="fal fa-plus"></i>
-          <span className="txt ms-2">Add Category</span>
+          <span className="txt ms-2">Add Admin</span>
         </button>
 
         {/* Delete Button */}
@@ -238,14 +232,14 @@ export default function CategoriesClient({ initialCategories = [] }) {
           onClick={() => setShowTrashModal(true)}
         >
           <i className="fal fa-trash-undo"></i>
-          <span className="txt ms-2">View Trash ({trashCategories.length})</span>
+          <span className="txt ms-2">View Trash ({trashAdmins.length})</span>
         </button>
       </PageHeader>
 
       {/* Page Content */}
       <div className="mt-4">
-        <CategoriesTable
-          data={categories}
+        <AdminsTable
+          data={admins}
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
           onEdit={handleEdit}
@@ -254,9 +248,9 @@ export default function CategoriesClient({ initialCategories = [] }) {
       </div>
 
       {/* Add/Edit Modal */}
-      <CategoryModal
+      <AdminModal
         show={showModal}
-        category={selectedCategory}
+        admin={selectedAdmin}
         onClose={() => setShowModal(false)}
         onSave={handleSave}
       />
@@ -264,7 +258,7 @@ export default function CategoriesClient({ initialCategories = [] }) {
       {/* Trash Modal */}
       <TrashModal
         show={showTrashModal}
-        trashCategories={trashCategories}
+        trashAdmins={trashAdmins}
         onClose={() => setShowTrashModal(false)}
         onRestore={handleRestore}
         onPermanentDelete={handlePermanentDelete}
