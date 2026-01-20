@@ -70,6 +70,24 @@ export default function SideMenu() {
                         </li>
 
                         <li>
+                            <Link href="/dashboard/sectors" className={`lnk ${isActive("/dashboard/sectors") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-tire"></i>
+                                </span>
+                                <span className="txt">Sectors</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/dashboard/countries" className={`lnk ${isActive("/dashboard/countries") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-globe"></i>
+                                </span>
+                                <span className="txt">Countries</span>
+                            </Link>
+                        </li>
+
+                        <li>
                             <Link href="/dashboard/about" className={`lnk ${isActive("/dashboard/about") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-bell"></i>
@@ -84,15 +102,6 @@ export default function SideMenu() {
                                     <i className="fal fa-square-check"></i>
                                 </span>
                                 <span className="txt">Tasks</span>
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link href="/sectors" className={`lnk ${isActive("/sectors") ? "active" : ""}`}>
-                                <span className="icon">
-                                    <i className="fal fa-tire"></i>
-                                </span>
-                                <span className="txt">Sectors</span>
                             </Link>
                         </li>
 
