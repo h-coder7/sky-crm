@@ -3121,6 +3121,9 @@ section {
             margin-bottom: -6px;
         }
     }
+    .table-responsive {
+        min-height: max-content;
+    }
 }
 
 .modal-show-task {

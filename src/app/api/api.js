@@ -14,7 +14,7 @@ const api = axios.create({
 // Add token from localStorage to requests (for crm)
 api.interceptors.request.use(
   (config) => {
-    if (!BASE_URL.includes("jsonplaceholder")) {
+    if (!BASE_URL.includes("jsonplaceholder") && typeof window !== "undefined") {
       const token = localStorage.getItem("token");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
