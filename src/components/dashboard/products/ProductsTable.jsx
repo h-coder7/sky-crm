@@ -10,13 +10,13 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
 } from "@tanstack/react-table";
-import SectorsFilter from "./SectorsFilter";
+import ProductsFilter from "./ProductsFilter";
 
 /**
  * 🔌 API READY: To connect to backend, replace the `data` prop with fetched data.
  */
 
-export default function SectorsTable({ 
+export default function ProductsTable({ 
     data = [], 
     selectedIds = [], 
     onSelectionChange, 
@@ -61,10 +61,6 @@ export default function SectorsTable({
         {
             id: "title",
             accessorKey: "title",
-        },
-        {
-            id: "description",
-            accessorKey: "description",
         },
         {
             id: "created_at",
@@ -148,13 +144,13 @@ export default function SectorsTable({
                                 <div className="form-check">
                                     <input
                                         className="form-check-input"
-                                        id="select-all-sectors"
+                                        id="select-all-products"
                                         type="checkbox"
                                         checked={table.getIsAllPageRowsSelected()}
                                         onChange={table.getToggleAllPageRowsSelectedHandler()}
                                     />
-                                    <label className="form-check-label ms-2" htmlFor="select-all-sectors">
-                                        Title
+                                    <label className="form-check-label ms-2" htmlFor="select-all-products">
+                                        Name
                                     </label>
                                 </div>
 
@@ -172,31 +168,6 @@ export default function SectorsTable({
                                         <li
                                             className="dropdown-item cursor-pointer"
                                             onClick={() => table.getColumn("title").toggleSorting(true)}
-                                        >
-                                            <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </th>
-
-                        <th>
-                            <div className="d-flex justify-content-between align-items-center">
-                                <span>Description</span>
-                                <div className="dropdown">
-                                    <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                        <i className="fat fa-sort"></i>
-                                    </button>
-                                    <ul className="dropdown-menu">
-                                        <li
-                                            className="dropdown-item cursor-pointer"
-                                            onClick={() => table.getColumn("description").toggleSorting(false)}
-                                        >
-                                            <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                        </li>
-                                        <li
-                                            className="dropdown-item cursor-pointer"
-                                            onClick={() => table.getColumn("description").toggleSorting(true)}
                                         >
                                             <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
                                         </li>
@@ -231,8 +202,8 @@ export default function SectorsTable({
                         </th>
                     </tr>
 
-                    {/* Integrated SectorsFilter */}
-                    <SectorsFilter 
+                    {/* Integrated ProductsFilter */}
+                    <ProductsFilter 
                         table={table} 
                         dateRangeValue={formatDateRangeDisplay()}
                         onOpenModal={() => setShowModal(true)}
@@ -243,7 +214,7 @@ export default function SectorsTable({
                     {table.getRowModel().rows.length === 0 ? (
                         <tr>
                             <td colSpan={5} className="text-center text-muted py-4">
-                                No sectors found
+                                No products found
                             </td>
                         </tr>
                     ) : (
@@ -257,20 +228,18 @@ export default function SectorsTable({
                                             <input
                                                 className="form-check-input"
                                                 type="checkbox"
-                                                id={`sector-${item.id}`}
+                                                id={`product-${item.id}`}
                                                 checked={row.getIsSelected()}
                                                 onChange={row.getToggleSelectedHandler()}
                                             />
                                             <label
                                                 className="form-check-label ms-2"
-                                                htmlFor={`sector-${item.id}`}
+                                                htmlFor={`product-${item.id}`}
                                             >
                                                 {item.title}
                                             </label>
                                         </div>
                                     </td>
-
-                                    <td>{item.description}</td>
 
                                     <td colSpan={2}>
                                         {new Date(item.created_at).toLocaleDateString()}
