@@ -5,7 +5,7 @@ import { confirmAction } from "@/utils/confirm";
 
 export default function TrashModal({
   show,
-  trashCountries = [],
+  trashDeals = [],
   onClose,
   onRestore,
   onPermanentDelete,
@@ -20,27 +20,16 @@ export default function TrashModal({
 
   return createPortal(
     <>
-      <div 
-        className="modal-backdrop fade show" 
-        onClick={onClose}
-      ></div>
-      <div 
-        className="modal fade show d-block" 
-        tabIndex="-1" 
-        onClick={(e) => e.target === e.currentTarget && onClose()}
-      >
+      <div className="modal-backdrop fade show" onClick={onClose}></div>
+      <div className="modal fade show d-block" onClick={(e) => e.target === e.currentTarget && onClose()}>
         <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Recycle Bin</h5>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={onClose}
-              ></button>
+              <h5 className="modal-title">Recycle Bin (Deals)</h5>
+              <button type="button" className="btn-close" onClick={onClose}></button>
             </div>
             <div className="modal-body">
-              {trashCountries.length === 0 ? (
+              {trashDeals.length === 0 ? (
                 <div className="text-center py-5 text-muted">
                   <i className="fal fa-trash-alt fa-3x mb-3"></i>
                   <p>Trash is empty</p>
@@ -50,18 +39,22 @@ export default function TrashModal({
                   <table className="table align-middle mb-0">
                     <thead className="bg-light">
                       <tr>
-                        <th>Name</th>
+                        <th>Title</th>
+                        <th>Company</th>
+                        <th>Amount</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {trashCountries.map((country) => (
-                        <tr key={country.id}>
-                          <td>{country.title}</td>
+                      {trashDeals.map((deal) => (
+                        <tr key={deal.id}>
+                          <td>{deal.title}</td>
+                          <td>{deal.company}</td>
+                          <td>{deal.amount}</td>
                           <td>
                             <button
                               className="btn btn-sm btn-outline-success me-2"
-                              onClick={() => onRestore(country.id)}
+                              onClick={() => onRestore(deal.id)}
                               title="Restore"
                             >
                               <i className="fal fa-trash-undo"></i>
@@ -73,7 +66,7 @@ export default function TrashModal({
                                   title: "Delete Permanently?",
                                   message: "This action cannot be undone. Are you sure?",
                                   confirmLabel: "Delete Forever",
-                                  onConfirm: () => onPermanentDelete(country.id),
+                                  onConfirm: () => onPermanentDelete(deal.id),
                                 });
                               }}
                               title="Delete Permanently"

@@ -71,13 +71,11 @@ const [isMounted, setIsMounted] = useState(false);
         <>
             <div 
                 className="modal-backdrop fade show" 
-                style={{ zIndex: 1060 }}
                 onClick={onClose}
             ></div>
             <div 
                 className="modal fade show d-block" 
                 tabIndex="-1" 
-                style={{ zIndex: 1061 }}
                 onClick={(e) => e.target === e.currentTarget && onClose()}
             >
                 <div className="modal-dialog modal-dialog-centered modal-lg">
@@ -191,7 +189,6 @@ const [isMounted, setIsMounted] = useState(false);
                                                                 <img src={imagePreview}
                                                                     alt="Preview"
                                                                     className=""
-                                                                    style={{}}
                                                                 />
                                                             </div>
                                                         )}

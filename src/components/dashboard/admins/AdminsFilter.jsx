@@ -68,12 +68,11 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal }) {
             </td>
             <td colSpan={2}>
                 <input
-                    className="form-control"
+                    className="form-control cursor-pointer"
                     placeholder="Select Date Range"
                     readOnly
                     value={dateRangeValue}
                     onClick={onOpenModal}
-                    style={{ cursor: "pointer" }}
                 />
             </td>
         </tr>

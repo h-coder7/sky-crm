@@ -233,7 +233,7 @@ export default function ProductsClient({ initialProducts = [] }) {
       </PageHeader>
 
       {/* Page Content */}
-      <div className="mt-4">
+      <div className="table-content">
         <ProductsTable
           data={products}
           selectedIds={selectedIds}

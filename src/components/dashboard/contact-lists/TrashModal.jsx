@@ -5,7 +5,7 @@ import { confirmAction } from "@/utils/confirm";
 
 export default function TrashModal({
   show,
-  trashCountries = [],
+  trashContacts = [],
   onClose,
   onRestore,
   onPermanentDelete,
@@ -40,7 +40,7 @@ export default function TrashModal({
               ></button>
             </div>
             <div className="modal-body">
-              {trashCountries.length === 0 ? (
+              {trashContacts.length === 0 ? (
                 <div className="text-center py-5 text-muted">
                   <i className="fal fa-trash-alt fa-3x mb-3"></i>
                   <p>Trash is empty</p>
@@ -51,17 +51,21 @@ export default function TrashModal({
                     <thead className="bg-light">
                       <tr>
                         <th>Name</th>
+                        <th>Email</th>
+                        <th>Company</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {trashCountries.map((country) => (
-                        <tr key={country.id}>
-                          <td>{country.title}</td>
+                      {trashContacts.map((contact) => (
+                        <tr key={contact.id}>
+                          <td>{contact.name}</td>
+                          <td>{contact.email}</td>
+                          <td>{contact.company}</td>
                           <td>
                             <button
                               className="btn btn-sm btn-outline-success me-2"
-                              onClick={() => onRestore(country.id)}
+                              onClick={() => onRestore(contact.id)}
                               title="Restore"
                             >
                               <i className="fal fa-trash-undo"></i>
@@ -73,7 +77,7 @@ export default function TrashModal({
                                   title: "Delete Permanently?",
                                   message: "This action cannot be undone. Are you sure?",
                                   confirmLabel: "Delete Forever",
-                                  onConfirm: () => onPermanentDelete(country.id),
+                                  onConfirm: () => onPermanentDelete(contact.id),
                                 });
                               }}
                               title="Delete Permanently"

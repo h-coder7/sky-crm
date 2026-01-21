@@ -238,7 +238,7 @@ export default function SectorsClient({ initialSectors = [] }) {
       </PageHeader>
 
       {/* Page Content */}
-      <div className="mt-4">
+      <div className="table-content">
         <SectorsTable
           data={sectors}
           selectedIds={selectedIds}

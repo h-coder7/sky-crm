@@ -354,6 +354,17 @@ small.text {
     }
 }
 
+.table-content {
+    position: relative;
+    padding: 10px;
+    padding-top: 5px;
+    border: 1px solid #99999911;
+    border-radius: 10px;
+    background-color: #f4f4f4;
+    overflow-x: hidden;
+    margin-top: 20px;
+}
+
 .table {
     position: relative;
     width: 100%;
@@ -475,6 +486,7 @@ small.text {
         }
     }
 
+
     .form-control {
         padding: 10px 15px;
         min-height: 40px;
@@ -566,6 +578,10 @@ small.text {
         color: #087990;
     }
 
+}
+
+label {
+    font-size: 12px;
 }
 
 .form-check-input:checked {
@@ -829,7 +845,7 @@ section {
 }
 
 .table-responsive {
-    min-height: 400px;
+    min-height: calc(100vh - 200px);
 }
 
 .show_hide_password {
@@ -1115,6 +1131,7 @@ section {
         .dashboard-body {
             position: relative;
             flex-grow: 1;
+            width: calc(100% - 260px);
 
             .title-wrapper {
                 position: relative;

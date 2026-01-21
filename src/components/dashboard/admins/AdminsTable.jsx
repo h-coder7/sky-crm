@@ -121,8 +121,10 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
     };
 
     return (
-        <div className="table-responsive position-relative">
-            <table className="table align-middle">
+        <>
+            <div className="table-content">
+                <div className="table-responsive position-relative">
+                    <table className="table align-middle">
                 <thead>
                     <tr>
                         <th>
@@ -135,7 +137,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                         checked={table.getIsAllPageRowsSelected()}
                                         onChange={table.getToggleAllPageRowsSelectedHandler()}
                                     />
-                                    <label className="form-check-label" htmlFor="select-all-admins">
+                                    <label className="form-check-label ms-2" htmlFor="select-all-admins">
                                         Name
                                     </label>
                                 </div>
@@ -269,23 +271,20 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                         return (
                             <tr key={row.id}>
                                 <td>
-                                    <div className="d-flex align-items-center">
-                                        <div className="form-check me-2">
-                                            <input
-                                                className="form-check-input"
-                                                type="checkbox"
-                                                checked={row.getIsSelected()}
-                                                onChange={row.getToggleSelectedHandler()}
-                                                id={`admin-${admin.id}`}
-                                            />
-                                        </div>
-                                        <img 
-                                            src={admin.image || "https://placehold.co/40x40"} 
-                                            alt={admin.name}
-                                            className="rounded-circle me-2"
-                                            style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                                    <div className="form-check">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            checked={row.getIsSelected()}
+                                            onChange={row.getToggleSelectedHandler()}
+                                            id={`admin-${admin.id}`}
                                         />
-                                        <label className="form-check-label mb-0" htmlFor={`admin-${admin.id}`}>
+                                        <label className="form-check-label ms-2 mb-0 d-flex align-items-center" htmlFor={`admin-${admin.id}`}>
+                                            <img 
+                                                src={admin.image || "https://placehold.co/40x40"} 
+                                                alt={admin.name}
+                                                className="rounded-circle me-2 icon-40"
+                                            />
                                             {admin.name}
                                         </label>
                                     </div>
@@ -335,10 +334,12 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                     })}
                 </tbody>
             </table>
+                </div>
+            </div>
 
             {/* --- PAGINATION CONTROLS --- */}
             <div className="d-flex justify-content-between align-items-center mt-3">
-                <div className="text-muted">
+                <div className="text-muted fsz-12">
                     Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
                     {Math.min(
                         (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
@@ -361,7 +362,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                     >
                         <i className="fal fa-angle-left"></i>
                     </button>
-                    <span className="d-flex align-items-center px-3">
+                    <span className="d-flex align-items-center px-3 fsz-12">
                         Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </span>
                     <button
@@ -386,17 +387,15 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                 <>
                     <div 
                         className="modal-backdrop fade show" 
-                        style={{ zIndex: 1060 }}
                         onClick={() => setShowModal(false)}
                     ></div>
                     <div 
                         className="modal fade show d-block" 
                         tabIndex="-1" 
-                        style={{ zIndex: 1061 }}
                         onClick={(e) => e.target === e.currentTarget && setShowModal(false)}
                     >
                         <div className="modal-dialog modal-dialog-centered">
-                            <div className="modal-content border-0" style={{ borderRadius: "15px" }}>
+                            <div className="modal-content border-0">
                                 <div className="modal-header">
                                     <h5 className="modal-title">Select Date Range</h5>
                                     <button className="btn-close" onClick={() => setShowModal(false)} />
@@ -423,6 +422,6 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                 </>,
                 document.body
             )}
-        </div>
+        </>
     );
 }

@@ -22,13 +22,11 @@ export default function TrashModal({
     <>
       <div 
         className="modal-backdrop fade show" 
-        style={{ zIndex: 1060 }}
         onClick={onClose}
       ></div>
       <div 
         className="modal fade show d-block" 
         tabIndex="-1" 
-        style={{ zIndex: 1061 }}
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <div className="modal-dialog modal-dialog-centered modal-lg">
@@ -66,7 +64,6 @@ export default function TrashModal({
                                     src={admin.image || "https://placehold.co/60x60"} 
                                     alt={admin.name}
                                     className="rounded-circle me-2"
-                                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
                                 />
                                 {admin.name}
                             </div>

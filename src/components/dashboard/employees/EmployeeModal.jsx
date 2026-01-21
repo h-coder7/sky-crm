@@ -104,17 +104,15 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
         <>
             <div 
                 className="modal-backdrop fade show" 
-                style={{ zIndex: 1060 }}
                 onClick={onClose}
             ></div>
             <div 
                 className="modal fade show d-block" 
                 tabIndex="-1" 
-                style={{ zIndex: 1061 }}
                 onClick={(e) => e.target === e.currentTarget && onClose()}
             >
                 <div className="modal-dialog modal-dialog-centered modal-lg">
-                    <div className="modal-content border-0" style={{ borderRadius: "15px" }}>
+                    <div className="modal-content border-0">
                         <div className="modal-header">
                             <h5 className="modal-title">
                                 {employee ? "Edit Employee" : "Add New Employee"}
@@ -230,7 +228,6 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                                                             <label 
                                                                 className="form-check-label fsz-12" 
                                                                 htmlFor={`sector-${index}`}
-                                                                style={{ cursor: "pointer", whiteSpace: "normal" }}
                                                             >
                                                                 {sector}
                                                             </label>

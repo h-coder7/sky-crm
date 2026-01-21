@@ -150,8 +150,10 @@ export default function CategoriesTable({
        5. JSX
        ====================================================================== */
     return (
-        <div className="table-responsive position-relative">
-            <table className="table align-middle">
+        <>
+            <div className="table-content">
+                <div className="table-responsive position-relative">
+                    <table className="table align-middle">
                 <thead>
                     <tr>
                         <th>
@@ -314,10 +316,12 @@ export default function CategoriesTable({
                     )}
                 </tbody>
             </table>
+                </div>
+            </div>
 
             {/* --- PAGINATION CONTROLS --- */}
             <div className="d-flex justify-content-between align-items-center mt-3">
-                <div className="text-muted">
+                <div className="text-muted fsz-12">
                     Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
                     {Math.min(
                         (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
@@ -340,7 +344,7 @@ export default function CategoriesTable({
                     >
                         <i className="fal fa-angle-left"></i>
                     </button>
-                    <span className="d-flex align-items-center px-3">
+                    <span className="d-flex align-items-center px-3 fsz-12">
                         Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </span>
                     <button
@@ -365,17 +369,15 @@ export default function CategoriesTable({
                 <>
                     <div 
                         className="modal-backdrop fade show" 
-                        style={{ zIndex: 1060 }}
                         onClick={() => setShowModal(false)}
                     ></div>
                     <div 
                         className="modal fade show d-block" 
                         tabIndex="-1" 
-                        style={{ zIndex: 1061 }}
                         onClick={(e) => e.target === e.currentTarget && setShowModal(false)}
                     >
                         <div className="modal-dialog modal-dialog-centered">
-                            <div className="modal-content border-0" style={{ borderRadius: "15px" }}>
+                            <div className="modal-content border-0">
                                 <div className="modal-header">
                                     <h5 className="modal-title">Select Date Range</h5>
                                     <button className="btn-close" onClick={() => setShowModal(false)} />
@@ -402,6 +404,6 @@ export default function CategoriesTable({
                 </>,
                 document.body
             )}
-        </div>
+        </>
     );
 }
