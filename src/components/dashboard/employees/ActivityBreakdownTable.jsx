@@ -74,8 +74,8 @@ export default function ActivityBreakdownTable() {
 
     return (
         <>
-        <h5 className="mb-3 mt-5"> Activity Breakdown per Employee </h5>
-        <div className="table-responsive position-relative">
+        <h5 className="mt-5"> Activity Breakdown per Employee </h5>
+        <div className="table-responsive position-relative min-h-auto">
             <table className="table align-middle">
                 <thead>
                     <tr>

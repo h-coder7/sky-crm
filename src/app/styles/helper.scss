@@ -1166,6 +1166,22 @@ a:hover .filter-gray {
   height: 1000px !important;
 }
 
+.min-h-auto {
+  min-height: auto !important;
+}
+
+.min-w-auto {
+  min-width: auto !important;
+}
+
+.max-h-auto {
+  max-height: auto !important;
+}
+
+.max-w-auto {
+  max-width: auto !important;
+}
+
 .text-pretty {
   text-wrap: pretty !important;
 }

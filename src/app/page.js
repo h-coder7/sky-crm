@@ -58,22 +58,22 @@ export default function Home() {
                     <div className="form-floating mb-3">
                       <input
                         type="email"
-                        className="form-control"
+                        className="form-control border"
                         id="floatingInput"
                         placeholder="name@example.com"
                         required
                       />
-                      <label htmlFor="floatingInput">Email address</label>
+                      <label htmlFor="floatingInput" className="lh-6">Email address</label>
                     </div>
                     <div className="form-floating mb-4">
                       <input
                         type="password"
-                        className="form-control"
+                        className="form-control border"
                         id="floatingPassword"
                         placeholder="Password"
                         required
                       />
-                      <label htmlFor="floatingPassword">Password</label>
+                      <label htmlFor="floatingPassword" className="lh-6">Password</label>
                     </div>
 
                     <div className="d-flex justify-content-between align-items-center mb-4">

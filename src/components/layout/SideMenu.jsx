@@ -115,41 +115,6 @@ export default function SideMenu() {
                             </Link>
                         </li>
 
-                        <li>
-                            <Link href="/dashboard/about" className={`lnk ${isActive("/dashboard/about") ? "active" : ""}`}>
-                                <span className="icon">
-                                    <i className="fal fa-bell"></i>
-                                </span>
-                                <span className="txt">about</span>
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link href="/tasks" className={`lnk ${isActive("/tasks") ? "active" : ""}`}>
-                                <span className="icon">
-                                    <i className="fal fa-square-check"></i>
-                                </span>
-                                <span className="txt">Tasks</span>
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link href="/companies" className={`lnk ${isActive("/companies") ? "active" : ""}`}>
-                                <span className="icon">
-                                    <i className="fal fa-city"></i>
-                                </span>
-                                <span className="txt">Companies</span>
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link href="/contacts" className={`lnk ${isActive("/contacts") ? "active" : ""}`}>
-                                <span className="icon">
-                                    <i className="fal fa-id-badge"></i>
-                                </span>
-                                <span className="txt">Contacts</span>
-                            </Link>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -157,23 +122,6 @@ export default function SideMenu() {
             <div className="btm-cont">
                 <div className="sidemenu-links">
                     <ul className="links">
-                        <li>
-                            <Link href="/invite-team" className={`lnk ${isActive("/invite-team") ? "active" : ""}`}>
-                                <span className="icon">
-                                    <i className="fal fa-user-plus"></i>
-                                </span>
-                                <span className="txt">Invite Team</span>
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link href="/integration" className={`lnk ${isActive("/integration") ? "active" : ""}`}>
-                                <span className="icon">
-                                    <i className="fal fa-grid-2"></i>
-                                </span>
-                                <span className="txt">Integration</span>
-                            </Link>
-                        </li>
 
                         <li>
                             <Link href="/help" className={`lnk ${isActive("/help") ? "active" : ""}`}>
@@ -183,6 +131,7 @@ export default function SideMenu() {
                                 <span className="txt">Help & First step</span>
                             </Link>
                         </li>
+                        
                     </ul>
                 </div>
 
