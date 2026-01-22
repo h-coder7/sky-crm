@@ -18,7 +18,7 @@ export default function SideMenu() {
                 <div className="logo-wrapper">
                     <Link href="/" className="logo ">
                         <Image
-                            src="/images/sky-logo.png"
+                            src="/crm-skybridge/images/sky-logo.png"
                             alt="Logo"
                             width={40}
                             height={40}
@@ -189,7 +189,7 @@ export default function SideMenu() {
                 <div className="user-wrapper">
                     <div className="avatar">
                         <Image
-                            src="/images/av2.png"
+                            src="/crm-skybridge/images/av2.png"
                             alt="User Avatar"
                             width={40}
                             height={40}

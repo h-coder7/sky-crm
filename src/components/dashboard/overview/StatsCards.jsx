@@ -12,7 +12,7 @@ export default function StatisticsSection() {
                     <div className="col-lg-4">
                         <div className="item">
                             <div className="icon">
-                                <Image src="/images/icons/st1.svg" alt="" width={40} height={40} />
+                                <Image src="/crm-skybridge/images/icons/st1.svg" alt="" width={40} height={40} />
                             </div>
                             <div className="cont">
                                 <div className="text">Total profit</div>
@@ -28,7 +28,7 @@ export default function StatisticsSection() {
                     <div className="col-lg-4">
                         <div className="item">
                             <div className="icon">
-                                <Image src="/images/icons/st2.svg" alt="" width={40} height={40} />
+                                <Image src="/crm-skybridge/images/icons/st2.svg" alt="" width={40} height={40} />
                             </div>
                             <div className="cont">
                                 <div className="text">Avg Sales</div>
@@ -44,7 +44,7 @@ export default function StatisticsSection() {
                     <div className="col-lg-4">
                         <div className="item">
                             <div className="icon">
-                                <Image src="/images/icons/st3.svg" alt="" width={40} height={40} />
+                                <Image src="/crm-skybridge/images/icons/st3.svg" alt="" width={40} height={40} />
                             </div>
                             <div className="cont">
                                 <div className="text">Total Sales</div>
@@ -60,7 +60,7 @@ export default function StatisticsSection() {
                     <div className="col-lg-4">
                         <div className="item">
                             <div className="icon">
-                                <Image src="/images/icons/st4.svg" alt="" width={40} height={40} />
+                                <Image src="/crm-skybridge/images/icons/st4.svg" alt="" width={40} height={40} />
                             </div>
                             <div className="cont">
                                 <div className="text">Annual Target</div>
@@ -76,7 +76,7 @@ export default function StatisticsSection() {
                     <div className="col-lg-4">
                         <div className="item">
                             <div className="icon">
-                                <Image src="/images/icons/st5.svg" alt="" width={40} height={40} />
+                                <Image src="/crm-skybridge/images/icons/st5.svg" alt="" width={40} height={40} />
                             </div>
                             <div className="cont">
                                 <div className="text">Communication Rate</div>
@@ -92,7 +92,7 @@ export default function StatisticsSection() {
                     <div className="col-lg-4">
                         <div className="item">
                             <div className="icon">
-                                <Image src="/images/icons/st6.svg" alt="" width={40} height={40} />
+                                <Image src="/crm-skybridge/images/icons/st6.svg" alt="" width={40} height={40} />
                             </div>
                             <div className="cont">
                                 <div className="text">New Customer</div>

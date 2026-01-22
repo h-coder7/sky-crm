@@ -29,7 +29,7 @@ export default function Home() {
                    <div className="z-1 text-center">
                     <div className="logo icon-100 mx-auto mb-4">
                       <Image
-                        src="/images/sky-logo.png" 
+                        src="/crm-skybridge/images/sky-logo.png" 
                         alt="Logo"
                         width={100}
                         height={100}
@@ -45,7 +45,7 @@ export default function Home() {
                 <div className="col-md-6 bg-white p-5">
                   <div className="text-center mb-5 d-md-none">
                      <Image
-                        src="/images/sky-logo.png" 
+                        src="/crm-skybridge/images/sky-logo.png" 
                         alt="Logo"
                         width={80}
                         height={80}

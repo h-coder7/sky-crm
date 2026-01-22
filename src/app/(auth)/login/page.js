@@ -54,7 +54,7 @@ export default function LoginPage() {
                     <div className="col-lg-6">
                         <div className="logo-side">
                             <Link href="/" className="logo">
-                                <Image src="/images/sky-logo.png" className="img-contain" alt="Skybridge Logo" width={180} height={60} priority/>
+                                <Image src="/crm-skybridge/images/sky-logo.png" className="img-contain" alt="Skybridge Logo" width={180} height={60} priority/>
                             </Link>
                         </div>
                     </div>
