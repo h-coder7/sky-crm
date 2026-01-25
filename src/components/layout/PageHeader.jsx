@@ -6,9 +6,9 @@ export default function PageHeader({
   children
 }) {
   return (
-    <div className="page-header pt-15 pb-15 px-4 border-bottom">
+    <div className="page-header">
       <div className="row align-items-center">
-        
+
         {/* Title */}
         <div className="col-lg-6">
           <h5 className="mb-0 fsz-24">{title}</h5>

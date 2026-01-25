@@ -22,6 +22,8 @@
     --blue: #3D2E84;
     --green: #40C4AA;
     --subColor: #C8C5C7;
+    --grad1: linear-gradient(45deg, #2dd97511, #0f044311);
+    --grad2: linear-gradient(45deg, #2dd97533, #0f044333);
     /* --subColor2: #77643d; */
 }
 
@@ -64,23 +66,31 @@
     border-color: var(--green) !important;
 }
 
-
-html::-webkit-scrollbar {
-    height: 20px;
-    width: 10px;
-    background: #f1f1f1;
-    border-radius: 10px;
+.bg-grad1 {
+    background: var(--grad1) !important;
 }
 
-html::-webkit-scrollbar-thumb {
-    background: #999;
+.bg-grad2 {
+    background: var(--grad2) !important;
+}
+
+
+*::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+    background: #fff0;
+    border-radius: 0;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--grad2);
     -webkit-border-radius: 0;
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
-html::-webkit-scrollbar-corner {
-    background: #999;
-    border-radius: 10px;
+*::-webkit-scrollbar-corner {
+    background: var(--grad2);
+    border-radius: 5px;
 }
 
 .table-responsive::-webkit-scrollbar {
@@ -1034,6 +1044,14 @@ section {
             justify-content: space-between;
             flex-direction: column;
             background-color: #fff;
+            height: 100vh;
+            overflow-y: auto;
+            &::-webkit-scrollbar {
+                height: 0;
+                width: 0;
+                background: #fff0;
+                border-radius: 0;
+            }
             .logo-wrapper {
                 position: relative;
                 padding: 0 15px;
@@ -1133,6 +1151,8 @@ section {
             position: relative;
             flex-grow: 1;
             width: calc(100% - 260px);
+            height: 100vh;
+            overflow-y: auto;
 
             .title-wrapper {
                 position: relative;
@@ -1176,8 +1196,12 @@ section {
 
             .page-header {
                 position: relative;
-                width: calc(100% + 48px);
-                margin-left: -24px;
+                // width: calc(100% + 48px);
+                // margin-left: -24px;
+                background-color: #fff;
+                border-radius: 10px;
+                margin: 15px 0px;
+                padding: 15px;
                 .view-btn {
                     border: 0;
                     border-bottom: 2px solid transparent;
