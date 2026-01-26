@@ -198,6 +198,8 @@ export default function AdminsClient({ initialAdmins = [] }) {
         <>
             <PageHeader
                 title="Admins"
+                titleCol="col-lg-4"
+                actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>
                     console.log("Filter:", field, checked)
                 }

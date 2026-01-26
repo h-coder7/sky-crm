@@ -3,19 +3,21 @@
 export default function PageHeader({
   title,
   onFilterChange,
-  children
+  children,
+  titleCol = "col-lg-6",
+  actionCol = "col-lg-6"
 }) {
   return (
     <div className="page-header">
       <div className="row align-items-center">
 
         {/* Title */}
-        <div className="col-lg-6">
+        <div className={titleCol}>
           <h5 className="mb-0 fsz-24">{title}</h5>
         </div>
 
         {/* Controls */}
-        <div className="col-lg-6">
+        <div className={actionCol}>
           <div className="nav-butns d-flex flex-wrap justify-content-lg-end mt-3 mt-lg-0 align-items-center">
 
             {/* Filter Dropdown */}
