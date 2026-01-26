@@ -505,6 +505,14 @@ small.text {
         overflow: hidden !important;
         min-width: 100%;
     }
+    
+    // .css-bzzwut-control {
+    //     min-width: 150px !important;
+    // }
+
+    // .react-select__menu {
+    //     overflow: hidden;
+    // }
 
     .form-check {
         margin-bottom: 0;
@@ -1212,6 +1220,10 @@ section {
                     &.active {
                         border-color: var(--blue);
                     }
+                }
+                .css-b62m3t-container {
+                    border: 1px solid #9993;
+                    border-radius: 10px;
                 }
             }
 
@@ -3168,6 +3180,34 @@ section {
     }
 }
 
+.checks-modal {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    .form-check {
+        padding: 0;
+        .form-check-input {
+            display: none;
+        }
+        .form-check-label {
+            font-size: 12px;
+            cursor: pointer;
+            padding: 10px 20px !important;
+            display: block;
+            // padding-inline-start: 35px;
+            border-radius: 30px;
+            background-color: #fff;
+        }
+        &:has(input[type="checkbox"]:checked) {
+            .form-check-label {
+                background-color: var(--blue);
+                color: #fff;
+            }
+        }
+    }
+}
+
 .modal-show-task {
     .task-tags {
         position: relative;
@@ -3413,6 +3453,8 @@ section {
 /* --------------- modal react range --------------- */
 .rdrCalendarWrapper {
     display: flex;
+    border-radius: 15px;
+    overflow: hidden;
     .rdrMonth {
         width: 100%;
     }

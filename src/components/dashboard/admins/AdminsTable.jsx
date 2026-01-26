@@ -64,7 +64,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
         onRowSelectionChange: (updater) => {
             const nextSelection = typeof updater === "function" ? updater(rowSelection) : updater;
             setRowSelection(nextSelection);
-            
+
             const selectedIdsList = Object.keys(nextSelection)
                 .filter(key => nextSelection[key])
                 .map(index => data[index]?.id)
@@ -125,215 +125,214 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
             <div className="table-content">
                 <div className="table-responsive position-relative">
                     <table className="table align-middle">
-                <thead>
-                    <tr>
-                        <th>
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="form-check">
-                                    <input 
-                                        className="form-check-input" 
-                                        id="select-all-admins" 
-                                        type="checkbox" 
-                                        checked={table.getIsAllPageRowsSelected()}
-                                        onChange={table.getToggleAllPageRowsSelectedHandler()}
-                                    />
-                                    <label className="form-check-label ms-2" htmlFor="select-all-admins">
-                                        Name
-                                    </label>
-                                </div>
-                                <div className="dropdown">
-                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fat fa-sort"></i>
-                                    </button>
-                                    <ul className="dropdown-menu">
-                                        <li>
-                                            <button className="dropdown-item" onClick={() => table.getColumn("name")?.toggleSorting(false)}>
-                                                <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button className="dropdown-item" onClick={() => table.getColumn("name")?.toggleSorting(true)}>
-                                                <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </th>
-                        <th>
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="txt"> Email </div>
-                                <div className="dropdown">
-                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fat fa-sort"></i>
-                                    </button>
-                                    <ul className="dropdown-menu">
-                                        <li>
-                                            <button className="dropdown-item" onClick={() => table.getColumn("email")?.toggleSorting(false)}>
-                                                <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button className="dropdown-item" onClick={() => table.getColumn("email")?.toggleSorting(true)}>
-                                                <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </th>
-                        <th>
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="txt"> Phone </div>
-                                <div className="dropdown">
-                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fat fa-sort"></i>
-                                    </button>
-                                    <ul className="dropdown-menu">
-                                        <li>
-                                            <button className="dropdown-item" onClick={() => table.getColumn("phone")?.toggleSorting(false)}>
-                                                <i className="fal fa-sort-numeric-up me-2"></i> (1 → 9)
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button className="dropdown-item" onClick={() => table.getColumn("phone")?.toggleSorting(true)}>
-                                                <i className="fal fa-sort-numeric-down me-2"></i> (9 → 1)
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </th>
-                        <th>
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="txt"> Role </div>
-                                <div className="dropdown">
-                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fat fa-sort"></i>
-                                    </button>
-                                    <ul className="dropdown-menu">
-                                        <li>
-                                            <button className="dropdown-item" onClick={() => table.getColumn("role")?.toggleSorting(false)}>
-                                                <i className="fal fa-sort-alpha-up me-2"></i> A → Z
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button className="dropdown-item" onClick={() => table.getColumn("role")?.toggleSorting(true)}>
-                                                <i className="fal fa-sort-alpha-down me-2"></i> Z → A
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </th>
-                        <th colSpan={2}>
-                            <div className="d-flex justify-content-between align-items-center">
-                                <div className="txt"> Added On </div>
-                                <div className="dropdown">
-                                    <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i className="fat fa-sort"></i>
-                                    </button>
-                                    <ul className="dropdown-menu">
-                                        <li>
-                                            <button className="dropdown-item" onClick={() => table.getColumn("created_at")?.toggleSorting(false)}>
-                                                <i className="fal fa-sort-amount-up me-2"></i> Oldest First
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button className="dropdown-item" onClick={() => table.getColumn("created_at")?.toggleSorting(true)}>
-                                                <i className="fal fa-sort-amount-down me-2"></i> Newest First
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </th>
-                    </tr>
-
-                    <AdminsFilter 
-                        table={table}
-                        dateRangeValue={formatDateRangeDisplay()}
-                        onOpenModal={() => setShowModal(true)}
-                    />
-                </thead>
-
-                <tbody>
-                    {!table.getRowModel().rows.length && (
-                        <tr>
-                            <td colSpan={6} className="text-center text-muted py-4">
-                                No admins found
-                            </td>
-                        </tr>
-                    )}
-
-                    {table.getRowModel().rows.map((row) => {
-                        const admin = row.original;
-                        return (
-                            <tr key={row.id}>
-                                <td>
-                                    <div className="form-check">
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            checked={row.getIsSelected()}
-                                            onChange={row.getToggleSelectedHandler()}
-                                            id={`admin-${admin.id}`}
-                                        />
-                                        <label className="form-check-label ms-2 mb-0 d-flex align-items-center" htmlFor={`admin-${admin.id}`}>
-                                            <img 
-                                                src={admin.image || "https://placehold.co/40x40"} 
-                                                alt={admin.name}
-                                                className="rounded-circle me-2 icon-40"
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                id="select-all-admins"
+                                                type="checkbox"
+                                                checked={table.getIsAllPageRowsSelected()}
+                                                onChange={table.getToggleAllPageRowsSelectedHandler()}
                                             />
-                                            {admin.name}
-                                        </label>
+                                            <label className="form-check-label ms-2" htmlFor="select-all-admins">
+                                                Name
+                                            </label>
+                                        </div>
+                                        <div className="dropdown">
+                                            <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                                <i className="fat fa-sort"></i>
+                                            </button>
+                                            <ul className="dropdown-menu">
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => table.getColumn("name")?.toggleSorting(false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => table.getColumn("name")?.toggleSorting(true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </td>
-                                <td>{admin.email}</td>
-                                <td>{admin.phone}</td>
-                                <td>
-                                    <span className={`alert rounded-pill py-1 px-3 fsz-12 border-0 mb-0 ${
-                                        admin.role === 'Super Admin' ? 'alert-danger' : 
-                                        admin.role === 'Admin' ? 'alert-primary' : 
-                                        admin.role === 'Sub Admin' ? 'alert-info' : 'alert-secondary'
-                                    }`}>
-                                        {admin.role}
-                                    </span>
-                                </td>
-                                <td>{admin.created_at}</td>
-                                <td>
-                                    <div className="dropdown">
-                                        <button
-                                            className="btn bg-transparent border-0 p-0 dropdown-toggle"
-                                            data-bs-toggle="dropdown"
-                                        >
-                                            <i className="fas fa-ellipsis"></i>
-                                        </button>
-                                        <ul className="dropdown-menu">
-                                            <li>
-                                                <button
-                                                    className="dropdown-item"
-                                                    onClick={() => onEdit?.(admin.id)}
-                                                >
-                                                    <i className="fal fa-pen me-2"></i> Edit
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <button
-                                                    className="dropdown-item text-danger"
-                                                    onClick={() => onDelete?.(admin.id)}
-                                                >
-                                                    <i className="fal fa-trash me-2"></i> Delete
-                                                </button>
-                                            </li>
-                                        </ul>
+                                </th>
+                                <th>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div className="txt"> Email </div>
+                                        <div className="dropdown">
+                                            <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                                <i className="fat fa-sort"></i>
+                                            </button>
+                                            <ul className="dropdown-menu">
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => table.getColumn("email")?.toggleSorting(false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => table.getColumn("email")?.toggleSorting(true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </td>
+                                </th>
+                                <th>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div className="txt"> Phone </div>
+                                        <div className="dropdown">
+                                            <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                                <i className="fat fa-sort"></i>
+                                            </button>
+                                            <ul className="dropdown-menu">
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => table.getColumn("phone")?.toggleSorting(false)}>
+                                                        <i className="fal fa-sort-numeric-up me-2"></i> (1 → 9)
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => table.getColumn("phone")?.toggleSorting(true)}>
+                                                        <i className="fal fa-sort-numeric-down me-2"></i> (9 → 1)
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div className="txt"> Role </div>
+                                        <div className="dropdown">
+                                            <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                                <i className="fat fa-sort"></i>
+                                            </button>
+                                            <ul className="dropdown-menu">
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => table.getColumn("role")?.toggleSorting(false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2"></i> A → Z
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => table.getColumn("role")?.toggleSorting(true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2"></i> Z → A
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th colSpan={2}>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <div className="txt"> Added On </div>
+                                        <div className="dropdown">
+                                            <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
+                                                <i className="fat fa-sort"></i>
+                                            </button>
+                                            <ul className="dropdown-menu">
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => table.getColumn("created_at")?.toggleSorting(false)}>
+                                                        <i className="fal fa-sort-amount-up me-2"></i> Oldest First
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => table.getColumn("created_at")?.toggleSorting(true)}>
+                                                        <i className="fal fa-sort-amount-down me-2"></i> Newest First
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </th>
                             </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+
+                            <AdminsFilter
+                                table={table}
+                                dateRangeValue={formatDateRangeDisplay()}
+                                onOpenModal={() => setShowModal(true)}
+                            />
+                        </thead>
+
+                        <tbody>
+                            {!table.getRowModel().rows.length && (
+                                <tr>
+                                    <td colSpan={6} className="text-center text-muted py-4">
+                                        No admins found
+                                    </td>
+                                </tr>
+                            )}
+
+                            {table.getRowModel().rows.map((row) => {
+                                const admin = row.original;
+                                return (
+                                    <tr key={row.id}>
+                                        <td>
+                                            <div className="form-check">
+                                                <input
+                                                    className="form-check-input"
+                                                    type="checkbox"
+                                                    checked={row.getIsSelected()}
+                                                    onChange={row.getToggleSelectedHandler()}
+                                                    id={`admin-${admin.id}`}
+                                                />
+                                                <label className="form-check-label ms-2 mb-0 d-flex align-items-center" htmlFor={`admin-${admin.id}`}>
+                                                    <img
+                                                        src={admin.image || "https://placehold.co/40x40"}
+                                                        alt={admin.name}
+                                                        className="rounded-circle me-2 icon-40"
+                                                    />
+                                                    {admin.name}
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>{admin.email}</td>
+                                        <td>{admin.phone}</td>
+                                        <td>
+                                            <span className={`alert rounded-pill py-1 px-3 fsz-12 border-0 mb-0 ${admin.role === 'Super Admin' ? 'alert-danger' :
+                                                    admin.role === 'Admin' ? 'alert-primary' :
+                                                        admin.role === 'Sub Admin' ? 'alert-info' : 'alert-secondary'
+                                                }`}>
+                                                {admin.role}
+                                            </span>
+                                        </td>
+                                        <td>{admin.created_at}</td>
+                                        <td>
+                                            <div className="dropdown">
+                                                <button
+                                                    className="btn bg-transparent border-0 p-0 dropdown-toggle"
+                                                    data-bs-toggle="dropdown"
+                                                >
+                                                    <i className="fas fa-ellipsis"></i>
+                                                </button>
+                                                <ul className="dropdown-menu">
+                                                    <li>
+                                                        <button
+                                                            className="dropdown-item"
+                                                            onClick={() => onEdit?.(admin.id)}
+                                                        >
+                                                            <i className="fal fa-pen me-2"></i> Edit
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button
+                                                            className="dropdown-item text-danger"
+                                                            onClick={() => onDelete?.(admin.id)}
+                                                        >
+                                                            <i className="fal fa-trash me-2"></i> Delete
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -385,13 +384,13 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
             {/* --- DATE MODAL (Portaled to body) --- */}
             {isMounted && showModal && createPortal(
                 <>
-                    <div 
-                        className="modal-backdrop fade show" 
+                    <div
+                        className="modal-backdrop fade show"
                         onClick={() => setShowModal(false)}
                     ></div>
-                    <div 
-                        className="modal fade show d-block" 
-                        tabIndex="-1" 
+                    <div
+                        className="modal fade show d-block"
+                        tabIndex="-1"
                         onClick={(e) => e.target === e.currentTarget && setShowModal(false)}
                     >
                         <div className="modal-dialog modal-dialog-centered">
@@ -400,7 +399,7 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                     <h5 className="modal-title">Select Date Range</h5>
                                     <button className="btn-close" onClick={() => setShowModal(false)} />
                                 </div>
-                                <div className="modal-body bg-light">
+                                <div className="modal-body px-0">
                                     <DateRange
                                         ranges={tempRange}
                                         onChange={(ranges) => setTempRange([ranges.selection])}

@@ -30,10 +30,12 @@ export default function DashboardFilters() {
         { value: "ind3", label: "Finance" },
     ];
 
-    const handlePeriodChange = (e) => {
-        setPeriodFilter(e.target.value);
-        console.log("Period changed:", e.target.value);
-    };
+    const periodOptions = [
+        { value: "week", label: "Week" },
+        { value: "month", label: "Month" },
+        { value: "quarter", label: "Quarter" },
+        { value: "year", label: "Year" },
+    ];
 
     const formatDateRangeDisplay = () => {
         const { startDate, endDate } = dateRange[0];
@@ -51,7 +53,7 @@ export default function DashboardFilters() {
         <>
             <div className="d-flex align-items-center gap-2 flex-wrap">
                 {/* Employee Search */}
-                <div style={{ minWidth: "200px" }}>
+                <div>
                     <SearchableSelect
                         options={employeeOptions}
                         value={employeeFilter}
@@ -64,7 +66,7 @@ export default function DashboardFilters() {
                 </div>
 
                 {/* Industry Search */}
-                <div style={{ minWidth: "200px" }}>
+                <div>
                     <SearchableSelect
                         options={industryOptions}
                         value={industryFilter}
@@ -78,20 +80,15 @@ export default function DashboardFilters() {
 
                 {/* Time Period Select */}
                 <div>
-                    <select
-                        className="form-select fsz-13"
-                        style={{ minHeight: '38px', cursor: "pointer" }}
+                    <SearchableSelect
+                        options={periodOptions}
                         value={periodFilter}
-                        onChange={handlePeriodChange}
-                        id="period"
-                        name="period"
-                    >
-                        <option value="">Time Period</option>
-                        <option value="week">Week</option>
-                        <option value="month">Month</option>
-                        <option value="quarter">Quarter</option>
-                        <option value="year">Year</option>
-                    </select>
+                        onChange={(val) => {
+                            setPeriodFilter(val);
+                            console.log("Period changed:", val);
+                        }}
+                        placeholder="Time Period"
+                    />
                 </div>
 
                 {/* Date Range Picker Button */}
@@ -131,7 +128,7 @@ export default function DashboardFilters() {
                                             onClick={() => setShowDateModal(false)}
                                         />
                                     </div>
-                                    <div className="modal-body bg-light d-flex justify-content-center">
+                                    <div className="modal-body px-0">
                                         <DateRange
                                             ranges={tempRange}
                                             onChange={(ranges) => setTempRange([ranges.selection])}

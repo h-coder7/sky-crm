@@ -33,7 +33,7 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
     useEffect(() => {
         if (employee) {
             // Intelligent parsing of the sector string by matching against known sectors
-            const savedSectors = typeof employee.sector === "string" 
+            const savedSectors = typeof employee.sector === "string"
                 ? SECTORS.filter(s => employee.sector.includes(s))
                 : (Array.isArray(employee.sector) ? employee.sector : []);
 
@@ -102,13 +102,13 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
 
     return createPortal(
         <>
-            <div 
-                className="modal-backdrop fade show" 
+            <div
+                className="modal-backdrop fade show"
                 onClick={onClose}
             ></div>
-            <div 
-                className="modal fade show d-block" 
-                tabIndex="-1" 
+            <div
+                className="modal fade show d-block"
+                tabIndex="-1"
                 onClick={(e) => e.target === e.currentTarget && onClose()}
             >
                 <div className="modal-dialog modal-dialog-centered modal-lg">
@@ -198,11 +198,11 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                                     <div className="col-lg-12">
                                         <div className="form-group mb-3">
                                             <label className="form-label d-block mb-3">Sector</label>
-                                            
+
                                             <div className="form-check mb-3">
-                                                <input 
-                                                    className="form-check-input" 
-                                                    type="checkbox" 
+                                                <input
+                                                    className="form-check-input"
+                                                    type="checkbox"
                                                     id="selectAllSectors"
                                                     checked={isAllSelected}
                                                     onChange={handleSelectAllSectors}
@@ -214,24 +214,22 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
 
                                             <hr className="mb-4 text-muted opacity-25" />
 
-                                            <div className="row g-3">
+                                            <div className="checks-modal">
                                                 {SECTORS.map((sector, index) => (
-                                                    <div className="col-md-3 col-sm-6" key={index}>
-                                                        <div className="form-check">
-                                                            <input 
-                                                                className="form-check-input" 
-                                                                type="checkbox" 
-                                                                id={`sector-${index}`}
-                                                                checked={selectedSectors.includes(sector)}
-                                                                onChange={() => handleSectorChange(sector)}
-                                                            />
-                                                            <label 
-                                                                className="form-check-label fsz-12" 
-                                                                htmlFor={`sector-${index}`}
-                                                            >
-                                                                {sector}
-                                                            </label>
-                                                        </div>
+                                                    <div className="form-check">
+                                                        <input
+                                                            className="form-check-input"
+                                                            type="checkbox"
+                                                            id={`sector-${index}`}
+                                                            checked={selectedSectors.includes(sector)}
+                                                            onChange={() => handleSectorChange(sector)}
+                                                        />
+                                                        <label
+                                                            className="form-check-label fsz-12"
+                                                            htmlFor={`sector-${index}`}
+                                                        >
+                                                            {sector}
+                                                        </label>
                                                     </div>
                                                 ))}
                                             </div>

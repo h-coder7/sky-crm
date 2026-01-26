@@ -2,14 +2,23 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import SearchableSelect from "@/components/shared/SearchableSelect";
 
 // Use dynamic import for ApexCharts to avoid SSR issues in Next.js
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export default function SalesTowardsTargets() {
     const [series] = useState([75]); // 75% towards target
+    const [period, setPeriod] = useState("monthly");
+
+    const periodOptions = [
+        { value: "weekly", label: "Weekly" },
+        { value: "monthly", label: "Monthly" },
+        { value: "yearly", label: "Yearly" },
+    ];
 
     const [options] = useState({
+        // ... (rest of options)
         chart: {
             height: 350,
             type: 'radialBar',
@@ -94,15 +103,13 @@ export default function SalesTowardsTargets() {
                 <div className="card-title pb-1 mb-3 border-bottom">
                     <div className="d-flex align-items-center justify-content-between mb-4">
                         <h5 className="card-title mb-0">Sales Towards Targets</h5>
-                        <div className="dropdown">
-                            <button className="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                Monthly
-                            </button>
-                            <ul className="dropdown-menu">
-                                <li><button className="dropdown-item">Weekly</button></li>
-                                <li><button className="dropdown-item">Monthly</button></li>
-                                <li><button className="dropdown-item">Yearly</button></li>
-                            </ul>
+                        <div style={{ minWidth: "120px" }}>
+                            <SearchableSelect
+                                options={periodOptions}
+                                value={period}
+                                onChange={setPeriod}
+                                isClearable={false}
+                            />
                         </div>
                     </div>
                 </div>

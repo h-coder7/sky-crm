@@ -16,12 +16,12 @@ import SectorsFilter from "./SectorsFilter";
  * 🔌 API READY: To connect to backend, replace the `data` prop with fetched data.
  */
 
-export default function SectorsTable({ 
-    data = [], 
-    selectedIds = [], 
-    onSelectionChange, 
-    onEdit, 
-    onDelete 
+export default function SectorsTable({
+    data = [],
+    selectedIds = [],
+    onSelectionChange,
+    onEdit,
+    onDelete
 }) {
 
     /* ======================================================================
@@ -232,8 +232,8 @@ export default function SectorsTable({
                     </tr>
 
                     {/* Integrated SectorsFilter */}
-                    <SectorsFilter 
-                        table={table} 
+                    <SectorsFilter
+                        table={table}
                         dateRangeValue={formatDateRangeDisplay()}
                         onOpenModal={() => setShowModal(true)}
                     />
@@ -352,13 +352,13 @@ export default function SectorsTable({
             {/* --- DATE MODAL (Portaled to body) --- */}
             {isMounted && showModal && createPortal(
                 <>
-                    <div 
-                        className="modal-backdrop fade show" 
+                    <div
+                        className="modal-backdrop fade show"
                         onClick={() => setShowModal(false)}
                     ></div>
-                    <div 
-                        className="modal fade show d-block" 
-                        tabIndex="-1" 
+                    <div
+                        className="modal fade show d-block"
+                        tabIndex="-1"
                         onClick={(e) => e.target === e.currentTarget && setShowModal(false)}
                     >
                         <div className="modal-dialog modal-dialog-centered">
@@ -367,7 +367,7 @@ export default function SectorsTable({
                                     <h5 className="modal-title">Select Date Range</h5>
                                     <button className="btn-close" onClick={() => setShowModal(false)} />
                                 </div>
-                                <div className="modal-body bg-light">
+                                <div className="modal-body px-0">
                                     <DateRange
                                         ranges={tempRange}
                                         onChange={(ranges) => setTempRange([ranges.selection])}

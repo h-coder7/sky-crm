@@ -1,8 +1,8 @@
-"use client";
+import { useState, useEffect, useMemo } from "react";
+import SearchableSelect from "../../shared/SearchableSelect";
 
-import { useState, useEffect } from "react";
-
-export default function ContactListsFilter({ table, dateRangeValue, onOpenModal }) {
+export default function ContactListsFilter({ table, employees = [], dateRangeValue, onOpenModal }) {
+    // ... (rest of states remain the same)
     const [nameSearch, setNameSearch] = useState(table.getColumn("name")?.getFilterValue() || "");
     const [addressSearch, setAddressSearch] = useState(table.getColumn("address")?.getFilterValue() || "");
     const [phoneSearch, setPhoneSearch] = useState(table.getColumn("phone")?.getFilterValue() || "");
@@ -22,6 +22,23 @@ export default function ContactListsFilter({ table, dateRangeValue, onOpenModal 
     const [dmStatusSearch, setDmStatusSearch] = useState(table.getColumn("decision_maker_status")?.getFilterValue() || "");
     const [statusSearch, setStatusSearch] = useState(table.getColumn("status")?.getFilterValue() || "");
     const [employeeSearch, setEmployeeSearch] = useState(table.getColumn("employee")?.getFilterValue() || "");
+
+    // Status options for react-select
+    const statusOptions = useMemo(() => [
+        { value: "New Lead", label: "New Lead" },
+        { value: "1st Contact Done", label: "1st Contact Done" },
+        { value: "2nd Contact Done", label: "2nd Contact Done" },
+        { value: "Follow - Up", label: "Follow - Up" },
+        { value: "Meeting Scheduled", label: "Meeting Scheduled" },
+        { value: "Brief Received", label: "Brief Received" },
+        { value: "Proposal Submitted", label: "Proposal Submitted" },
+        { value: "Comments Received", label: "Comments Received" },
+        { value: "Quotation Submitted", label: "Quotation Submitted" },
+        { value: "Revising Quotation", label: "Revising Quotation" },
+        { value: "Final Proposal & Quotation Submitted", label: "Final Proposal & Quotation Submitted" },
+        { value: "Project Won", label: "Project Won" },
+        { value: "Project Lost", label: "Project Lost" },
+    ], []);
 
     // 🔄 Sync local state with table filters
     useEffect(() => {
@@ -47,7 +64,7 @@ export default function ContactListsFilter({ table, dateRangeValue, onOpenModal 
     }, [table.getState().columnFilters]);
 
     return (
-        <tr className="search-tr">
+        <tr className="search-tr fsz-12">
             {/* Name */}
             <td>
                 <input
@@ -102,7 +119,7 @@ export default function ContactListsFilter({ table, dateRangeValue, onOpenModal 
 
             {/* Top Customer */}
             <td>
-                <select 
+                <select
                     className="form-control form-select form-select-sm"
                     value={topCustomerSearch}
                     onChange={(e) => {
@@ -119,7 +136,7 @@ export default function ContactListsFilter({ table, dateRangeValue, onOpenModal 
 
             {/* Decision Maker Status */}
             <td>
-                <select 
+                <select
                     className="form-control form-select form-select-sm"
                     value={dmStatusSearch}
                     onChange={(e) => {
@@ -136,55 +153,28 @@ export default function ContactListsFilter({ table, dateRangeValue, onOpenModal 
 
             {/* Status */}
             <td>
-                <select 
-                    className="form-control form-select form-select-sm"
+                <SearchableSelect
+                    options={statusOptions}
                     value={statusSearch}
-                    onChange={(e) => {
-                        const val = e.target.value;
+                    onChange={(val) => {
                         setStatusSearch(val);
                         table.getColumn("status")?.setFilterValue(val || undefined);
                     }}
-                >
-                    <option value="">All</option>
-                    <option value="New Lead">New Lead</option>
-                    <option value="1st Contact Done">1st Contact Done</option>
-                    <option value="2nd Contact Done">2nd Contact Done</option>
-                    <option value="Follow - Up">Follow - Up</option>
-                    <option value="Meeting Scheduled">Meeting Scheduled</option>
-                    <option value="Brief Received">Brief Received</option>
-                    <option value="Proposal Submitted">Proposal Submitted</option>
-                    <option value="Comments Received">Comments Received</option>
-                    <option value="Quotation Submitted">Quotation Submitted</option>
-                    <option value="Revising Quotation">Revising Quotation</option>
-                    <option value="Final Proposal & Quotation Submitted">Final Proposal & Quotation Submitted</option>
-                    <option value="Project Won">Project Won</option>
-                    <option value="Project Lost">Project Lost</option>
-                </select>
+                    placeholder="Status"
+                />
             </td>
 
             {/* Employee */}
             <td>
-                <select 
-                    className="form-control form-select form-select-sm"
+                <SearchableSelect
+                    options={employees}
                     value={employeeSearch}
-                    onChange={(e) => {
-                        const val = e.target.value;
+                    onChange={(val) => {
                         setEmployeeSearch(val);
                         table.getColumn("employee")?.setFilterValue(val || undefined);
                     }}
-                >
-                    <option value="">All</option>
-                    <option value="SKB Test">SKB Test</option>
-                    <option value="Esslam Emad">Esslam Emad</option>
-                    <option value="omar ibrahim elhosseny">omar ibrahim elhosseny</option>
-                    <option value="Houssen Salman">Houssen Salman</option>
-                    <option value="omar">omar</option>
-                    <option value="Sedra Quraid">Sedra Quraid</option>
-                    <option value="Christina Skentos">Christina Skentos</option>
-                    <option value="Pretti Nayak">Pretti Nayak</option>
-                    <option value="Nourel Moulay">Nourel Moulay</option>
-                    <option value="Moustafa Sayed">Moustafa Sayed</option>
-                </select>
+                    placeholder="Employee"
+                />
             </td>
 
             {/* Country */}
