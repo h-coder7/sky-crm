@@ -2,35 +2,44 @@
 
 import { useState } from "react";
 import PageHeader from "@/components/layout/PageHeader";
-import ProductsTable from "./ProductsTable";
-import ProductModal from "./ProductModal";
+import CompaniesTable from "./CompaniesTable";
+import CompanyModal from "./CompanyModal";
 import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
 
-export default function ProductsClient({ initialProducts = [] }) {
-    const [products, setProducts] = useState(initialProducts);
+export default function CompaniesClient({ initialCompanies = [] }) {
+    const [companies, setCompanies] = useState(initialCompanies);
+    const [selectedCompany, setSelectedCompany] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
 
-    // Modals state
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isTrashOpen, setIsTrashOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState(null);
-
     // Trash State
-    const [trashProducts, setTrashProducts] = useState([]);
+    const [trashCompanies, setTrashCompanies] = useState([]);
+    const [showTrashModal, setShowTrashModal] = useState(false);
 
     /* ======================================================================
        1. Handlers
        ====================================================================== */
-    const handleAddModal = () => {
-        setEditingProduct(null);
-        setIsModalOpen(true);
+    const handleSave = (companyData) => {
+        // 🔌 API READY: Integrate your POST/PUT request here.
+        if (selectedCompany) {
+            setCompanies(prev => prev.map(c => c.id === selectedCompany.id ? { ...c, ...companyData } : c));
+        } else {
+            const newCompany = {
+                ...companyData,
+                id: Math.max(0, ...companies.map(c => c.id)) + 1,
+                created_at: new Date().toISOString().split('T')[0]
+            };
+            setCompanies(prev => [newCompany, ...prev]);
+        }
+        setIsModalOpen(false);
+        setSelectedCompany(null);
     };
 
-    const handleEditModal = (id) => {
-        const product = products.find(p => p.id === id);
-        if (product) {
-            setEditingProduct(product);
+    const handleEdit = (id) => {
+        const company = companies.find(c => c.id === id);
+        if (company) {
+            setSelectedCompany(company);
             setIsModalOpen(true);
         }
     };
@@ -38,18 +47,30 @@ export default function ProductsClient({ initialProducts = [] }) {
     const handleDelete = (id) => {
         confirmAction({
             title: "Move to Trash?",
-            message: "This product will be moved to the recycle bin.",
+            message: "This company will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: () => {
-                const productToDelete = products.find((p) => p.id === id);
-                if (productToDelete) {
-                    setTrashProducts((prev) => [productToDelete, ...prev]);
-                    setProducts((prev) => prev.filter((p) => p.id !== id));
-                    setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+                const companyToDelete = companies.find((c) => c.id === id);
+                if (companyToDelete) {
+                    setTrashCompanies((prev) => [companyToDelete, ...prev]);
+                    setCompanies((prev) => prev.filter((c) => c.id !== id));
                 }
             }
         });
     };
+
+    const handleRestore = (id) => {
+        const companyToRestore = trashCompanies.find((c) => c.id === id);
+        if (companyToRestore) {
+            setCompanies((prev) => [companyToRestore, ...prev]);
+            setTrashCompanies((prev) => prev.filter((c) => c.id !== id));
+        }
+    };
+
+    const handlePermanentDelete = (id) => {
+        setTrashCompanies((prev) => prev.filter((c) => c.id !== id));
+    };
+
 
     const handleBulkDelete = () => {
         if (selectedIds.length === 0) return;
@@ -59,38 +80,12 @@ export default function ProductsClient({ initialProducts = [] }) {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: () => {
-                const itemsToDelete = products.filter(p => selectedIds.includes(p.id));
-                setTrashProducts(prev => [...itemsToDelete, ...prev]);
-                setProducts(prev => prev.filter(p => !selectedIds.includes(p.id)));
+                const itemsToDelete = companies.filter(c => selectedIds.includes(c.id));
+                setTrashCompanies(prev => [...itemsToDelete, ...prev]);
+                setCompanies(prev => prev.filter(c => !selectedIds.includes(c.id)));
                 setSelectedIds([]);
             }
         });
-    };
-
-    const handleSave = (productData) => {
-        if (editingProduct) {
-            setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...p, ...productData } : p));
-        } else {
-            const newProduct = {
-                ...productData,
-                id: Math.max(0, ...products.map(p => p.id)) + 1,
-                created_at: new Date().toISOString().split('T')[0]
-            };
-            setProducts(prev => [newProduct, ...prev]);
-        }
-        setIsModalOpen(false);
-    };
-
-    const handleRestore = (id) => {
-        const productToRestore = trashProducts.find((p) => p.id === id);
-        if (productToRestore) {
-            setProducts((prev) => [productToRestore, ...prev]);
-            setTrashProducts((prev) => prev.filter((p) => p.id !== id));
-        }
-    };
-
-    const handlePermanentDelete = (id) => {
-        setTrashProducts((prev) => prev.filter((p) => p.id !== id));
     };
 
     /* ======================================================================
@@ -99,7 +94,7 @@ export default function ProductsClient({ initialProducts = [] }) {
     return (
         <>
             <PageHeader
-                title="Products"
+                title="Companies"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>
@@ -110,10 +105,13 @@ export default function ProductsClient({ initialProducts = [] }) {
                 <button
                     type="button"
                     className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
-                    onClick={handleAddModal}
+                    onClick={() => {
+                        setSelectedCompany(null);
+                        setIsModalOpen(true);
+                    }}
                 >
                     <i className="fal fa-plus"></i>
-                    <span className="txt ms-2">Add Product</span>
+                    <span className="txt ms-2">Add Company</span>
                 </button>
 
                 {/* Delete Button */}
@@ -130,35 +128,35 @@ export default function ProductsClient({ initialProducts = [] }) {
                 <button
                     type="button"
                     className="alert alert-secondary rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
-                    onClick={() => setIsTrashOpen(true)}
+                    onClick={() => setShowTrashModal(true)}
                 >
                     <i className="fal fa-trash-undo"></i>
-                    <span className="txt ms-2">View Trash ({trashProducts.length})</span>
+                    <span className="txt ms-2">View Trash ({trashCompanies.length})</span>
                 </button>
             </PageHeader>
 
             <div className="table-content">
-                <ProductsTable
-                    data={products}
+                <CompaniesTable
+                    data={companies}
                     selectedIds={selectedIds}
                     onSelectionChange={setSelectedIds}
-                    onEdit={handleEditModal}
+                    onEdit={handleEdit}
                     onDelete={handleDelete}
                 />
             </div>
 
             {/* Modals */}
-            <ProductModal
-                show={isModalOpen}
+            <CompanyModal
+                isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSave}
-                product={editingProduct}
+                company={selectedCompany}
             />
 
             <TrashModal
-                show={isTrashOpen}
-                onClose={() => setIsTrashOpen(false)}
-                trashProducts={trashProducts}
+                isOpen={showTrashModal}
+                onClose={() => setShowTrashModal(false)}
+                trashCompanies={trashCompanies}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
             />

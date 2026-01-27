@@ -87,14 +87,6 @@ export default function SideMenu() {
                             </Link>
                         </li>
 
-                        <li>
-                            <Link href="/dashboard/products" className={`lnk ${isActive("/dashboard/products") ? "active" : ""}`}>
-                                <span className="icon">
-                                    <i className="fal fa-box"></i>
-                                </span>
-                                <span className="txt">Products</span>
-                            </Link>
-                        </li>
 
                         <li>
                             <Link href="/dashboard/contact-lists" className={`lnk ${isActive("/dashboard/contact-lists") ? "active" : ""}`}>
@@ -105,13 +97,30 @@ export default function SideMenu() {
                             </Link>
                         </li>
 
-
                         <li>
                             <Link href="/dashboard/deals" className={`lnk ${isActive("/dashboard/deals") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-check-circle"></i>
                                 </span>
                                 <span className="txt">Deals</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/dashboard/companies" className={`lnk ${isActive("/dashboard/companies") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-building"></i>
+                                </span>
+                                <span className="txt">Companies</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/dashboard/products" className={`lnk ${isActive("/dashboard/products") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-box"></i>
+                                </span>
+                                <span className="txt">Products</span>
                             </Link>
                         </li>
 
@@ -131,7 +140,7 @@ export default function SideMenu() {
                                 <span className="txt">Help & First step</span>
                             </Link>
                         </li>
-                        
+
                     </ul>
                 </div>
 

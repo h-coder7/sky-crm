@@ -39,20 +39,20 @@ export default function ProductModal({ show, onClose, onSave, product = null }) 
 
   return createPortal(
     <>
-      <div 
-        className="modal-backdrop fade show" 
+      <div
+        className="modal-backdrop fade show"
         onClick={onClose}
       ></div>
-      <div 
-        className="modal fade show d-block" 
-        tabIndex="-1" 
+      <div
+        className="modal fade show d-block"
+        tabIndex="-1"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">
-                {product ? "Edit Product" : "Add New Product"}
+                {product ? "Edit Product" : "Add Product"}
               </h5>
               <button
                 type="button"
@@ -64,7 +64,7 @@ export default function ProductModal({ show, onClose, onSave, product = null }) 
               <div className="modal-body">
                 <div className="mb-3">
                   <label htmlFor="title" className="form-label">
-                    Product Name
+                    Title
                   </label>
                   <input
                     type="text"

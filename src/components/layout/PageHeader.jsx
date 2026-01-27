@@ -8,7 +8,7 @@ export default function PageHeader({
   actionCol = "col-lg-6"
 }) {
   return (
-    <div className="page-header">
+    <div className="page-header mb-0">
       <div className="row align-items-center">
 
         {/* Title */}

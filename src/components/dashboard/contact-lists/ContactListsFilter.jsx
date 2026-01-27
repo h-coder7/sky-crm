@@ -295,7 +295,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             </td>
 
             {/* Added On */}
-            <td>
+            <td colSpan={2}>
                 <input
                     className="form-control form-control-sm cursor-pointer"
                     placeholder="Select range..."
@@ -304,9 +304,6 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
                     onClick={onOpenModal}
                 />
             </td>
-
-            {/* Actions */}
-            <td></td>
         </tr>
     );
 }

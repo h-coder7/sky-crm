@@ -483,7 +483,7 @@ export default function DealsTable({
                 <>
                     <div className="modal-backdrop fade show" onClick={() => setShowModal(false)}></div>
                     <div className="modal fade show d-block" onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
-                        <div className="modal-dialog modal-dialog-centered modal-lg">
+                        <div className="modal-dialog modal-dialog-centered">
                             <div className="modal-content border-0">
                                 <div className="modal-header">
                                     <h5 className="modal-title">Select Date Range</h5>

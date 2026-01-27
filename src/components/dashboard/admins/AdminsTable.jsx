@@ -280,11 +280,13 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                                     id={`admin-${admin.id}`}
                                                 />
                                                 <label className="form-check-label ms-2 mb-0 d-flex align-items-center" htmlFor={`admin-${admin.id}`}>
-                                                    <img
-                                                        src={admin.image || "https://placehold.co/40x40"}
-                                                        alt={admin.name}
-                                                        className="rounded-circle me-2 icon-40"
-                                                    />
+                                                    <div className="icon-40 p-10 rounded-circle bg-grad1 me-3">
+                                                        <img
+                                                            src={admin.image || "/crm-skybridge/images/fav.png"}
+                                                            alt={admin.name}
+                                                            className="img-contain"
+                                                        />
+                                                    </div>
                                                     {admin.name}
                                                 </label>
                                             </div>
@@ -293,8 +295,8 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                         <td>{admin.phone}</td>
                                         <td>
                                             <span className={`alert rounded-pill py-1 px-3 fsz-12 border-0 mb-0 ${admin.role === 'Super Admin' ? 'alert-danger' :
-                                                    admin.role === 'Admin' ? 'alert-primary' :
-                                                        admin.role === 'Sub Admin' ? 'alert-info' : 'alert-secondary'
+                                                admin.role === 'Admin' ? 'alert-primary' :
+                                                    admin.role === 'Sub Admin' ? 'alert-info' : 'alert-secondary'
                                                 }`}>
                                                 {admin.role}
                                             </span>
@@ -334,52 +336,52 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                         </tbody>
                     </table>
                 </div>
+                {/* --- PAGINATION CONTROLS --- */}
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                    <div className="text-muted fsz-12">
+                        Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
+                        {Math.min(
+                            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                            table.getFilteredRowModel().rows.length
+                        )}{" "}
+                        of {table.getFilteredRowModel().rows.length} entries
+                    </div>
+                    <div className="d-flex gap-2">
+                        <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => table.setPageIndex(0)}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            <i className="fal fa-angle-double-left"></i>
+                        </button>
+                        <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            <i className="fal fa-angle-left"></i>
+                        </button>
+                        <span className="d-flex align-items-center px-3 fsz-12">
+                            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                        </span>
+                        <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            <i className="fal fa-angle-right"></i>
+                        </button>
+                        <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            <i className="fal fa-angle-double-right"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            {/* --- PAGINATION CONTROLS --- */}
-            <div className="d-flex justify-content-between align-items-center mt-3">
-                <div className="text-muted fsz-12">
-                    Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
-                    {Math.min(
-                        (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-                        table.getFilteredRowModel().rows.length
-                    )}{" "}
-                    of {table.getFilteredRowModel().rows.length} entries
-                </div>
-                <div className="d-flex gap-2">
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.setPageIndex(0)}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        <i className="fal fa-angle-double-left"></i>
-                    </button>
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        <i className="fal fa-angle-left"></i>
-                    </button>
-                    <span className="d-flex align-items-center px-3 fsz-12">
-                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                    </span>
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        <i className="fal fa-angle-right"></i>
-                    </button>
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        <i className="fal fa-angle-double-right"></i>
-                    </button>
-                </div>
-            </div>
 
             {/* --- DATE MODAL (Portaled to body) --- */}
             {isMounted && showModal && createPortal(

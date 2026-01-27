@@ -1,33 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ProductsFilter({ table, dateRangeValue, onOpenModal }) {
-    // Local states for inputs to ensure they are always responsive/writable
     const [titleSearch, setTitleSearch] = useState(table.getColumn("title")?.getFilterValue() || "");
-    
-    /* ======================================================================
-       Helpers
-       ====================================================================== */
-    const handleTitleChange = (val) => {
-        setTitleSearch(val);
-        table.getColumn("title")?.setFilterValue(val);
-    };
+
+    useEffect(() => {
+        setTitleSearch(table.getColumn("title")?.getFilterValue() || "");
+    }, [table.getState().columnFilters]);
 
     return (
-        <tr className="search-tr">
+        <tr className="search-tr fsz-12">
             <td>
                 <input
-                    className="form-control"
-                    placeholder="Search name..."
+                    className="form-control form-control-sm"
+                    placeholder="Search title..."
                     value={titleSearch}
-                    onChange={(e) => handleTitleChange(e.target.value)}
+                    onChange={(e) => {
+                        setTitleSearch(e.target.value);
+                        table.getColumn("title")?.setFilterValue(e.target.value);
+                    }}
                 />
             </td>
 
-            <td colSpan={3}>
+            <td colSpan={2}>
                 <input
-                    className="form-control cursor-pointer"
+                    className="form-control form-control-sm cursor-pointer"
                     placeholder="Select range..."
                     readOnly
                     value={dateRangeValue}

@@ -10,9 +10,9 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
 } from "@tanstack/react-table";
-import ProductsFilter from "./ProductsFilter";
+import CompaniesFilter from "./CompaniesFilter";
 
-export default function ProductsTable({
+export default function CompaniesTable({
     data = [],
     selectedIds = [],
     onSelectionChange,
@@ -57,6 +57,34 @@ export default function ProductsTable({
         {
             id: "title",
             accessorKey: "title",
+        },
+        {
+            id: "address",
+            accessorKey: "address",
+        },
+        {
+            id: "description",
+            accessorKey: "description",
+        },
+        {
+            id: "domain",
+            accessorKey: "domain",
+        },
+        {
+            id: "sector",
+            accessorKey: "sector",
+            filterFn: (row, columnId, filterValue) => {
+                if (!filterValue) return true;
+                return row.getValue(columnId) === filterValue;
+            },
+        },
+        {
+            id: "country",
+            accessorKey: "country",
+            filterFn: (row, columnId, filterValue) => {
+                if (!filterValue) return true;
+                return row.getValue(columnId) === filterValue;
+            },
         },
         {
             id: "created_at",
@@ -131,7 +159,6 @@ export default function ProductsTable({
        6. JSX
        ====================================================================== */
     return (
-
         <div className="table-responsive position-relative">
             <table className="table align-middle">
                 <thead>
@@ -141,39 +168,121 @@ export default function ProductsTable({
                                 <div className="form-check">
                                     <input
                                         className="form-check-input"
-                                        id="select-all-products"
+                                        id="select-all-companies"
                                         type="checkbox"
                                         checked={table.getIsAllPageRowsSelected()}
                                         onChange={table.getToggleAllPageRowsSelectedHandler()}
                                     />
-                                    <label className="form-check-label ms-2" htmlFor="select-all-products">
+                                    <label className="form-check-label ms-2" htmlFor="select-all-companies">
                                         Title
                                     </label>
                                 </div>
-
                                 <div className="dropdown">
                                     <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                         <i className="fat fa-sort"></i>
                                     </button>
                                     <ul className="dropdown-menu">
-                                        <li
-                                            className="dropdown-item cursor-pointer"
-                                            onClick={() => table.getColumn("title").toggleSorting(false)}
-                                        >
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("title").toggleSorting(false)}>
                                             <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
                                         </li>
-                                        <li
-                                            className="dropdown-item cursor-pointer"
-                                            onClick={() => table.getColumn("title").toggleSorting(true)}
-                                        >
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("title").toggleSorting(true)}>
                                             <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         </th>
-
-                        <th colSpan={2}>
+                        <th>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <span>Address</span>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("address").toggleSorting(false)}>
+                                            <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
+                                        </li>
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("address").toggleSorting(true)}>
+                                            <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <span>Description</span>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("description").toggleSorting(false)}>
+                                            <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
+                                        </li>
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("description").toggleSorting(true)}>
+                                            <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <span>Domain</span>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("domain").toggleSorting(false)}>
+                                            <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
+                                        </li>
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("domain").toggleSorting(true)}>
+                                            <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <span>Sector</span>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("sector").toggleSorting(false)}>
+                                            <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
+                                        </li>
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("sector").toggleSorting(true)}>
+                                            <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <span>Country</span>
+                                <div className="dropdown">
+                                    <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                        <i className="fat fa-sort"></i>
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("country").toggleSorting(false)}>
+                                            <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
+                                        </li>
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("country").toggleSorting(true)}>
+                                            <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
                             <div className="d-flex justify-content-between align-items-center">
                                 <span>Added On</span>
                                 <div className="dropdown">
@@ -181,26 +290,21 @@ export default function ProductsTable({
                                         <i className="fat fa-sort"></i>
                                     </button>
                                     <ul className="dropdown-menu">
-                                        <li
-                                            className="dropdown-item cursor-pointer"
-                                            onClick={() => table.getColumn("created_at").toggleSorting(false)}
-                                        >
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("created_at").toggleSorting(false)}>
                                             <i className="fal fa-sort-amount-up me-2"></i> Oldest First
                                         </li>
-                                        <li
-                                            className="dropdown-item cursor-pointer"
-                                            onClick={() => table.getColumn("created_at").toggleSorting(true)}
-                                        >
+                                        <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("created_at").toggleSorting(true)}>
                                             <i className="fal fa-sort-amount-down me-2"></i> Newest First
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         </th>
+                        <th></th>
                     </tr>
 
-                    {/* Integrated ProductsFilter */}
-                    <ProductsFilter
+                    {/* Integrated CompaniesFilter */}
+                    <CompaniesFilter
                         table={table}
                         dateRangeValue={formatDateRangeDisplay()}
                         onOpenModal={() => setShowModal(true)}
@@ -210,8 +314,8 @@ export default function ProductsTable({
                 <tbody>
                     {table.getRowModel().rows.length === 0 ? (
                         <tr>
-                            <td colSpan={2} className="text-center text-muted py-4">
-                                No products found
+                            <td colSpan={8} className="text-center text-muted py-4">
+                                No companies found
                             </td>
                         </tr>
                     ) : (
@@ -225,19 +329,34 @@ export default function ProductsTable({
                                             <input
                                                 className="form-check-input"
                                                 type="checkbox"
-                                                id={`product-${item.id}`}
+                                                id={`company-${item.id}`}
                                                 checked={row.getIsSelected()}
                                                 onChange={row.getToggleSelectedHandler()}
                                             />
                                             <label
                                                 className="form-check-label ms-2"
-                                                htmlFor={`product-${item.id}`}
+                                                htmlFor={`company-${item.id}`}
                                             >
                                                 {item.title}
                                             </label>
                                         </div>
                                     </td>
-
+                                    <td>{item.address}</td>
+                                    <td>
+                                        <div className="text-pop fsz-12">
+                                            {item.description?.length > 30 ? item.description.slice(0, 30) + "..." : item.description}
+                                            <span className="tooltip-text">{item.description}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {item.domain ? (
+                                            <a href={item.domain} target="_blank" rel="noopener noreferrer" className="text-primary">
+                                                {item.domain.replace(/^https?:\/\//, '').split('/')[0]}
+                                            </a>
+                                        ) : "-"}
+                                    </td>
+                                    <td>{item.sector}</td>
+                                    <td>{item.country}</td>
                                     <td>
                                         {new Date(item.created_at).toLocaleDateString()}
                                     </td>
@@ -253,12 +372,6 @@ export default function ProductsTable({
                                                     onClick={() => onEdit?.(item.id)}
                                                 >
                                                     <i className="fal fa-pen me-2"></i> Edit
-                                                </li>
-                                                <li
-                                                    className="dropdown-item cursor-pointer"
-                                                    onClick={() => console.log("Lock product", item.id)}
-                                                >
-                                                    <i className="fal fa-lock me-2"></i> Lock
                                                 </li>
                                                 <li
                                                     className="dropdown-item cursor-pointer text-danger"
@@ -339,7 +452,7 @@ export default function ProductsTable({
                                     <h5 className="modal-title">Select Date Range</h5>
                                     <button className="btn-close" onClick={() => setShowModal(false)} />
                                 </div>
-                                <div className="modal-body px-0">
+                                <div className="modal-body px-0 text-center">
                                     <DateRange
                                         ranges={tempRange}
                                         onChange={(ranges) => setTempRange([ranges.selection])}
