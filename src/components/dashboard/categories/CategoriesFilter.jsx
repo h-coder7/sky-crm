@@ -1,46 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function CategoriesFilter({ table, dateRangeValue, onOpenModal }) {
-    // Local states for inputs to ensure they are always responsive/writable
     const [titleSearch, setTitleSearch] = useState(table.getColumn("title")?.getFilterValue() || "");
-    const [priceSearch, setPriceSearch] = useState(table.getColumn("start_price")?.getFilterValue() || "");
-    
-    /* ======================================================================
-       Helpers
-       ====================================================================== */
-    const handleTitleChange = (val) => {
-        setTitleSearch(val);
-        table.getColumn("title")?.setFilterValue(val);
-    };
+    const [startPriceSearch, setStartPriceSearch] = useState(table.getColumn("start_price")?.getFilterValue() || "");
+    const [endPriceSearch, setEndPriceSearch] = useState(table.getColumn("end_price")?.getFilterValue() || "");
 
-    const handlePriceChange = (val) => {
-        setPriceSearch(val);
-        table.getColumn("start_price")?.setFilterValue(val);
-    };
+    useEffect(() => {
+        setTitleSearch(table.getColumn("title")?.getFilterValue() || "");
+        setStartPriceSearch(table.getColumn("start_price")?.getFilterValue() || "");
+        setEndPriceSearch(table.getColumn("end_price")?.getFilterValue() || "");
+    }, [table.getState().columnFilters]);
 
     return (
-        <tr className="search-tr">
+        <tr className="search-tr fsz-12">
             <td>
                 <input
                     className="form-control"
-                    placeholder="Search title..."
+                    placeholder="Search Title..."
                     value={titleSearch}
-                    onChange={(e) => handleTitleChange(e.target.value)}
+                    onChange={(e) => {
+                        setTitleSearch(e.target.value);
+                        table.getColumn("title")?.setFilterValue(e.target.value);
+                    }}
                 />
             </td>
 
             <td>
                 <input
                     className="form-control"
-                    placeholder="Search price..."
-                    value={priceSearch}
-                    onChange={(e) => handlePriceChange(e.target.value)}
+                    placeholder="Search Start Price..."
+                    value={startPriceSearch}
+                    onChange={(e) => {
+                        setStartPriceSearch(e.target.value);
+                        table.getColumn("start_price")?.setFilterValue(e.target.value);
+                    }}
                 />
             </td>
 
-            <td colSpan={3}>
+            <td>
+                <input
+                    className="form-control"
+                    placeholder="Search End Price..."
+                    value={endPriceSearch}
+                    onChange={(e) => {
+                        setEndPriceSearch(e.target.value);
+                        table.getColumn("end_price")?.setFilterValue(e.target.value);
+                    }}
+                />
+            </td>
+
+            <td colSpan={2}>
                 <input
                     className="form-control cursor-pointer"
                     placeholder="Select range..."

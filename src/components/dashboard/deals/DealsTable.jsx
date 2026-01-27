@@ -143,7 +143,9 @@ export default function DealsTable({
     };
 
     return (
+
         <>
+
             <div className="table-content">
                 <div className="table-responsive position-relative">
                     <table className="table align-middle">
@@ -506,6 +508,8 @@ export default function DealsTable({
                 </>,
                 document.body
             )}
+
         </>
+
     );
 }

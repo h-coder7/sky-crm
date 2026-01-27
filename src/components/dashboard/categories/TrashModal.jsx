@@ -20,13 +20,13 @@ export default function TrashModal({
 
   return createPortal(
     <>
-      <div 
-        className="modal-backdrop fade show" 
+      <div
+        className="modal-backdrop fade show"
         onClick={onClose}
       ></div>
-      <div 
-        className="modal fade show d-block" 
-        tabIndex="-1" 
+      <div
+        className="modal fade show d-block"
+        tabIndex="-1"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <div className="modal-dialog modal-dialog-centered modal-lg">
@@ -51,19 +51,21 @@ export default function TrashModal({
                     <thead className="bg-light">
                       <tr>
                         <th>Title</th>
-                        <th>Price</th>
+                        <th>Start Price</th>
+                        <th>End Price</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {trashCategories.map((cat) => (
-                        <tr key={cat.id}>
-                          <td>{cat.title}</td>
-                          <td>{cat.start_price}</td>
+                      {trashCategories.map((category) => (
+                        <tr key={category.id}>
+                          <td>{category.title}</td>
+                          <td>{category.start_price}</td>
+                          <td>{category.end_price}</td>
                           <td>
                             <button
                               className="btn btn-sm btn-outline-success me-2"
-                              onClick={() => onRestore(cat.id)}
+                              onClick={() => onRestore(category.id)}
                               title="Restore"
                             >
                               <i className="fal fa-trash-undo"></i>
@@ -75,7 +77,7 @@ export default function TrashModal({
                                   title: "Delete Permanently?",
                                   message: "This action cannot be undone. Are you sure?",
                                   confirmLabel: "Delete Forever",
-                                  onConfirm: () => onPermanentDelete(cat.id),
+                                  onConfirm: () => onPermanentDelete(category.id),
                                 });
                               }}
                               title="Delete Permanently"
@@ -90,15 +92,6 @@ export default function TrashModal({
                 </div>
               )}
             </div>
-            {/* <div className="modal-footer">
-              <button
-                type="button"
-                className="butn-st2 butn-md line-butn"
-                onClick={onClose}
-              >
-                Close
-              </button>
-            </div> */}
           </div>
         </div>
       </div>

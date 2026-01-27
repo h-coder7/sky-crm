@@ -137,15 +137,13 @@ export default function ProductsClient({ initialProducts = [] }) {
                 </button>
             </PageHeader>
 
-            <div className="table-content">
-                <ProductsTable
-                    data={products}
-                    selectedIds={selectedIds}
-                    onSelectionChange={setSelectedIds}
-                    onEdit={handleEditModal}
-                    onDelete={handleDelete}
-                />
-            </div>
+            <ProductsTable
+                data={products}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+                onEdit={handleEditModal}
+                onDelete={handleDelete}
+            />
 
             {/* Modals */}
             <ProductModal

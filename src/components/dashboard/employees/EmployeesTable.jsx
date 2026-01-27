@@ -124,7 +124,9 @@ export default function EmployeesTable({ data = [], selectedIds = [], onSelectio
     };
 
     return (
+
         <>
+
             <div className="table-content">
                 <div className="table-responsive position-relative">
                     <table className="table align-middle">
@@ -371,52 +373,52 @@ export default function EmployeesTable({ data = [], selectedIds = [], onSelectio
                         </tbody>
                     </table>
                 </div>
-                {/* --- PAGINATION CONTROLS --- */}
-                <div className="d-flex justify-content-between align-items-center mt-3">
-                    <div className="text-muted fsz-12">
-                        Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
-                        {Math.min(
-                            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-                            table.getFilteredRowModel().rows.length
-                        )}{" "}
-                        of {table.getFilteredRowModel().rows.length} entries
-                    </div>
-                    <div className="d-flex gap-2">
-                        <button
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => table.setPageIndex(0)}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            <i className="fal fa-angle-double-left"></i>
-                        </button>
-                        <button
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            <i className="fal fa-angle-left"></i>
-                        </button>
-                        <span className="d-flex align-items-center px-3 fsz-12">
-                            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                        </span>
-                        <button
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            <i className="fal fa-angle-right"></i>
-                        </button>
-                        <button
-                            className="btn btn-sm btn-outline-secondary"
-                            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            <i className="fal fa-angle-double-right"></i>
-                        </button>
-                    </div>
-                </div>
             </div>
 
+            {/* --- PAGINATION CONTROLS --- */}
+            <div className="d-flex justify-content-between align-items-center mt-3">
+                <div className="text-muted fsz-12">
+                    Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
+                    {Math.min(
+                        (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                        table.getFilteredRowModel().rows.length
+                    )}{" "}
+                    of {table.getFilteredRowModel().rows.length} entries
+                </div>
+                <div className="d-flex gap-2">
+                    <button
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => table.setPageIndex(0)}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        <i className="fal fa-angle-double-left"></i>
+                    </button>
+                    <button
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        <i className="fal fa-angle-left"></i>
+                    </button>
+                    <span className="d-flex align-items-center px-3 fsz-12">
+                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                    </span>
+                    <button
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        <i className="fal fa-angle-right"></i>
+                    </button>
+                    <button
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        <i className="fal fa-angle-double-right"></i>
+                    </button>
+                </div>
+            </div>
 
             {/* --- DATE MODAL (Portaled to body) --- */}
             {isMounted && showModal && createPortal(
@@ -458,6 +460,8 @@ export default function EmployeesTable({ data = [], selectedIds = [], onSelectio
                 </>,
                 document.body
             )}
+
         </>
+
     );
 }

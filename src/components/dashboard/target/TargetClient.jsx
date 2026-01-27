@@ -2,44 +2,35 @@
 
 import { useState } from "react";
 import PageHeader from "@/components/layout/PageHeader";
-import CompaniesTable from "./CompaniesTable";
-import CompanyModal from "./CompanyModal";
+import TargetTable from "./TargetTable";
+import TargetModal from "./TargetModal";
 import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
 
-export default function CompaniesClient({ initialCompanies = [] }) {
-    const [companies, setCompanies] = useState(initialCompanies);
-    const [selectedCompany, setSelectedCompany] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+export default function TargetClient({ initialTargets = [] }) {
+    const [targets, setTargets] = useState(initialTargets);
     const [selectedIds, setSelectedIds] = useState([]);
 
+    // Modals state
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isTrashOpen, setIsTrashOpen] = useState(false);
+    const [editingTarget, setEditingTarget] = useState(null);
+
     // Trash State
-    const [trashCompanies, setTrashCompanies] = useState([]);
-    const [showTrashModal, setShowTrashModal] = useState(false);
+    const [trashTargets, setTrashTargets] = useState([]);
 
     /* ======================================================================
        1. Handlers
        ====================================================================== */
-    const handleSave = (companyData) => {
-        // 🔌 API READY: Integrate your POST/PUT request here.
-        if (selectedCompany) {
-            setCompanies(prev => prev.map(c => c.id === selectedCompany.id ? { ...c, ...companyData } : c));
-        } else {
-            const newCompany = {
-                ...companyData,
-                id: Math.max(0, ...companies.map(c => c.id)) + 1,
-                created_at: new Date().toISOString().split('T')[0]
-            };
-            setCompanies(prev => [newCompany, ...prev]);
-        }
-        setIsModalOpen(false);
-        setSelectedCompany(null);
+    const handleAddModal = () => {
+        setEditingTarget(null);
+        setIsModalOpen(true);
     };
 
-    const handleEdit = (id) => {
-        const company = companies.find(c => c.id === id);
-        if (company) {
-            setSelectedCompany(company);
+    const handleEditModal = (id) => {
+        const target = targets.find(t => t.id === id);
+        if (target) {
+            setEditingTarget(target);
             setIsModalOpen(true);
         }
     };
@@ -47,30 +38,18 @@ export default function CompaniesClient({ initialCompanies = [] }) {
     const handleDelete = (id) => {
         confirmAction({
             title: "Move to Trash?",
-            message: "This company will be moved to the recycle bin.",
+            message: "This target will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: () => {
-                const companyToDelete = companies.find((c) => c.id === id);
-                if (companyToDelete) {
-                    setTrashCompanies((prev) => [companyToDelete, ...prev]);
-                    setCompanies((prev) => prev.filter((c) => c.id !== id));
+                const targetToDelete = targets.find((t) => t.id === id);
+                if (targetToDelete) {
+                    setTrashTargets((prev) => [targetToDelete, ...prev]);
+                    setTargets((prev) => prev.filter((t) => t.id !== id));
+                    setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
                 }
             }
         });
     };
-
-    const handleRestore = (id) => {
-        const companyToRestore = trashCompanies.find((c) => c.id === id);
-        if (companyToRestore) {
-            setCompanies((prev) => [companyToRestore, ...prev]);
-            setTrashCompanies((prev) => prev.filter((c) => c.id !== id));
-        }
-    };
-
-    const handlePermanentDelete = (id) => {
-        setTrashCompanies((prev) => prev.filter((c) => c.id !== id));
-    };
-
 
     const handleBulkDelete = () => {
         if (selectedIds.length === 0) return;
@@ -80,12 +59,38 @@ export default function CompaniesClient({ initialCompanies = [] }) {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: () => {
-                const itemsToDelete = companies.filter(c => selectedIds.includes(c.id));
-                setTrashCompanies(prev => [...itemsToDelete, ...prev]);
-                setCompanies(prev => prev.filter(c => !selectedIds.includes(c.id)));
+                const itemsToDelete = targets.filter(t => selectedIds.includes(t.id));
+                setTrashTargets(prev => [...itemsToDelete, ...prev]);
+                setTargets(prev => prev.filter(t => !selectedIds.includes(t.id)));
                 setSelectedIds([]);
             }
         });
+    };
+
+    const handleSave = (targetData) => {
+        if (editingTarget) {
+            setTargets(prev => prev.map(t => t.id === editingTarget.id ? { ...t, ...targetData } : t));
+        } else {
+            const newTarget = {
+                ...targetData,
+                id: Math.max(0, ...targets.map(t => t.id)) + 1,
+                created_at: new Date().toISOString().split('T')[0]
+            };
+            setTargets(prev => [newTarget, ...prev]);
+        }
+        setIsModalOpen(false);
+    };
+
+    const handleRestore = (id) => {
+        const targetToRestore = trashTargets.find((t) => t.id === id);
+        if (targetToRestore) {
+            setTargets((prev) => [targetToRestore, ...prev]);
+            setTrashTargets((prev) => prev.filter((t) => t.id !== id));
+        }
+    };
+
+    const handlePermanentDelete = (id) => {
+        setTrashTargets((prev) => prev.filter((t) => t.id !== id));
     };
 
     /* ======================================================================
@@ -94,7 +99,7 @@ export default function CompaniesClient({ initialCompanies = [] }) {
     return (
         <>
             <PageHeader
-                title="Companies"
+                title="Targets"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>
@@ -105,13 +110,10 @@ export default function CompaniesClient({ initialCompanies = [] }) {
                 <button
                     type="button"
                     className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
-                    onClick={() => {
-                        setSelectedCompany(null);
-                        setIsModalOpen(true);
-                    }}
+                    onClick={handleAddModal}
                 >
                     <i className="fal fa-plus"></i>
-                    <span className="txt ms-2">Add Company</span>
+                    <span className="txt ms-2">Add Target</span>
                 </button>
 
                 {/* Delete Button */}
@@ -128,33 +130,33 @@ export default function CompaniesClient({ initialCompanies = [] }) {
                 <button
                     type="button"
                     className="alert alert-secondary rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
-                    onClick={() => setShowTrashModal(true)}
+                    onClick={() => setIsTrashOpen(true)}
                 >
                     <i className="fal fa-trash-undo"></i>
-                    <span className="txt ms-2">View Trash ({trashCompanies.length})</span>
+                    <span className="txt ms-2">View Trash ({trashTargets.length})</span>
                 </button>
             </PageHeader>
 
-            <CompaniesTable
-                data={companies}
+            <TargetTable
+                data={targets}
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
-                onEdit={handleEdit}
+                onEdit={handleEditModal}
                 onDelete={handleDelete}
             />
 
             {/* Modals */}
-            <CompanyModal
-                isOpen={isModalOpen}
+            <TargetModal
+                show={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSave}
-                company={selectedCompany}
+                target={editingTarget}
             />
 
             <TrashModal
-                isOpen={showTrashModal}
-                onClose={() => setShowTrashModal(false)}
-                trashCompanies={trashCompanies}
+                show={isTrashOpen}
+                onClose={() => setIsTrashOpen(false)}
+                trashTargets={trashTargets}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
             />

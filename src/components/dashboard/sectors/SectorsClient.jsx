@@ -240,15 +240,13 @@ export default function SectorsClient({ initialSectors = [] }) {
             </PageHeader>
 
             {/* Page Content */}
-            <div className="table-content">
-                <SectorsTable
-                    data={sectors}
-                    selectedIds={selectedIds}
-                    onSelectionChange={setSelectedIds}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                />
-            </div>
+            <SectorsTable
+                data={sectors}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+            />
 
             {/* Add/Edit Modal */}
             <SectorModal

@@ -1,8 +1,6 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { DateRange } from "react-date-range";
 import {
     useReactTable,
     getCoreRowModel,
@@ -10,9 +8,9 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
 } from "@tanstack/react-table";
-import CategoriesFilter from "./CategoriesFilter";
+import TargetFilter from "./TargetFilter";
 
-export default function CategoriesTable({
+export default function TargetTable({
     data = [],
     selectedIds = [],
     onSelectionChange,
@@ -27,11 +25,6 @@ export default function CategoriesTable({
     const [columnFilters, setColumnFilters] = useState([]);
     const [rowSelection, setRowSelection] = useState({});
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-
-    // Date Range State
-    const [dateRange, setDateRange] = useState([{ startDate: null, endDate: null, key: "selection" }]);
-    const [tempRange, setTempRange] = useState([{ startDate: null, endDate: null, key: "selection" }]);
-    const [showModal, setShowModal] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -55,35 +48,24 @@ export default function CategoriesTable({
        ====================================================================== */
     const columns = useMemo(() => [
         {
-            id: "title",
-            accessorKey: "title",
-            header: "Title",
+            id: "employee",
+            accessorKey: "employee",
+            header: "Employee",
         },
         {
-            id: "start_price",
-            accessorKey: "start_price",
-            header: "Start Price",
+            id: "year",
+            accessorKey: "year",
+            header: "Year",
         },
         {
-            id: "end_price",
-            accessorKey: "end_price",
-            header: "End Price",
+            id: "product",
+            accessorKey: "product",
+            header: "Product",
         },
         {
-            id: "created_at",
-            accessorKey: "created_at",
-            header: "Added On",
-            filterFn: (row, columnId, filterValue) => {
-                if (!filterValue || !filterValue[0] || !filterValue[1]) return true;
-                const rowDate = new Date(row.getValue(columnId));
-                const [start, end] = filterValue;
-                return rowDate >= start && rowDate <= end;
-            },
-            sortingFn: (rowA, rowB, columnId) => {
-                const a = new Date(rowA.getValue(columnId));
-                const b = new Date(rowB.getValue(columnId));
-                return a > b ? 1 : a < b ? -1 : 0;
-            },
+            id: "target",
+            accessorKey: "target",
+            header: "Target",
         },
     ], []);
 
@@ -116,30 +98,7 @@ export default function CategoriesTable({
     });
 
     /* ======================================================================
-       5. Helpers
-       ====================================================================== */
-    const confirmDateRange = () => {
-        setDateRange(tempRange);
-        setShowModal(false);
-
-        if (tempRange[0].startDate && tempRange[0].endDate) {
-            table.getColumn("created_at")?.setFilterValue([
-                tempRange[0].startDate,
-                tempRange[0].endDate,
-            ]);
-        } else {
-            table.getColumn("created_at")?.setFilterValue(undefined);
-        }
-    };
-
-    const formatDateRangeDisplay = () => {
-        const { startDate, endDate } = dateRange[0];
-        if (!startDate || !endDate) return "";
-        return `${startDate.toISOString().split("T")[0]} to ${endDate.toISOString().split("T")[0]}`;
-    };
-
-    /* ======================================================================
-       6. JSX
+       5. JSX
        ====================================================================== */
     return (
 
@@ -155,13 +114,13 @@ export default function CategoriesTable({
                                         <div className="form-check">
                                             <input
                                                 className="form-check-input"
-                                                id="select-all-categories"
+                                                id="select-all-targets"
                                                 type="checkbox"
                                                 checked={table.getIsAllPageRowsSelected()}
                                                 onChange={table.getToggleAllPageRowsSelectedHandler()}
                                             />
-                                            <label className="form-check-label ms-2" htmlFor="select-all-categories">
-                                                Title
+                                            <label className="form-check-label ms-2" htmlFor="select-all-targets">
+                                                Employee
                                             </label>
                                         </div>
 
@@ -172,13 +131,13 @@ export default function CategoriesTable({
                                             <ul className="dropdown-menu">
                                                 <li
                                                     className="dropdown-item cursor-pointer"
-                                                    onClick={() => table.getColumn("title").toggleSorting(false)}
+                                                    onClick={() => table.getColumn("employee").toggleSorting(false)}
                                                 >
                                                     <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
                                                 </li>
                                                 <li
                                                     className="dropdown-item cursor-pointer"
-                                                    onClick={() => table.getColumn("title").toggleSorting(true)}
+                                                    onClick={() => table.getColumn("employee").toggleSorting(true)}
                                                 >
                                                     <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
                                                 </li>
@@ -189,7 +148,7 @@ export default function CategoriesTable({
 
                                 <th>
                                     <div className="d-flex justify-content-between align-items-center">
-                                        <span>Start Price</span>
+                                        <span>Year</span>
                                         <div className="dropdown">
                                             <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                                 <i className="fat fa-sort"></i>
@@ -197,15 +156,15 @@ export default function CategoriesTable({
                                             <ul className="dropdown-menu">
                                                 <li
                                                     className="dropdown-item cursor-pointer"
-                                                    onClick={() => table.getColumn("start_price").toggleSorting(false)}
+                                                    onClick={() => table.getColumn("year").toggleSorting(false)}
                                                 >
-                                                    <i className="fal fa-sort-numeric-up me-2"></i> Lowest First
+                                                    <i className="fal fa-sort-numeric-up me-2"></i> Ascending
                                                 </li>
                                                 <li
                                                     className="dropdown-item cursor-pointer"
-                                                    onClick={() => table.getColumn("start_price").toggleSorting(true)}
+                                                    onClick={() => table.getColumn("year").toggleSorting(true)}
                                                 >
-                                                    <i className="fal fa-sort-numeric-down me-2"></i> Highest First
+                                                    <i className="fal fa-sort-numeric-down me-2"></i> Descending
                                                 </li>
                                             </ul>
                                         </div>
@@ -214,7 +173,7 @@ export default function CategoriesTable({
 
                                 <th>
                                     <div className="d-flex justify-content-between align-items-center">
-                                        <span>End Price</span>
+                                        <span>Product</span>
                                         <div className="dropdown">
                                             <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                                 <i className="fat fa-sort"></i>
@@ -222,15 +181,15 @@ export default function CategoriesTable({
                                             <ul className="dropdown-menu">
                                                 <li
                                                     className="dropdown-item cursor-pointer"
-                                                    onClick={() => table.getColumn("end_price").toggleSorting(false)}
+                                                    onClick={() => table.getColumn("product").toggleSorting(false)}
                                                 >
-                                                    <i className="fal fa-sort-numeric-up me-2"></i> Lowest First
+                                                    <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
                                                 </li>
                                                 <li
                                                     className="dropdown-item cursor-pointer"
-                                                    onClick={() => table.getColumn("end_price").toggleSorting(true)}
+                                                    onClick={() => table.getColumn("product").toggleSorting(true)}
                                                 >
-                                                    <i className="fal fa-sort-numeric-down me-2"></i> Highest First
+                                                    <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
                                                 </li>
                                             </ul>
                                         </div>
@@ -239,7 +198,7 @@ export default function CategoriesTable({
 
                                 <th colSpan={2}>
                                     <div className="d-flex justify-content-between align-items-center">
-                                        <span>Added On</span>
+                                        <span>Target</span>
                                         <div className="dropdown">
                                             <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                                 <i className="fat fa-sort"></i>
@@ -247,35 +206,32 @@ export default function CategoriesTable({
                                             <ul className="dropdown-menu">
                                                 <li
                                                     className="dropdown-item cursor-pointer"
-                                                    onClick={() => table.getColumn("created_at").toggleSorting(false)}
+                                                    onClick={() => table.getColumn("target").toggleSorting(false)}
                                                 >
-                                                    <i className="fal fa-sort-amount-up me-2"></i> Oldest First
+                                                    <i className="fal fa-sort-numeric-up me-2"></i> Lowest First
                                                 </li>
                                                 <li
                                                     className="dropdown-item cursor-pointer"
-                                                    onClick={() => table.getColumn("created_at").toggleSorting(true)}
+                                                    onClick={() => table.getColumn("target").toggleSorting(true)}
                                                 >
-                                                    <i className="fal fa-sort-amount-down me-2"></i> Newest First
+                                                    <i className="fal fa-sort-numeric-down me-2"></i> Highest First
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                 </th>
+
                             </tr>
 
-                            {/* Integrated CategoriesFilter */}
-                            <CategoriesFilter
-                                table={table}
-                                dateRangeValue={formatDateRangeDisplay()}
-                                onOpenModal={() => setShowModal(true)}
-                            />
+                            {/* Integrated TargetFilter */}
+                            <TargetFilter table={table} />
                         </thead>
 
                         <tbody>
                             {table.getRowModel().rows.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="text-center text-muted py-4">
-                                        No categories found
+                                        No targets found
                                     </td>
                                 </tr>
                             ) : (
@@ -289,26 +245,21 @@ export default function CategoriesTable({
                                                     <input
                                                         className="form-check-input"
                                                         type="checkbox"
-                                                        id={`category-${item.id}`}
+                                                        id={`target-${item.id}`}
                                                         checked={row.getIsSelected()}
                                                         onChange={row.getToggleSelectedHandler()}
                                                     />
                                                     <label
                                                         className="form-check-label ms-2"
-                                                        htmlFor={`category-${item.id}`}
+                                                        htmlFor={`target-${item.id}`}
                                                     >
-                                                        {item.title}
+                                                        {item.employee}
                                                     </label>
                                                 </div>
                                             </td>
-
-                                            <td>{item.start_price}</td>
-                                            <td>{item.end_price}</td>
-
-                                            <td>
-                                                {new Date(item.created_at).toLocaleDateString()}
-                                            </td>
-
+                                            <td>{item.year}</td>
+                                            <td>{item.product}</td>
+                                            <td>{item.target}</td>
                                             <td>
                                                 <div className="dropdown">
                                                     <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
@@ -320,12 +271,6 @@ export default function CategoriesTable({
                                                             onClick={() => onEdit?.(item.id)}
                                                         >
                                                             <i className="fal fa-pen me-2"></i> Edit
-                                                        </li>
-                                                        <li
-                                                            className="dropdown-item cursor-pointer"
-                                                            onClick={() => console.log("Lock", item.id)}
-                                                        >
-                                                            <i className="fal fa-lock me-2"></i> Lock
                                                         </li>
                                                         <li
                                                             className="dropdown-item cursor-pointer text-danger"
@@ -389,47 +334,6 @@ export default function CategoriesTable({
                     </button>
                 </div>
             </div>
-
-            {/* --- DATE MODAL (Portaled to body) --- */}
-            {isMounted && showModal && createPortal(
-                <>
-                    <div
-                        className="modal-backdrop fade show"
-                        onClick={() => setShowModal(false)}
-                    ></div>
-                    <div
-                        className="modal fade show d-block"
-                        tabIndex="-1"
-                        onClick={(e) => e.target === e.currentTarget && setShowModal(false)}
-                    >
-                        <div className="modal-dialog modal-dialog-centered">
-                            <div className="modal-content border-0">
-                                <div className="modal-header">
-                                    <h5 className="modal-title">Select Date Range</h5>
-                                    <button className="btn-close" onClick={() => setShowModal(false)} />
-                                </div>
-                                <div className="modal-body px-0">
-                                    <DateRange
-                                        ranges={tempRange}
-                                        onChange={(ranges) => setTempRange([ranges.selection])}
-                                        editableDateInputs
-                                        moveRangeOnFirstSelection={false}
-                                    />
-                                </div>
-                                <div className="modal-footer">
-                                    <button className="alert alert-light rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0" onClick={() => setShowModal(false)}>
-                                        Cancel
-                                    </button>
-                                    <button className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0" onClick={confirmDateRange}>
-                                        Confirm
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </>,
-                document.body
-            )}
 
         </>
 

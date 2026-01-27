@@ -1,12 +1,13 @@
-"use client";
+import { useState, useEffect, useMemo } from "react";
+import SearchableSelect from "../../shared/SearchableSelect";
 
-import { useState, useEffect } from "react";
-
-export default function ProductsFilter({ table, dateRangeValue, onOpenModal }) {
+export default function RegionsFilter({ table, countries = [], dateRangeValue, onOpenModal }) {
     const [titleSearch, setTitleSearch] = useState(table.getColumn("title")?.getFilterValue() || "");
+    const [countrySearch, setCountrySearch] = useState(table.getColumn("country")?.getFilterValue() || "");
 
     useEffect(() => {
         setTitleSearch(table.getColumn("title")?.getFilterValue() || "");
+        setCountrySearch(table.getColumn("country")?.getFilterValue() || "");
     }, [table.getState().columnFilters]);
 
     return (
@@ -22,7 +23,17 @@ export default function ProductsFilter({ table, dateRangeValue, onOpenModal }) {
                     }}
                 />
             </td>
-
+            <td>
+                <SearchableSelect
+                    options={countries}
+                    value={countrySearch}
+                    onChange={(val) => {
+                        setCountrySearch(val);
+                        table.getColumn("country")?.setFilterValue(val || undefined);
+                    }}
+                    placeholder="Country"
+                />
+            </td>
             <td colSpan={2}>
                 <input
                     className="form-control cursor-pointer"

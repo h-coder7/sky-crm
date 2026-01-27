@@ -61,15 +61,6 @@ export default function SideMenu() {
                         </li>
 
                         <li>
-                            <Link href="/dashboard/categories" className={`lnk ${isActive("/dashboard/categories") ? "active" : ""}`}>
-                                <span className="icon">
-                                    <i className="fal fa-grid-2"></i>
-                                </span>
-                                <span className="txt">Categories</span>
-                            </Link>
-                        </li>
-
-                        <li>
                             <Link href="/dashboard/sectors" className={`lnk ${isActive("/dashboard/sectors") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-tire"></i>
@@ -121,6 +112,42 @@ export default function SideMenu() {
                                     <i className="fal fa-box"></i>
                                 </span>
                                 <span className="txt">Products</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/dashboard/target" className={`lnk ${isActive("/dashboard/target") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-bullseye-arrow"></i>
+                                </span>
+                                <span className="txt">Target</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/dashboard/categories" className={`lnk ${isActive("/dashboard/categories") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-grid-2"></i>
+                                </span>
+                                <span className="txt">Categories</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/dashboard/regions" className={`lnk ${isActive("/dashboard/regions") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-globe"></i>
+                                </span>
+                                <span className="txt">Regions</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link href="/dashboard/settings" className={`lnk ${isActive("/dashboard/settings") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-cogs"></i>
+                                </span>
+                                <span className="txt">Settings</span>
                             </Link>
                         </li>
 

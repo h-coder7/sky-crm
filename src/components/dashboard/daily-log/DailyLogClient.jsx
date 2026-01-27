@@ -2,35 +2,35 @@
 
 import { useState } from "react";
 import PageHeader from "@/components/layout/PageHeader";
-import CategoriesTable from "@/components/dashboard/categories/CategoriesTable";
-import CategoryModal from "@/components/dashboard/categories/CategoryModal";
-import TrashModal from "@/components/dashboard/categories/TrashModal";
+import DailyLogTable from "@/components/dashboard/daily-log/DailyLogTable";
+import DailyLogModal from "@/components/dashboard/daily-log/DailyLogModal";
+import TrashModal from "@/components/dashboard/daily-log/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 
-export default function CategoriesClient({ initialCategories = [] }) {
-    const [categories, setCategories] = useState(initialCategories);
+export default function DailyLogClient({ initialLogs = [] }) {
+    const [logs, setLogs] = useState(initialLogs);
     const [selectedIds, setSelectedIds] = useState([]);
 
     // Modals state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTrashOpen, setIsTrashOpen] = useState(false);
-    const [editingCategory, setEditingCategory] = useState(null);
+    const [editingLog, setEditingLog] = useState(null);
 
     // Trash State
-    const [trashCategories, setTrashCategories] = useState([]);
+    const [trashLogs, setTrashLogs] = useState([]);
 
     /* ======================================================================
        1. Handlers
        ====================================================================== */
     const handleAddModal = () => {
-        setEditingCategory(null);
+        setEditingLog(null);
         setIsModalOpen(true);
     };
 
     const handleEditModal = (id) => {
-        const category = categories.find(c => c.id === id);
-        if (category) {
-            setEditingCategory(category);
+        const log = logs.find(l => l.id === id);
+        if (log) {
+            setEditingLog(log);
             setIsModalOpen(true);
         }
     };
@@ -38,13 +38,13 @@ export default function CategoriesClient({ initialCategories = [] }) {
     const handleDelete = (id) => {
         confirmAction({
             title: "Move to Trash?",
-            message: "This category will be moved to the recycle bin.",
+            message: "This log will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: () => {
-                const categoryToDelete = categories.find((c) => c.id === id);
-                if (categoryToDelete) {
-                    setTrashCategories((prev) => [categoryToDelete, ...prev]);
-                    setCategories((prev) => prev.filter((c) => c.id !== id));
+                const logToDelete = logs.find((l) => l.id === id);
+                if (logToDelete) {
+                    setTrashLogs((prev) => [logToDelete, ...prev]);
+                    setLogs((prev) => prev.filter((l) => l.id !== id));
                     setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
                 }
             }
@@ -59,38 +59,38 @@ export default function CategoriesClient({ initialCategories = [] }) {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: () => {
-                const itemsToDelete = categories.filter(c => selectedIds.includes(c.id));
-                setTrashCategories(prev => [...itemsToDelete, ...prev]);
-                setCategories(prev => prev.filter(c => !selectedIds.includes(c.id)));
+                const itemsToDelete = logs.filter(l => selectedIds.includes(l.id));
+                setTrashLogs(prev => [...itemsToDelete, ...prev]);
+                setLogs(prev => prev.filter(l => !selectedIds.includes(l.id)));
                 setSelectedIds([]);
             }
         });
     };
 
-    const handleSave = (categoryData) => {
-        if (editingCategory) {
-            setCategories(prev => prev.map(c => c.id === editingCategory.id ? { ...c, ...categoryData } : c));
+    const handleSave = (logData) => {
+        if (editingLog) {
+            setLogs(prev => prev.map(l => l.id === editingLog.id ? { ...l, ...logData } : l));
         } else {
-            const newCategory = {
-                ...categoryData,
-                id: Math.max(0, ...categories.map(c => c.id)) + 1,
+            const newLog = {
+                ...logData,
+                id: Math.max(0, ...logs.map(l => l.id)) + 1,
                 created_at: new Date().toISOString().split('T')[0]
             };
-            setCategories(prev => [newCategory, ...prev]);
+            setLogs(prev => [newLog, ...prev]);
         }
         setIsModalOpen(false);
     };
 
     const handleRestore = (id) => {
-        const categoryToRestore = trashCategories.find((c) => c.id === id);
-        if (categoryToRestore) {
-            setCategories((prev) => [categoryToRestore, ...prev]);
-            setTrashCategories((prev) => prev.filter((c) => c.id !== id));
+        const logToRestore = trashLogs.find((l) => l.id === id);
+        if (logToRestore) {
+            setLogs((prev) => [logToRestore, ...prev]);
+            setTrashLogs((prev) => prev.filter((l) => l.id !== id));
         }
     };
 
     const handlePermanentDelete = (id) => {
-        setTrashCategories((prev) => prev.filter((c) => c.id !== id));
+        setTrashLogs((prev) => prev.filter((l) => l.id !== id));
     };
 
     /* ======================================================================
@@ -99,12 +99,9 @@ export default function CategoriesClient({ initialCategories = [] }) {
     return (
         <>
             <PageHeader
-                title="Categories"
+                title="Daily Logs"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
-                onFilterChange={(field, checked) =>
-                    console.log("Filter:", field, checked)
-                }
             >
                 {/* Add Button */}
                 <button
@@ -113,7 +110,7 @@ export default function CategoriesClient({ initialCategories = [] }) {
                     onClick={handleAddModal}
                 >
                     <i className="fal fa-plus"></i>
-                    <span className="txt ms-2">Add Category</span>
+                    <span className="txt ms-2">Add Log</span>
                 </button>
 
                 {/* Delete Button */}
@@ -133,30 +130,32 @@ export default function CategoriesClient({ initialCategories = [] }) {
                     onClick={() => setIsTrashOpen(true)}
                 >
                     <i className="fal fa-trash-undo"></i>
-                    <span className="txt ms-2">View Trash ({trashCategories.length})</span>
+                    <span className="txt ms-2">View Trash ({trashLogs.length})</span>
                 </button>
             </PageHeader>
 
-            <CategoriesTable
-                data={categories}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                onEdit={handleEditModal}
-                onDelete={handleDelete}
-            />
+            <div className="table-content">
+                <DailyLogTable
+                    data={logs}
+                    selectedIds={selectedIds}
+                    onSelectionChange={setSelectedIds}
+                    onEdit={handleEditModal}
+                    onDelete={handleDelete}
+                />
+            </div>
 
             {/* Modals */}
-            <CategoryModal
+            <DailyLogModal
                 show={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSave}
-                category={editingCategory}
+                log={editingLog}
             />
 
             <TrashModal
                 show={isTrashOpen}
                 onClose={() => setIsTrashOpen(false)}
-                trashCategories={trashCategories}
+                trashLogs={trashLogs}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
             />

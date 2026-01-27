@@ -68,7 +68,7 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
             {/* Title */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Search title..."
                     value={titleSearch}
                     onChange={(e) => {
@@ -81,7 +81,7 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
             {/* Address */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Search address..."
                     value={addressSearch}
                     onChange={(e) => {
@@ -94,7 +94,7 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
             {/* Description */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Search description..."
                     value={descriptionSearch}
                     onChange={(e) => {
@@ -107,7 +107,7 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
             {/* Domain */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Search domain..."
                     value={domainSearch}
                     onChange={(e) => {
@@ -146,7 +146,7 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
             {/* Added On */}
             <td colSpan={2}>
                 <input
-                    className="form-control form-control-sm cursor-pointer"
+                    className="form-control cursor-pointer"
                     placeholder="Select range..."
                     readOnly
                     value={dateRangeValue}

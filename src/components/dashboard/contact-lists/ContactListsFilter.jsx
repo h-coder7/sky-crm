@@ -68,7 +68,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Name */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Search name..."
                     value={nameSearch}
                     onChange={(e) => {
@@ -81,7 +81,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Address */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Search address..."
                     value={addressSearch}
                     onChange={(e) => {
@@ -94,7 +94,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Phone */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Search phone..."
                     value={phoneSearch}
                     onChange={(e) => {
@@ -107,7 +107,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Email */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Search email..."
                     value={emailSearch}
                     onChange={(e) => {
@@ -180,7 +180,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Country */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Search country..."
                     value={countrySearch}
                     onChange={(e) => {
@@ -193,7 +193,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Company */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Search company..."
                     value={companySearch}
                     onChange={(e) => {
@@ -206,7 +206,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Budget */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Budget"
                     value={budgetSearch}
                     onChange={(e) => {
@@ -219,7 +219,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Avg Stands/Yr */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Stands/Yr"
                     value={avgStandsSearch}
                     onChange={(e) => {
@@ -232,7 +232,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Avg Events/Yr */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Events/Yr"
                     value={avgEventsSearch}
                     onChange={(e) => {
@@ -245,7 +245,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Website */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Website"
                     value={websiteSearch}
                     onChange={(e) => {
@@ -258,7 +258,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Job Title */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Job Title"
                     value={jobTitleSearch}
                     onChange={(e) => {
@@ -271,7 +271,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Sector */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Sector"
                     value={sectorSearch}
                     onChange={(e) => {
@@ -284,7 +284,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Notes */}
             <td>
                 <input
-                    className="form-control form-control-sm"
+                    className="form-control"
                     placeholder="Notes"
                     value={notesSearch}
                     onChange={(e) => {
@@ -297,7 +297,7 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
             {/* Added On */}
             <td colSpan={2}>
                 <input
-                    className="form-control form-control-sm cursor-pointer"
+                    className="form-control cursor-pointer"
                     placeholder="Select range..."
                     readOnly
                     value={dateRangeValue}

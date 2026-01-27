@@ -8,6 +8,7 @@ export default function CategoryModal({ show, onClose, onSave, category = null }
   const [formData, setFormData] = useState({
     title: "",
     start_price: "",
+    end_price: "",
   });
 
   useEffect(() => {
@@ -19,11 +20,13 @@ export default function CategoryModal({ show, onClose, onSave, category = null }
       setFormData({
         title: category.title || "",
         start_price: category.start_price || "",
+        end_price: category.end_price || "",
       });
     } else {
       setFormData({
         title: "",
         start_price: "",
+        end_price: "",
       });
     }
   }, [category, show]);
@@ -42,20 +45,20 @@ export default function CategoryModal({ show, onClose, onSave, category = null }
 
   return createPortal(
     <>
-      <div 
-        className="modal-backdrop fade show" 
+      <div
+        className="modal-backdrop fade show"
         onClick={onClose}
       ></div>
-      <div 
-        className="modal fade show d-block" 
-        tabIndex="-1" 
+      <div
+        className="modal fade show d-block"
+        tabIndex="-1"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
-        <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">
-                {category ? "Edit Category" : "Add New Category"}
+                {category ? "Edit Category" : "Add Category"}
               </h5>
               <button
                 type="button"
@@ -65,33 +68,40 @@ export default function CategoryModal({ show, onClose, onSave, category = null }
             </div>
             <form onSubmit={handleSubmit}>
               <div className="modal-body">
-                <div className="mb-3">
-                  <label htmlFor="title" className="form-label">
-                    Category Title
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="start_price" className="form-label">
-                    Start Price
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="start_price"
-                    name="start_price"
-                    value={formData.start_price}
-                    onChange={handleChange}
-                    required
-                  />
+                <div className="row g-3">
+                  <div className="col-md-12">
+                    <label className="form-label">Title</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">Start Price</label>
+                    <input
+                      type="text" // Using text to allow custom formatting input if user desires, or number
+                      className="form-control"
+                      name="start_price"
+                      value={formData.start_price}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">End Price</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="end_price"
+                      value={formData.end_price}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                 </div>
               </div>
               <div className="modal-footer">

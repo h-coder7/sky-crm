@@ -23,28 +23,28 @@ export default function DealsFilter({ table, dateRangeValue, onOpenModal }) {
     return (
         <tr className="search-tr">
             <td>
-                <input className="form-control form-control-sm fsz-12" placeholder="Title" value={titleSearch} onChange={(e) => handleFilter("title", e.target.value, setTitleSearch)} />
+                <input className="form-control fsz-12" placeholder="Title" value={titleSearch} onChange={(e) => handleFilter("title", e.target.value, setTitleSearch)} />
             </td>
             <td>
-                <input className="form-control form-control-sm fsz-12" placeholder="Desc" value={descSearch} onChange={(e) => handleFilter("description", e.target.value, setDescSearch)} />
+                <input className="form-control fsz-12" placeholder="Desc" value={descSearch} onChange={(e) => handleFilter("description", e.target.value, setDescSearch)} />
             </td>
             <td>
-                <input className="form-control form-control-sm fsz-12" placeholder="Start Date" value={startDateSearch} onChange={(e) => handleFilter("start_date", e.target.value, setStartDateSearch)} />
+                <input className="form-control fsz-12" placeholder="Start Date" value={startDateSearch} onChange={(e) => handleFilter("start_date", e.target.value, setStartDateSearch)} />
             </td>
             <td>
-                <input className="form-control form-control-sm fsz-12" placeholder="End Date" value={endDateSearch} onChange={(e) => handleFilter("end_date", e.target.value, setEndDateSearch)} />
+                <input className="form-control fsz-12" placeholder="End Date" value={endDateSearch} onChange={(e) => handleFilter("end_date", e.target.value, setEndDateSearch)} />
             </td>
             <td>
-                <input className="form-control form-control-sm fsz-12" placeholder="Employee" value={empSearch} onChange={(e) => handleFilter("employee", e.target.value, setEmpSearch)} />
+                <input className="form-control fsz-12" placeholder="Employee" value={empSearch} onChange={(e) => handleFilter("employee", e.target.value, setEmpSearch)} />
             </td>
             <td>
-                <input className="form-control form-control-sm fsz-12" placeholder="Product" value={prodSearch} onChange={(e) => handleFilter("product", e.target.value, setProdSearch)} />
+                <input className="form-control fsz-12" placeholder="Product" value={prodSearch} onChange={(e) => handleFilter("product", e.target.value, setProdSearch)} />
             </td>
             <td>
-                <input className="form-control form-control-sm fsz-12" placeholder="Contact" value={contactSearch} onChange={(e) => handleFilter("contact_list", e.target.value, setContactSearch)} />
+                <input className="form-control fsz-12" placeholder="Contact" value={contactSearch} onChange={(e) => handleFilter("contact_list", e.target.value, setContactSearch)} />
             </td>
             <td>
-                <input className="form-control form-control-sm fsz-12" placeholder="Company" value={compSearch} onChange={(e) => handleFilter("company", e.target.value, setCompSearch)} />
+                <input className="form-control fsz-12" placeholder="Company" value={compSearch} onChange={(e) => handleFilter("company", e.target.value, setCompSearch)} />
             </td>
             <td>
                 <select className="form-control form-select form-select-sm fsz-12" value={statusSearch} onChange={(e) => handleFilter("status", e.target.value, setStatusSearch)}>
@@ -65,7 +65,7 @@ export default function DealsFilter({ table, dateRangeValue, onOpenModal }) {
                 </select>
             </td>
             <td>
-                <input className="form-control form-control-sm fsz-12" placeholder="Amount" value={amountSearch} onChange={(e) => handleFilter("amount", e.target.value, setAmountSearch)} />
+                <input className="form-control fsz-12" placeholder="Amount" value={amountSearch} onChange={(e) => handleFilter("amount", e.target.value, setAmountSearch)} />
             </td>
             <td>
                 <select className="form-control form-select form-select-sm fsz-12" value={monthSearch} onChange={(e) => handleFilter("month", e.target.value, setMonthSearch)}>
@@ -85,7 +85,7 @@ export default function DealsFilter({ table, dateRangeValue, onOpenModal }) {
                 </select>
             </td>
             <td colSpan={2}>
-                <input className="form-control form-control-sm fsz-12 cursor-pointer" readOnly value={dateRangeValue} onClick={onOpenModal} placeholder="Date" />
+                <input className="form-control fsz-12 cursor-pointer" readOnly value={dateRangeValue} onClick={onOpenModal} placeholder="Date" />
             </td>
         </tr>
     );

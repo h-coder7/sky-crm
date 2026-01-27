@@ -212,15 +212,13 @@ export default function ContactListsClient({ initialContacts = [] }) {
             </PageHeader>
 
             {/* Page Content */}
-            <div className="table-content">
-                <ContactListsTable
-                    data={contacts}
-                    selectedIds={selectedIds}
-                    onSelectionChange={setSelectedIds}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                />
-            </div>
+            <ContactListsTable
+                data={contacts}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+            />
 
             {/* Add/Edit Modal */}
             <ContactListModal
