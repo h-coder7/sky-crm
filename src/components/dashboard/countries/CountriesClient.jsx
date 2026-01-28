@@ -194,6 +194,7 @@ export default function CountriesClient({ initialCountries = [] }) {
         <>
             <PageHeader
                 title="Countries"
+                icon="fal fa-globe"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>

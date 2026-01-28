@@ -8,7 +8,7 @@ import LeadConversionChart from "@/components/dashboard/overview/LeadConversionC
 export default function DashboardPage() {
     return (
         <div>
-            <PageHeader title="Overview" titleCol="col-lg-4" actionCol="col-lg-8">
+            <PageHeader title="Overview" icon="fal fa-chart-simple" titleCol="col-lg-4" actionCol="col-lg-8">
                 <DashboardFilters />
             </PageHeader>
             <StatsCards />

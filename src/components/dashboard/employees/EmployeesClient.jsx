@@ -198,6 +198,7 @@ export default function EmployeesClient({ initialEmployees = [] }) {
         <>
             <PageHeader
                 title="Employees"
+                icon="fal fa-users"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>

@@ -199,6 +199,7 @@ export default function SectorsClient({ initialSectors = [] }) {
         <>
             <PageHeader
                 title="Sectors"
+                icon="fal fa-layer-group"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>

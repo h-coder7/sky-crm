@@ -171,6 +171,7 @@ export default function ContactListsClient({ initialContacts = [] }) {
         <>
             <PageHeader
                 title="Contact Lists"
+                icon="fal fa-list"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>

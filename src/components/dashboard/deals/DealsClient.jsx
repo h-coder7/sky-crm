@@ -15,7 +15,7 @@ export default function DealsClient({ initialDeals = [] }) {
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-  
+
   const [trashDeals, setTrashDeals] = useState([]);
   const [showTrashModal, setShowTrashModal] = useState(false);
 
@@ -77,7 +77,7 @@ export default function DealsClient({ initialDeals = [] }) {
 
   const handleBulkDelete = () => {
     if (selectedIds.length === 0) return;
-    
+
     confirmAction({
       title: "Delete Selected Items?",
       message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
@@ -93,7 +93,7 @@ export default function DealsClient({ initialDeals = [] }) {
 
   return (
     <>
-      <PageHeader title="Deals">
+      <PageHeader title="Deals" icon="fal fa-check-circle">
         <button
           type="button"
           className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"

@@ -100,6 +100,7 @@ export default function CategoriesClient({ initialCategories = [] }) {
         <>
             <PageHeader
                 title="Categories"
+                icon="fal fa-grid-2"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>

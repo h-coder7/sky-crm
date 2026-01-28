@@ -396,7 +396,7 @@ export default function CompaniesTable({
             </div>
 
             {/* --- PAGINATION CONTROLS --- */}
-            <div className="d-flex justify-content-between align-items-center mt-3">
+            <div className="d-flex justify-content-between align-items-center mt-3 react-pagination">
                 <div className="text-muted fsz-12">
                     Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
                     {Math.min(

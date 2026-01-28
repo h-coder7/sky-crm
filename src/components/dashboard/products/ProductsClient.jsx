@@ -100,6 +100,7 @@ export default function ProductsClient({ initialProducts = [] }) {
         <>
             <PageHeader
                 title="Products"
+                icon="fal fa-box"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>

@@ -88,6 +88,7 @@ export default function RegionsClient({ initialRegions = [] }) {
         <>
             <PageHeader
                 title="Regions"
+                icon="fal fa-map-location-dot"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
             >

@@ -198,6 +198,7 @@ export default function AdminsClient({ initialAdmins = [] }) {
         <>
             <PageHeader
                 title="Admins"
+                icon="fal fa-user-tie"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>

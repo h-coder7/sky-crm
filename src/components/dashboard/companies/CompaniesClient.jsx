@@ -95,6 +95,7 @@ export default function CompaniesClient({ initialCompanies = [] }) {
         <>
             <PageHeader
                 title="Companies"
+                icon="fal fa-building"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>

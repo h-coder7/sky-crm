@@ -2,6 +2,7 @@
 
 export default function PageHeader({
   title,
+  icon,
   onFilterChange,
   children,
   titleCol = "col-lg-6",
@@ -13,7 +14,10 @@ export default function PageHeader({
 
         {/* Title */}
         <div className={titleCol}>
-          <h5 className="mb-0 fsz-24">{title}</h5>
+          <h5 className="mb-0 fsz-24 d-flex align-items-center">
+            {icon && <i className={`${icon} cr-999 me-3 ms-1 fsz-18`}></i>}
+            {title}
+          </h5>
         </div>
 
         {/* Controls */}

@@ -99,7 +99,8 @@ export default function TargetClient({ initialTargets = [] }) {
     return (
         <>
             <PageHeader
-                title="Targets"
+                title="Target"
+                icon="fal fa-bullseye-arrow"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
                 onFilterChange={(field, checked) =>

@@ -100,6 +100,7 @@ export default function DailyLogClient({ initialLogs = [] }) {
         <>
             <PageHeader
                 title="Daily Logs"
+                icon="fal fa-clipboard-list"
                 titleCol="col-lg-4"
                 actionCol="col-lg-8"
             >

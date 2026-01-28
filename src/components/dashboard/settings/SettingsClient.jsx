@@ -33,7 +33,7 @@ export default function SettingsClient() {
 
     return (
         <>
-            <PageHeader title="Settings" />
+            <PageHeader title="Settings" icon="fal fa-gear" />
 
             <div className="row mt-4">
                 <div className="col-lg-12">
