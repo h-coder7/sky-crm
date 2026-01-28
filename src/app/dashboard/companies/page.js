@@ -1,25 +1,9 @@
+import { Suspense } from "react";
 import CompaniesClient from "@/components/dashboard/companies/CompaniesClient";
 import api from "@/app/api/api"; // 🔌 Import your configured axios instance
 
 /**
  * 🎯 Server Component for Companies Page
- * 
- * Benefits:
- * - Fast initial page load (no hydration delay)
- * - Server-side rendering for better SEO
- * - Ready for async data fetching from API
- * 
- * 🔌 API READY: Replace MOCK_COMPANIES with actual data fetching:
- * 
- * async function getCompanies() {
- *   try {
- *     const res = await api.get('/companies');
- *     return res.data;
- *   } catch (error) {
- *     console.error('Failed to fetch companies:', error);
- *     return [];
- *   }
- * }
  */
 
 // Mock data - Provided by user
@@ -57,8 +41,9 @@ const MOCK_COMPANIES = [
 ];
 
 export default function CompaniesPage() {
-  // 🔌 When API is ready, make this async and fetch data here
-  // const companies = await getCompanies();
-  
-  return <CompaniesClient initialCompanies={MOCK_COMPANIES} />;
+  return (
+    <Suspense fallback={<div>Loading companies...</div>}>
+      <CompaniesClient initialCompanies={MOCK_COMPANIES} />
+    </Suspense>
+  );
 }

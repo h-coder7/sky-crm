@@ -74,48 +74,50 @@ export default function ActivityBreakdownTable() {
 
     return (
         <>
-        <h5 className="mt-5"> Activity Breakdown per Employee </h5>
-        <div className="table-responsive position-relative min-h-auto">
-            <table className="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Employee</th>
-                        <th>Phone call</th>
-                        <th>Zoom meeting</th>
-                        <th>Face to face</th>
-                        <th>Email</th>
-                        <th>Linkedin message</th>
-                        <th>Acquaintance</th>
-                    </tr>
-                </thead>
+            <div className="employee-table mt-5">
+                <h5 className="mb-3"> Activity Breakdown per Employee </h5>
+                <div className="table-responsive position-relative min-h-auto">
+                    <table className="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Phone call</th>
+                                <th>Zoom meeting</th>
+                                <th>Face to face</th>
+                                <th>Email</th>
+                                <th>Linkedin message</th>
+                                <th>Acquaintance</th>
+                            </tr>
+                        </thead>
 
-                <tbody>
-                    {!data.length && (
-                        <tr>
-                            <td colSpan={7} className="text-center text-muted py-4">
-                                No employees found
-                            </td>
-                        </tr>
-                    )}
+                        <tbody>
+                            {!data.length && (
+                                <tr>
+                                    <td colSpan={7} className="text-center text-muted py-4">
+                                        No employees found
+                                    </td>
+                                </tr>
+                            )}
 
-                    {data.map((employee) => (
-                        <tr key={employee.id}>
-                            <td>
-                                <div className="d-flex align-items-center">
-                                    <span>{employee.employee}</span>
-                                </div>
-                            </td>
-                            <td>{employee.phone_call}</td>
-                            <td>{employee.zoom_meeting}</td>
-                            <td>{employee.face_to_face}</td>
-                            <td>{employee.email}</td>
-                            <td>{employee.linkedin_message}</td>
-                            <td>{employee.acquaintance}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                            {data.map((employee) => (
+                                <tr key={employee.id}>
+                                    <td>
+                                        <div className="d-flex align-items-center">
+                                            <span>{employee.employee}</span>
+                                        </div>
+                                    </td>
+                                    <td>{employee.phone_call}</td>
+                                    <td>{employee.zoom_meeting}</td>
+                                    <td>{employee.face_to_face}</td>
+                                    <td>{employee.email}</td>
+                                    <td>{employee.linkedin_message}</td>
+                                    <td>{employee.acquaintance}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </>
     );
 }

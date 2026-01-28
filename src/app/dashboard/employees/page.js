@@ -1,30 +1,9 @@
+import { Suspense } from "react";
 import EmployeesClient from "@/components/dashboard/employees/EmployeesClient";
 import api from "@/app/api/api"; // 🔌 Import your configured axios instance
 
 /**
  * 🎯 Server Component for Employees Page
- * 
- * Benefits:
- * - Fast initial page load (no hydration delay)
- * - Server-side rendering for better SEO
- * - Ready for async data fetching from API
- * 
- * 🔌 API READY: Replace MOCK_EMPLOYEES with actual data fetching:
- * 
- * async function getEmployees() {
- *   try {
- *     const res = await api.get('/employees');
- *     return res.data;
- *   } catch (error) {
- *     console.error('Failed to fetch employees:', error);
- *     return [];
- *   }
- * }
- * 
- * export default async function EmployeesPage() {
- *   const employees = await getEmployees();
- *   return <EmployeesClient initialEmployees={employees} />;
- * }
  */
 
 // Mock data - Replace with API call when backend is ready
@@ -50,9 +29,10 @@ const MOCK_EMPLOYEES = [
 ];
 
 export default function EmployeesPage() {
-  // 🔌 When API is ready, make this async and fetch data here
-  // const employees = await getEmployees();
-  
-  return <EmployeesClient initialEmployees={MOCK_EMPLOYEES} />;
+  return (
+    <Suspense fallback={<div className="d-none">Loading employees...</div>}>
+      <EmployeesClient initialEmployees={MOCK_EMPLOYEES} />
+    </Suspense>
+  );
 }
 

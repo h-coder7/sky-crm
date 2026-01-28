@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import EmployeesTable from "@/components/dashboard/employees/EmployeesTable";
 import api from "@/app/api/api"; // 🔌 Import axios instance
@@ -28,6 +29,22 @@ export default function EmployeesClient({ initialEmployees = [] }) {
 
     const [trashEmployees, setTrashEmployees] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
+
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        if (searchParams.get("action") === "add") {
+            setSelectedEmployee(null);
+            setShowModal(true);
+            // Clean URL
+            const params = new URLSearchParams(searchParams);
+            params.delete("action");
+            const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+            router.replace(newUrl, { scroll: false });
+        }
+    }, [searchParams, pathname, router]);
 
     /* ======================================================================
        CRUD Handlers (Ready for API Integration)

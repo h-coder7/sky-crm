@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import DealsTable from "@/components/dashboard/deals/DealsTable";
 import DealsModal from "@/components/dashboard/deals/DealsModal";
@@ -18,6 +19,22 @@ export default function DealsClient({ initialDeals = [] }) {
 
   const [trashDeals, setTrashDeals] = useState([]);
   const [showTrashModal, setShowTrashModal] = useState(false);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (searchParams.get("action") === "add") {
+      setSelectedDeal(null);
+      setShowModal(true);
+      // Clean URL
+      const params = new URLSearchParams(searchParams);
+      params.delete("action");
+      const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+      router.replace(newUrl, { scroll: false });
+    }
+  }, [searchParams, pathname, router]);
 
   const handleSave = async (data) => {
     if (selectedDeal) {

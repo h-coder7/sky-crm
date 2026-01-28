@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import RegionsClient from "@/components/dashboard/regions/RegionsClient";
 
 const MOCK_REGIONS = [
@@ -22,5 +23,9 @@ const MOCK_REGIONS = [
 ];
 
 export default function RegionsPage() {
-  return <RegionsClient initialRegions={MOCK_REGIONS} />;
+  return (
+    <Suspense fallback={<div className="d-none">Loading regions...</div>}>
+      <RegionsClient initialRegions={MOCK_REGIONS} />
+    </Suspense>
+  );
 }

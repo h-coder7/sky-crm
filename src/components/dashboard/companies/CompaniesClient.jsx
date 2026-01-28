@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import CompaniesTable from "./CompaniesTable";
 import CompanyModal from "./CompanyModal";
@@ -16,6 +17,22 @@ export default function CompaniesClient({ initialCompanies = [] }) {
     // Trash State
     const [trashCompanies, setTrashCompanies] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
+
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        if (searchParams.get("action") === "add") {
+            setSelectedCompany(null);
+            setIsModalOpen(true);
+            // Clean URL
+            const params = new URLSearchParams(searchParams);
+            params.delete("action");
+            const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+            router.replace(newUrl, { scroll: false });
+        }
+    }, [searchParams, pathname, router]);
 
     /* ======================================================================
        1. Handlers

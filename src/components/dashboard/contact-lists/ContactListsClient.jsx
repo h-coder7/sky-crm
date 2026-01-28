@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import ContactListsTable from "@/components/dashboard/contact-lists/ContactListsTable";
 import api from "@/app/api/api"; // 🔌 Import axios instance
@@ -22,6 +23,22 @@ export default function ContactListsClient({ initialContacts = [] }) {
 
     const [trashContacts, setTrashContacts] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
+
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        if (searchParams.get("action") === "add") {
+            setSelectedContact(null);
+            setShowModal(true);
+            // Clean URL
+            const params = new URLSearchParams(searchParams);
+            params.delete("action");
+            const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+            router.replace(newUrl, { scroll: false });
+        }
+    }, [searchParams, pathname, router]);
 
     /* ======================================================================
        CRUD Handlers (Ready for API Integration)

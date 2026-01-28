@@ -108,22 +108,22 @@ export default function LeadConversionChart() {
     */
 
     return (
-        <div className="card border-0 radius-15 p-4 mb-5 mt-5">
-            <div className="card-body">
-                <div className="card-title pb-1 mb-3 border-bottom">
-                    <div className="d-flex align-items-center justify-content-between mb-4">
-                        <h5 className="card-title mb-0">Lead Conversion Rate</h5>
-                        {/* <div className="dropdown">
-                            <button className="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                Monthly
-                            </button>
-                            <ul className="dropdown-menu">
-                                <li><button className="dropdown-item">Monthly</button></li>
-                                <li><button className="dropdown-item">Yearly</button></li>
-                            </ul>
-                        </div> */}
-                    </div>
+        <div className="card border-0 radius-15 p-4 mt-4">
+            <div className="card-title py-2 pb-1 border-bottom">
+                <div className="d-flex align-items-center justify-content-between mb-4">
+                    <h5 className="mb-0 fsz-18">Lead Conversion Rate</h5>
+                    {/* <div className="dropdown">
+                        <button className="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Monthly
+                        </button>
+                        <ul className="dropdown-menu">
+                            <li><button className="dropdown-item">Monthly</button></li>
+                            <li><button className="dropdown-item">Yearly</button></li>
+                        </ul>
+                    </div> */}
                 </div>
+            </div>
+            <div className="card-body">
                 <div id="chart">
                     <Chart options={options} series={series} type="bar" height={350} />
                 </div>

@@ -1,30 +1,9 @@
+import { Suspense } from "react";
 import CountriesClient from "@/components/dashboard/countries/CountriesClient";
 import api from "@/app/api/api"; // 🔌 Import your configured axios instance
 
 /**
  * 🎯 Server Component for Countries Page
- * 
- * Benefits:
- * - Fast initial page load (no hydration delay)
- * - Server-side rendering for better SEO
- * - Ready for async data fetching from API
- * 
- * 🔌 API READY: Replace MOCK_COUNTRIES with actual data fetching:
- * 
- * async function getCountries() {
- *   try {
- *     const res = await api.get('/countries');
- *     return res.data;
- *   } catch (error) {
- *     console.error('Failed to fetch countries:', error);
- *     return [];
- *   }
- * }
- * 
- * export default async function CountriesPage() {
- *   const countries = await getCountries();
- *   return <CountriesClient initialCountries={countries} />;
- * }
  */
 
 // Mock data - Replace with API call when backend is ready
@@ -50,8 +29,9 @@ const MOCK_COUNTRIES = [
 ];
 
 export default function CountriesPage() {
-  // 🔌 When API is ready, make this async and fetch data here
-  // const countries = await getCountries();
-  
-  return <CountriesClient initialCountries={MOCK_COUNTRIES} />;
+  return (
+    <Suspense fallback={<div className="d-none">Loading countries...</div>}>
+      <CountriesClient initialCountries={MOCK_COUNTRIES} />
+    </Suspense>
+  );
 }

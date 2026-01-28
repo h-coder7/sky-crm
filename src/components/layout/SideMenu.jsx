@@ -2,11 +2,25 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { confirmAction } from "@/utils/confirm";
 
 export default function SideMenu() {
     const pathname = usePathname();
+    const router = useRouter();
+    const [user, setUser] = useState({ name: "Yasmin Ali", email: "YasminAli@gmail.com" });
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (error) {
+                console.error("Failed to parse user data:", error);
+            }
+        }
+    }, []);
 
     const isActive = (path) => pathname === path;
 
@@ -143,6 +157,15 @@ export default function SideMenu() {
                         </li>
 
                         <li>
+                            <Link href="/dashboard/logs" className={`lnk ${isActive("/dashboard/logs") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-history"></i>
+                                </span>
+                                <span className="txt">Logs</span>
+                            </Link>
+                        </li>
+
+                        <li>
                             <Link href="/dashboard/settings" className={`lnk ${isActive("/dashboard/settings") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-gear"></i>
@@ -155,21 +178,7 @@ export default function SideMenu() {
                 </div>
             </div>
 
-            <div className="btm-cont">
-                <div className="sidemenu-links">
-                    <ul className="links">
-
-                        <li>
-                            <Link href="/help" className={`lnk ${isActive("/help") ? "active" : ""}`}>
-                                <span className="icon">
-                                    <i className="fal fa-headphones"></i>
-                                </span>
-                                <span className="txt">Help & First step</span>
-                            </Link>
-                        </li>
-
-                    </ul>
-                </div>
+            <div className="btm-cont px-3">
 
                 <div className="user-wrapper">
                     <div className="avatar">
@@ -182,8 +191,8 @@ export default function SideMenu() {
                     </div>
 
                     <div className="inf">
-                        <h6>Yasmin Ali</h6>
-                        <small>YasminAli@gmail.com</small>
+                        <h6>{user.name}</h6>
+                        <small>{user.email}</small>
                     </div>
 
                     <button
@@ -194,8 +203,9 @@ export default function SideMenu() {
                                 message: "Are you sure you want to logout?",
                                 confirmLabel: "Logout",
                                 onConfirm: () => {
-                                    console.log("Logged out");
-                                    // 🔜 Logout logic (e.g. redirect to login)
+                                    localStorage.removeItem("token");
+                                    localStorage.removeItem("user");
+                                    router.push("/login");
                                 },
                             });
                         }}
@@ -205,6 +215,7 @@ export default function SideMenu() {
                     </button>
                 </div>
             </div>
+
         </aside>
     );
 }

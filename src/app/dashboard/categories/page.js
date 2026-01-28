@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import CategoriesClient from "@/components/dashboard/categories/CategoriesClient";
 
 // Mock data
@@ -8,5 +9,9 @@ const MOCK_CATEGORIES = [
 ];
 
 export default function CategoriesPage() {
-  return <CategoriesClient initialCategories={MOCK_CATEGORIES} />;
+  return (
+    <Suspense fallback={<div className="d-none">Loading categories...</div>}>
+      <CategoriesClient initialCategories={MOCK_CATEGORIES} />
+    </Suspense>
+  );
 }

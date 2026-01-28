@@ -1,30 +1,9 @@
+import { Suspense } from "react";
 import ContactListsClient from "@/components/dashboard/contact-lists/ContactListsClient";
 import api from "@/app/api/api"; // 🔌 Import your configured axios instance
 
 /**
  * 🎯 Server Component for Contact Lists Page
- * 
- * Benefits:
- * - Fast initial page load (no hydration delay)
- * - Server-side rendering for better SEO
- * - Ready for async data fetching from API
- * 
- * 🔌 API READY: Replace MOCK_CONTACTS with actual data fetching:
- * 
- * async function getContactLists() {
- *   try {
- *     const res = await api.get('/contact-lists');
- *     return res.data;
- *   } catch (error) {
- *     console.error('Failed to fetch contact lists:', error);
- *     return [];
- *   }
- * }
- * 
- * export default async function ContactListsPage() {
- *   const contacts = await getContactLists();
- *   return <ContactListsClient initialContacts={contacts} />;
- * }
  */
 
 // Mock data - Replace with API call when backend is ready
@@ -95,8 +74,9 @@ const MOCK_CONTACTS = [
 ];
 
 export default function ContactListsPage() {
-  // 🔌 When API is ready, make this async and fetch data here
-  // const contacts = await getContactLists();
-  
-  return <ContactListsClient initialContacts={MOCK_CONTACTS} />;
+  return (
+    <Suspense fallback={<div className="d-none">Loading contacts...</div>}>
+      <ContactListsClient initialContacts={MOCK_CONTACTS} />
+    </Suspense>
+  );
 }

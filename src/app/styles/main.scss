@@ -9,7 +9,7 @@
 //     src: url(../fonts/ParalucentLight.otf);
 // }
 
-@import "./helper";
+@use "./helper" as *;
 
 *,
 * button:focus {
@@ -229,6 +229,10 @@ p {
 //     border-radius: 10px;
 // }
 
+.card {
+    height: calc(100% - 24px);
+}
+
 .text,
 .text * {
     font-size: 14px;
@@ -258,6 +262,10 @@ small.text {
             padding: 0.5rem 1rem;
             border-radius: 10px;
             cursor: pointer;
+            &:active {
+                background-color: transparent;
+                color: #000;
+            }
         }
     }
 }
@@ -866,6 +874,30 @@ section {
 .table-responsive {
     min-height: calc(100vh - 280px);
 }
+
+.log-item {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    &.shadow-sm {
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.045)!important;
+    }
+    &:hover {
+        border-color: var(--main-color);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.05)!important;
+    }
+}
+
+.hover-translate-y {
+    transition: transform 0.3s ease;
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+.bg-green-light { background-color: rgba(45, 217, 117, 0.1); }
+.bg-blue-light { background-color: rgba(61, 46, 132, 0.1); }
+.bg-red-light { background-color: rgba(221, 61, 121, 0.1); }
+.bg-main-light { background-color: rgba(45, 217, 117, 0.1); }
 
 .react-pagination {
     margin-bottom: 30px;

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import DealsClient from "@/components/dashboard/deals/DealsClient";
 import api from "@/app/api/api";
 
@@ -40,5 +41,9 @@ const MOCK_DEALS = [
 ];
 
 export default function DealsPage() {
-  return <DealsClient initialDeals={MOCK_DEALS} />;
+  return (
+    <Suspense fallback={<div className="d-none">Loading deals...</div>}>
+      <DealsClient initialDeals={MOCK_DEALS} />
+    </Suspense>
+  );
 }

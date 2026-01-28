@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import CategoriesTable from "@/components/dashboard/categories/CategoriesTable";
 import CategoryModal from "@/components/dashboard/categories/CategoryModal";
@@ -18,6 +19,22 @@ export default function CategoriesClient({ initialCategories = [] }) {
 
     // Trash State
     const [trashCategories, setTrashCategories] = useState([]);
+
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        if (searchParams.get("action") === "add") {
+            setEditingCategory(null);
+            setIsModalOpen(true);
+            // Clean URL
+            const params = new URLSearchParams(searchParams);
+            params.delete("action");
+            const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+            router.replace(newUrl, { scroll: false });
+        }
+    }, [searchParams, pathname, router]);
 
     /* ======================================================================
        1. Handlers

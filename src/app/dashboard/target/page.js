@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import TargetClient from "@/components/dashboard/target/TargetClient";
 
 // Mock data
@@ -8,5 +9,9 @@ const MOCK_TARGETS = [
 ];
 
 export default function TargetPage() {
-  return <TargetClient initialTargets={MOCK_TARGETS} />;
+  return (
+    <Suspense fallback={<div className="d-none">Loading targets...</div>}>
+      <TargetClient initialTargets={MOCK_TARGETS} />
+    </Suspense>
+  );
 }
