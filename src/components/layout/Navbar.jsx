@@ -5,18 +5,17 @@ import { useState } from "react";
 
 export default function TitleWrapper() {
     const quickCreateItems = [
-        { label: "Category", icon: "fal fa-cube" },
-        { label: "Product", icon: "fal fa-plus-square" },
-        { label: "Purchase", icon: "fal fa-shopping-bag" },
-        { label: "Sale", icon: "fal fa-shopping-cart" },
-        { label: "Expense", icon: "fal fa-file-invoice-dollar" },
-        { label: "Quotation", icon: "fal fa-file-alt" },
-        { label: "Return", icon: "fal fa-undo" },
-        { label: "User", icon: "fal fa-user" },
-        { label: "Customer", icon: "fal fa-users" },
-        { label: "Biller", icon: "fal fa-shield-alt" },
-        { label: "Supplier", icon: "fal fa-user-tie" },
-        { label: "Transfer", icon: "fal fa-truck" },
+        { label: "Admin", icon: "fal fa-user-tie" },
+        { label: "Employee", icon: "fal fa-user" },
+        { label: "Sector", icon: "fal fa-layer-group" },
+        { label: "Country", icon: "fal fa-globe" },
+        { label: "Contact list", icon: "fal fa-phone" },
+        { label: "Deal", icon: "fal fa-check-circle" },
+        { label: "Company", icon: "fal fa-building" },
+        { label: "Product", icon: "fal fa-box" },
+        { label: "Target", icon: "fal fa-bullseye-arrow" },
+        { label: "Category", icon: "fal fa-grid-2" },
+        { label: "Region", icon: "fal fa-map-location-dot" },
     ];
 
     return (

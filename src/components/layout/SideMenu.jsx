@@ -63,7 +63,7 @@ export default function SideMenu() {
                         <li>
                             <Link href="/dashboard/sectors" className={`lnk ${isActive("/dashboard/sectors") ? "active" : ""}`}>
                                 <span className="icon">
-                                    <i className="fal fa-tire"></i>
+                                    <i className="fal fa-layer-group"></i>
                                 </span>
                                 <span className="txt">Sectors</span>
                             </Link>
@@ -136,7 +136,7 @@ export default function SideMenu() {
                         <li>
                             <Link href="/dashboard/regions" className={`lnk ${isActive("/dashboard/regions") ? "active" : ""}`}>
                                 <span className="icon">
-                                    <i className="fal fa-globe"></i>
+                                    <i className="fal fa-map-location-dot"></i>
                                 </span>
                                 <span className="txt">Regions</span>
                             </Link>
@@ -145,7 +145,7 @@ export default function SideMenu() {
                         <li>
                             <Link href="/dashboard/settings" className={`lnk ${isActive("/dashboard/settings") ? "active" : ""}`}>
                                 <span className="icon">
-                                    <i className="fal fa-cogs"></i>
+                                    <i className="fal fa-gear"></i>
                                 </span>
                                 <span className="txt">Settings</span>
                             </Link>

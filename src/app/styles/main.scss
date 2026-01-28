@@ -1281,22 +1281,24 @@ section {
                             border: 1px solid #9992;
                             transition: all 0.2s;
                             &:hover {
-                                background: var(--grad2);
+                                background: var(--grad1);
+                                border-color: transparent;
                                 .icon-box {
                                     background-color: #fff;
                                     color: var(--main-color);
                                 }
                             }
                             .icon-box {
-                                width: 45px;
-                                height: 45px;
+                                width: 35px;
+                                height: 35px;
+                                margin: 0px auto;
+                                font-size: 14px;
                                 background-color: #f1f3f6;
                                 border-radius: 10px;
                                 margin: 0 auto;
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
-                                font-size: 18px;
                                 color: #6c757d;
                             }
                             span {
