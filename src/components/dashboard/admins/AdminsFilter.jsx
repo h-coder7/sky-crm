@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function AdminsFilter({ table, dateRangeValue, onOpenModal }) {
+export default function AdminsFilter({ table, dateRangeValue, onOpenModal, onReset, columnOrder = [] }) {
     const [nameSearch, setNameSearch] = useState("");
     const [emailSearch, setEmailSearch] = useState("");
     const [phoneSearch, setPhoneSearch] = useState("");
@@ -28,9 +28,17 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal }) {
         table.getColumn("role")?.setFilterValue(val || undefined);
     };
 
-    return (
-        <tr className="search-tr">
-            <td>
+    const handleReset = () => {
+        setNameSearch("");
+        setEmailSearch("");
+        setPhoneSearch("");
+        setRoleSearch("");
+        onReset?.();
+    };
+
+    const filterCells = {
+        name: (
+            <td key="name">
                 <input
                     className="form-control"
                     placeholder="Name"
@@ -38,7 +46,9 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal }) {
                     onChange={(e) => handleNameChange(e.target.value)}
                 />
             </td>
-            <td>
+        ),
+        email: (
+            <td key="email">
                 <input
                     className="form-control"
                     placeholder="Email"
@@ -46,7 +56,9 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal }) {
                     onChange={(e) => handleEmailChange(e.target.value)}
                 />
             </td>
-            <td>
+        ),
+        phone: (
+            <td key="phone">
                 <input
                     className="form-control"
                     placeholder="Phone"
@@ -54,7 +66,9 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal }) {
                     onChange={(e) => handlePhoneChange(e.target.value)}
                 />
             </td>
-            <td>
+        ),
+        role: (
+            <td key="role">
                 <select
                     className="form-control form-select"
                     value={roleSearch}
@@ -66,7 +80,9 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal }) {
                     <option value="Sub Admin">Sub Admin</option>
                 </select>
             </td>
-            <td colSpan={2}>
+        ),
+        created_at: (
+            <td key="created_at">
                 <input
                     className="form-control cursor-pointer"
                     placeholder="Select Date Range"
@@ -75,6 +91,27 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal }) {
                     onClick={onOpenModal}
                 />
             </td>
+        ),
+        columnActions: (
+            <td key="columnActions" className="text-end">
+                <button
+                    className="btn btn-white icon-30 p-0 shadow-sm border-0 me-15"
+                    title="Clear All Filters"
+                    onClick={handleReset}
+                    type="button"
+                >
+                    <i className="fal fa-filter-slash fsz-12 text-danger"></i>
+                </button>
+            </td>
+        ),
+    };
+
+    return (
+        <tr className="search-tr">
+            {columnOrder
+                .filter(id => table.getColumn(id)?.getIsVisible() !== false)
+                .map((id) => filterCells[id])
+            }
         </tr>
     );
 }

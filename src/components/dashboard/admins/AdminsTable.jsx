@@ -10,56 +10,74 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
 } from "@tanstack/react-table";
+
+// Shared Reusable Table Components (Modular DnD)
+import TableColumnDnd from "../../../components/shared/table/TableColumnDnd";
+import SortableRow from "../../../components/shared/table/SortableRow";
+import SortableTh from "../../../components/shared/table/SortableTh";
+
 import AdminsFilter from "./AdminsFilter";
 
-export default function AdminsTable({ data = [], selectedIds = [], onSelectionChange, onEdit, onDelete }) {
+export default function AdminsTable({
+    data = [],
+    selectedIds = [],
+    onSelectionChange,
+    onEdit,
+    onDelete
+}) {
+
+    /* ======================================================================
+       1. Table State
+       ====================================================================== */
     const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
     const [rowSelection, setRowSelection] = useState({});
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+    const [columnVisibility, setColumnVisibility] = useState({});
+
+    // Date Range State
+    const [dateRange, setDateRange] = useState([{ startDate: null, endDate: null, key: "selection" }]);
+    const [tempRange, setTempRange] = useState([{ startDate: null, endDate: null, key: "selection" }]);
+    const [showModal, setShowModal] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
-    const columns = useMemo(
-        () => [
-            {
-                id: "name",
-                accessorKey: "name",
-            },
-            {
-                id: "email",
-                accessorKey: "email",
-            },
-            {
-                id: "phone",
-                accessorKey: "phone",
-            },
-            {
-                id: "role",
-                accessorKey: "role",
-                filterFn: "equals",
-            },
-            {
-                id: "created_at",
-                accessorKey: "created_at",
-                filterFn: (row, columnId, filterValue) => {
-                    if (!filterValue || !filterValue[0] || !filterValue[1]) return true;
-                    const rowDate = new Date(row.getValue(columnId));
-                    const [start, end] = filterValue;
-                    return rowDate >= start && rowDate <= end;
-                },
-            },
-        ],
-        []
-    );
+    /* ======================================================================
+       2. Selection Sync
+       ====================================================================== */
+    useEffect(() => {
+        const newSelection = {};
+        selectedIds.forEach((id) => {
+            const index = data.findIndex((item) => item.id === id);
+            if (index !== -1) newSelection[index] = true;
+        });
+        setRowSelection(newSelection);
+    }, [selectedIds, data]);
 
+    /* ======================================================================
+       3. Columns Logic
+       ====================================================================== */
+    const columns = useMemo(() => [
+        { id: "name", accessorKey: "name", header: "Name", enableSorting: true, draggable: false },
+        { id: "email", accessorKey: "email", header: "Email", enableSorting: true, draggable: true },
+        { id: "phone", accessorKey: "phone", header: "Phone", enableSorting: true, draggable: true },
+        { id: "role", accessorKey: "role", header: "Role", enableSorting: true, draggable: true },
+        { id: "created_at", accessorKey: "created_at", header: "Added On", enableSorting: true, draggable: true },
+        { id: "columnActions", header: "Actions", enableSorting: false, draggable: false },
+    ], []);
+
+    const [columnOrder, setColumnOrder] = useState(columns.map(c => c.id));
+
+    /* ======================================================================
+       4. Table Instance
+       ====================================================================== */
     const table = useReactTable({
         data,
         columns,
-        state: { sorting, columnFilters, rowSelection, pagination },
+        state: { sorting, columnFilters, rowSelection, pagination, columnOrder, columnVisibility },
         enableRowSelection: true,
         onRowSelectionChange: (updater) => {
             const nextSelection = typeof updater === "function" ? updater(rowSelection) : updater;
@@ -75,35 +93,29 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         onPaginationChange: setPagination,
+        onColumnOrderChange: setColumnOrder,
+        onColumnVisibilityChange: setColumnVisibility,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
     });
 
-    // Sync external selectedIds with internal rowSelection
-    useEffect(() => {
-        const newSelection = {};
-        selectedIds.forEach((id) => {
-            const index = data.findIndex((item) => item.id === id);
-            if (index !== -1) newSelection[index] = true;
+    /* ======================================================================
+       5. Helpers
+       ====================================================================== */
+    const handleColumnDragEnd = (activeId, overId) => {
+        setColumnOrder((items) => {
+            const oldIndex = items.indexOf(activeId);
+            const newIndex = items.indexOf(overId);
+            if (oldIndex !== -1 && newIndex !== -1) {
+                const newItems = [...items];
+                const [movedItem] = newItems.splice(oldIndex, 1);
+                newItems.splice(newIndex, 0, movedItem);
+                return newItems;
+            }
+            return items;
         });
-        setRowSelection(newSelection);
-    }, [selectedIds, data]);
-
-    /* ================= Date Range ================= */
-    const [dateRange, setDateRange] = useState([
-        { startDate: null, endDate: null, key: "selection" },
-    ]);
-    const [tempRange, setTempRange] = useState([
-        { startDate: null, endDate: null, key: "selection" },
-    ]);
-    const [showModal, setShowModal] = useState(false);
-
-    const formatDateRangeDisplay = () => {
-        const { startDate, endDate } = dateRange[0];
-        if (!startDate || !endDate) return "";
-        return `${startDate.toISOString().split("T")[0]} to ${endDate.toISOString().split("T")[0]}`;
     };
 
     const confirmDateRange = () => {
@@ -120,227 +132,276 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
         }
     };
 
+    const formatDateRangeDisplay = () => {
+        const { startDate, endDate } = dateRange[0];
+        if (!startDate || !endDate) return "";
+        return `${startDate.toISOString().split("T")[0]} to ${endDate.toISOString().split("T")[0]}`;
+    };
+
+    const resetAllFilters = () => {
+        setDateRange([{ startDate: null, endDate: null, key: "selection" }]);
+        setTempRange([{ startDate: null, endDate: null, key: "selection" }]);
+        table.resetColumnFilters();
+    };
+
+    /* ======================================================================
+       6. JSX Rendering Helpers
+       ====================================================================== */
+    const visibleColumnOrder = useMemo(() => {
+        return columnOrder.filter(id => table.getColumn(id)?.getIsVisible());
+    }, [columnOrder, columnVisibility]);
+
+    /* ======================================================================
+       7. JSX
+       ====================================================================== */
     return (
-
         <>
-
             <div className="table-content">
                 <div className="table-responsive position-relative">
-                    <table className="table align-middle">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="form-check">
-                                            <input
-                                                className="form-check-input"
-                                                id="select-all-admins"
-                                                type="checkbox"
-                                                checked={table.getIsAllPageRowsSelected()}
-                                                onChange={table.getToggleAllPageRowsSelectedHandler()}
-                                            />
-                                            <label className="form-check-label ms-2" htmlFor="select-all-admins">
-                                                Name
-                                            </label>
-                                        </div>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li>
-                                                    <button className="dropdown-item" onClick={() => table.getColumn("name")?.toggleSorting(false)}>
-                                                        <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button className="dropdown-item" onClick={() => table.getColumn("name")?.toggleSorting(true)}>
-                                                        <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="txt"> Email </div>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li>
-                                                    <button className="dropdown-item" onClick={() => table.getColumn("email")?.toggleSorting(false)}>
-                                                        <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button className="dropdown-item" onClick={() => table.getColumn("email")?.toggleSorting(true)}>
-                                                        <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="txt"> Phone </div>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li>
-                                                    <button className="dropdown-item" onClick={() => table.getColumn("phone")?.toggleSorting(false)}>
-                                                        <i className="fal fa-sort-numeric-up me-2"></i> (1 → 9)
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button className="dropdown-item" onClick={() => table.getColumn("phone")?.toggleSorting(true)}>
-                                                        <i className="fal fa-sort-numeric-down me-2"></i> (9 → 1)
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="txt"> Role </div>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li>
-                                                    <button className="dropdown-item" onClick={() => table.getColumn("role")?.toggleSorting(false)}>
-                                                        <i className="fal fa-sort-alpha-up me-2"></i> A → Z
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button className="dropdown-item" onClick={() => table.getColumn("role")?.toggleSorting(true)}>
-                                                        <i className="fal fa-sort-alpha-down me-2"></i> Z → A
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th colSpan={2}>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="txt"> Added On </div>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0 dropdown-toggle" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li>
-                                                    <button className="dropdown-item" onClick={() => table.getColumn("created_at")?.toggleSorting(false)}>
-                                                        <i className="fal fa-sort-amount-up me-2"></i> Oldest First
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button className="dropdown-item" onClick={() => table.getColumn("created_at")?.toggleSorting(true)}>
-                                                        <i className="fal fa-sort-amount-down me-2"></i> Newest First
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                            </tr>
-
-                            <AdminsFilter
-                                table={table}
-                                dateRangeValue={formatDateRangeDisplay()}
-                                onOpenModal={() => setShowModal(true)}
-                            />
-                        </thead>
-
-                        <tbody>
-                            {!table.getRowModel().rows.length && (
-                                <tr>
-                                    <td colSpan={6} className="text-center text-muted py-4">
-                                        No admins found
-                                    </td>
-                                </tr>
-                            )}
-
-                            {table.getRowModel().rows.map((row) => {
-                                const admin = row.original;
-                                return (
-                                    <tr key={row.id}>
-                                        <td>
+                    <TableColumnDnd onDragEnd={handleColumnDragEnd}>
+                        <table className="table align-middle">
+                            <thead>
+                                <SortableRow items={visibleColumnOrder}>
+                                    {/* Name Column */}
+                                    {table.getColumn("name").getIsVisible() && (
+                                        <SortableTh id="name" key="name" disabled className="sticky-col">
                                             <div className="form-check">
                                                 <input
                                                     className="form-check-input"
+                                                    id="select-all-admins"
                                                     type="checkbox"
-                                                    checked={row.getIsSelected()}
-                                                    onChange={row.getToggleSelectedHandler()}
-                                                    id={`admin-${admin.id}`}
+                                                    checked={table.getIsAllPageRowsSelected()}
+                                                    onChange={table.getToggleAllPageRowsSelectedHandler()}
                                                 />
-                                                <label className="form-check-label ms-2 mb-0 d-flex align-items-center" htmlFor={`admin-${admin.id}`}>
-                                                    <div className="icon-40 p-10 rounded-circle bg-grad1 me-3">
-                                                        <img
-                                                            src={admin.image || "/crm-skybridge/images/fav.png"}
-                                                            alt={admin.name}
-                                                            className="img-contain"
-                                                        />
-                                                    </div>
-                                                    {admin.name}
+                                                <label className="form-check-label ms-2" htmlFor="select-all-admins">
+                                                    Name
                                                 </label>
                                             </div>
-                                        </td>
-                                        <td>{admin.email}</td>
-                                        <td>{admin.phone}</td>
-                                        <td>
-                                            <span className={`alert rounded-pill py-1 px-3 fsz-12 border-0 mb-0 ${admin.role === 'Super Admin' ? 'alert-danger' :
-                                                admin.role === 'Admin' ? 'alert-primary' :
-                                                    admin.role === 'Sub Admin' ? 'alert-info' : 'alert-secondary'
-                                                }`}>
-                                                {admin.role}
-                                            </span>
-                                        </td>
-                                        <td>{admin.created_at}</td>
-                                        <td>
-                                            <div className="dropdown">
-                                                <button
-                                                    className="btn bg-transparent border-0 p-0 dropdown-toggle"
-                                                    data-bs-toggle="dropdown"
-                                                >
-                                                    <i className="fas fa-ellipsis"></i>
+
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
                                                 </button>
-                                                <ul className="dropdown-menu">
-                                                    <li>
-                                                        <button
-                                                            className="dropdown-item"
-                                                            onClick={() => onEdit?.(admin.id)}
-                                                        >
-                                                            <i className="fal fa-pen me-2"></i> Edit
-                                                        </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => table.getColumn("name").toggleSorting(false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
                                                     </li>
-                                                    <li>
-                                                        <button
-                                                            className="dropdown-item text-danger"
-                                                            onClick={() => onDelete?.(admin.id)}
-                                                        >
-                                                            <i className="fal fa-trash me-2"></i> Delete
-                                                        </button>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => table.getColumn("name").toggleSorting(true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
                                                     </li>
                                                 </ul>
                                             </div>
+                                        </SortableTh>
+                                    )}
+
+                                    {/* Email Column */}
+                                    {table.getColumn("email").getIsVisible() && (
+                                        <SortableTh id="email" key="email">
+                                            <span>Email</span>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => table.getColumn("email").toggleSorting(false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
+                                                    </li>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => table.getColumn("email").toggleSorting(true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+
+                                    {/* Phone Column */}
+                                    {table.getColumn("phone").getIsVisible() && (
+                                        <SortableTh id="phone" key="phone">
+                                            <span>Phone</span>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item fsz-12 py-2 cursor-pointer" onClick={() => table.getColumn("phone").toggleSorting(false)}>
+                                                        <i className="fal fa-sort-numeric-up me-2 text-muted"></i> Lowest First
+                                                    </li>
+                                                    <li className="dropdown-item fsz-12 py-2 cursor-pointer" onClick={() => table.getColumn("phone").toggleSorting(true)}>
+                                                        <i className="fal fa-sort-numeric-down me-2 text-muted"></i> Highest First
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+
+                                    {/* Role Column */}
+                                    {table.getColumn("role").getIsVisible() && (
+                                        <SortableTh id="role" key="role">
+                                            <span>Role</span>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item fsz-12 py-2 cursor-pointer" onClick={() => table.getColumn("role").toggleSorting(false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
+                                                    </li>
+                                                    <li className="dropdown-item fsz-12 py-2 cursor-pointer" onClick={() => table.getColumn("role").toggleSorting(true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+
+                                    {/* Created At Column */}
+                                    {table.getColumn("created_at").getIsVisible() && (
+                                        <SortableTh id="created_at" key="created_at">
+                                            <span>Added On</span>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item fsz-12 py-2 cursor-pointer" onClick={() => table.getColumn("created_at").toggleSorting(false)}>
+                                                        <i className="fal fa-sort-amount-up me-2 text-muted"></i> Oldest First
+                                                    </li>
+                                                    <li className="dropdown-item fsz-12 py-2 cursor-pointer" onClick={() => table.getColumn("created_at").toggleSorting(true)}>
+                                                        <i className="fal fa-sort-amount-down me-2 text-muted"></i> Newest First
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+
+                                    {/* Actions Header (Visibility Toggle) */}
+                                    {table.getColumn("columnActions").getIsVisible() && (
+                                        <SortableTh id="columnActions" key="columnActions" disabled>
+                                            <div className="dropdown icon-30 ms-auto">
+                                                <button className="btn bg-white border-0 p-0 icon-30" data-bs-toggle="dropdown" type="button" data-bs-auto-close="outside">
+                                                    <i className="fas fa-ellipsis-v fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-3" onClick={(e) => e.stopPropagation()}>
+                                                    <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Toggle Columns</h6>
+                                                    {table.getAllLeafColumns().map(column => {
+                                                        if (column.id === 'columnActions' || column.id === 'name') return null;
+                                                        return (
+                                                            <li key={column.id} className="mb-2 last-0">
+                                                                <div className="form-check fsz-12" onClick={(e) => e.stopPropagation()}>
+                                                                    <input
+                                                                        className="form-check-input"
+                                                                        type="checkbox"
+                                                                        checked={column.getIsVisible()}
+                                                                        onChange={(e) => {
+                                                                            column.getToggleVisibilityHandler()(e);
+                                                                        }}
+                                                                        id={`toggle-${column.id}`}
+                                                                    />
+                                                                    <label className="form-check-label ms-2 cursor-pointer fw-500" htmlFor={`toggle-${column.id}`}>
+                                                                        {column.columnDef.header || column.id}
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        )
+                                                    })}
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+                                </SortableRow>
+
+                                {/* Filters Row */}
+                                <AdminsFilter
+                                    table={table}
+                                    dateRangeValue={formatDateRangeDisplay()}
+                                    onOpenModal={() => setShowModal(true)}
+                                    onReset={resetAllFilters}
+                                    columnOrder={columnOrder}
+                                />
+                            </thead>
+
+                            <tbody>
+                                {table.getRowModel().rows.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={visibleColumnOrder.length} className="text-center text-muted py-4">
+                                            No admins found
                                         </td>
                                     </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                ) : (
+                                    table.getRowModel().rows.map((row) => {
+                                        const admin = row.original;
+                                        return (
+                                            <SortableRow key={row.id} items={visibleColumnOrder}>
+                                                {table.getColumn("name").getIsVisible() && (
+                                                    <td id="name" key="name">
+                                                        <div className="form-check">
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                id={`admin-${admin.id}`}
+                                                                checked={row.getIsSelected()}
+                                                                onChange={row.getToggleSelectedHandler()}
+                                                            />
+                                                            <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor={`admin-${admin.id}`}>
+                                                                <div className="icon-40 p-1 rounded-circle border me-3 overflow-hidden shadow-sm">
+                                                                    <img
+                                                                        src={admin.image || "/crm-skybridge/images/fav.png"}
+                                                                        alt={admin.name}
+                                                                        className="img-contain h-100 w-100"
+                                                                    />
+                                                                </div>
+                                                                {admin.name}
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("email").getIsVisible() && (
+                                                    <td id="email" key="email" className="fsz-13 text-muted">{admin.email}</td>
+                                                )}
+
+                                                {table.getColumn("phone").getIsVisible() && (
+                                                    <td id="phone" key="phone" className="fsz-13 text-muted">{admin.phone}</td>
+                                                )}
+
+                                                {table.getColumn("role").getIsVisible() && (
+                                                    <td id="role" key="role">
+                                                        <span className={`alert rounded-pill py-1 px-3 fsz-12 border-0 mb-0 ${admin.role === 'Super Admin' ? 'alert-danger' : admin.role === 'Admin' ? 'alert-primary' : admin.role === 'Sub Admin' ? 'alert-info' : 'alert-secondary'}`}>
+                                                            {admin.role}
+                                                        </span>
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("created_at").getIsVisible() && (
+                                                    <td id="created_at" key="created_at" className="fsz-13 text-muted">
+                                                        {admin.created_at}
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("columnActions").getIsVisible() && (
+                                                    <td id="columnActions" key="columnActions">
+                                                        <div className="dropdown">
+                                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                                <i className="fas fa-ellipsis fsz-14 text-muted"></i>
+                                                            </button>
+                                                            <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                                <li><button className="dropdown-item fsz-12 py-2" onClick={() => onEdit?.(admin.id)}><i className="fal fa-pen me-2 text-muted"></i> Edit</button></li>
+                                                                <li><button className="dropdown-item text-danger fsz-12 py-2" onClick={() => onDelete?.(admin.id)}><i className="fal fa-trash me-2 text-muted"></i> Delete</button></li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                )}
+                                            </SortableRow>
+                                        );
+                                    })
+                                )}
+                            </tbody>
+                        </table>
+                    </TableColumnDnd>
                 </div>
             </div>
 
-            {/* --- PAGINATION CONTROLS --- */}
+            {/* Pagination */}
             <div className="d-flex justify-content-between align-items-center mt-3 react-pagination">
                 <div className="text-muted fsz-12">
                     Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
@@ -351,59 +412,36 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                     of {table.getFilteredRowModel().rows.length} entries
                 </div>
                 <div className="d-flex gap-2">
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.setPageIndex(0)}
-                        disabled={!table.getCanPreviousPage()}
-                    >
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
                         <i className="fal fa-angle-double-left"></i>
                     </button>
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
                         <i className="fal fa-angle-left"></i>
                     </button>
-                    <span className="d-flex align-items-center px-3 fsz-12">
+                    <span className="d-flex align-items-center px-3 fsz-12 fw-500">
                         Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </span>
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
                         <i className="fal fa-angle-right"></i>
                     </button>
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                        disabled={!table.getCanNextPage()}
-                    >
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()}>
                         <i className="fal fa-angle-double-right"></i>
                     </button>
                 </div>
             </div>
 
-            {/* --- DATE MODAL (Portaled to body) --- */}
+            {/* Date Modal */}
             {isMounted && showModal && createPortal(
                 <>
-                    <div
-                        className="modal-backdrop fade show"
-                        onClick={() => setShowModal(false)}
-                    ></div>
-                    <div
-                        className="modal fade show d-block"
-                        tabIndex="-1"
-                        onClick={(e) => e.target === e.currentTarget && setShowModal(false)}
-                    >
+                    <div className="modal-backdrop fade show" onClick={() => setShowModal(false)}></div>
+                    <div className="modal fade show d-block" tabIndex="-1" onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
                         <div className="modal-dialog modal-dialog-centered">
-                            <div className="modal-content border-0">
-                                <div className="modal-header">
-                                    <h5 className="modal-title">Select Date Range</h5>
-                                    <button className="btn-close" onClick={() => setShowModal(false)} />
+                            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                                <div className="modal-header border-0 bg-light py-3">
+                                    <h6 className="modal-title fw-600">Select Date Range</h6>
+                                    <button className="btn-close fsz-10" onClick={() => setShowModal(false)} />
                                 </div>
-                                <div className="modal-body px-0">
+                                <div className="modal-body px-0 d-flex justify-content-center">
                                     <DateRange
                                         ranges={tempRange}
                                         onChange={(ranges) => setTempRange([ranges.selection])}
@@ -411,13 +449,9 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                                         moveRangeOnFirstSelection={false}
                                     />
                                 </div>
-                                <div className="modal-footer">
-                                    <button className="alert alert-light rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0" onClick={() => setShowModal(false)}>
-                                        Cancel
-                                    </button>
-                                    <button className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0" onClick={confirmDateRange}>
-                                        Confirm
-                                    </button>
+                                <div className="modal-footer border-0 pb-4 justify-content-center gap-3">
+                                    <button className="btn btn-light rounded-pill px-4 fsz-12 fw-600" onClick={() => setShowModal(false)}>Cancel</button>
+                                    <button className="btn btn-primary rounded-pill px-4 fsz-12 fw-600 shadow-sm" onClick={confirmDateRange}>Confirm Selection</button>
                                 </div>
                             </div>
                         </div>
@@ -425,8 +459,6 @@ export default function AdminsTable({ data = [], selectedIds = [], onSelectionCh
                 </>,
                 document.body
             )}
-
         </>
-
     );
 }
