@@ -64,7 +64,7 @@ export default function AdminsTable({
         { id: "name", accessorKey: "name", header: "Name", enableSorting: true, draggable: false },
         { id: "email", accessorKey: "email", header: "Email", enableSorting: true, draggable: true },
         { id: "phone", accessorKey: "phone", header: "Phone", enableSorting: true, draggable: true },
-        { id: "role", accessorKey: "role", header: "Role", enableSorting: true, draggable: true },
+        { id: "role", accessorKey: "role", header: "Role", enableSorting: true, draggable: true, filterFn: "equals" },
         { id: "created_at", accessorKey: "created_at", header: "Added On", enableSorting: true, draggable: true },
         { id: "columnActions", header: "Actions", enableSorting: false, draggable: false },
     ], []);

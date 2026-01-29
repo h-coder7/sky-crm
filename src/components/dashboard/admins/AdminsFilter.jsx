@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Select from "react-select";
 
 export default function AdminsFilter({ table, dateRangeValue, onOpenModal, onReset, columnOrder = [] }) {
     const [nameSearch, setNameSearch] = useState("");
     const [emailSearch, setEmailSearch] = useState("");
     const [phoneSearch, setPhoneSearch] = useState("");
-    const [roleSearch, setRoleSearch] = useState("");
+    const [roleSearch, setRoleSearch] = useState(null);
 
     const handleNameChange = (val) => {
         setNameSearch(val);
@@ -23,18 +24,24 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal, onRes
         table.getColumn("phone")?.setFilterValue(val || undefined);
     };
 
-    const handleRoleChange = (val) => {
-        setRoleSearch(val);
-        table.getColumn("role")?.setFilterValue(val || undefined);
+    const handleRoleChange = (selectedOption) => {
+        setRoleSearch(selectedOption);
+        table.getColumn("role")?.setFilterValue(selectedOption?.value || undefined);
     };
 
     const handleReset = () => {
         setNameSearch("");
         setEmailSearch("");
         setPhoneSearch("");
-        setRoleSearch("");
+        setRoleSearch(null);
         onReset?.();
     };
+
+    const roleOptions = [
+        { value: "Admin", label: "Admin" },
+        { value: "Super Admin", label: "Super Admin" },
+        { value: "Sub Admin", label: "Sub Admin" },
+    ];
 
     const filterCells = {
         name: (
@@ -69,16 +76,14 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal, onRes
         ),
         role: (
             <td key="role">
-                <select
-                    className="form-control form-select"
+                <Select
+                    options={roleOptions}
                     value={roleSearch}
-                    onChange={(e) => handleRoleChange(e.target.value)}
-                >
-                    <option value="">All Roles</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Super Admin">Super Admin</option>
-                    <option value="Sub Admin">Sub Admin</option>
-                </select>
+                    onChange={handleRoleChange}
+                    placeholder="All Roles"
+                    isClearable
+                    classNamePrefix="react-select"
+                />
             </td>
         ),
         created_at: (

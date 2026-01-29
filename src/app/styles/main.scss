@@ -605,6 +605,16 @@ small.text {
         color: #087990;
     }
 
+    .react-select__control {
+        border-radius: 10px !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        &:hover, &:focus, &:active {
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+    }
+
 }
 
 label {
