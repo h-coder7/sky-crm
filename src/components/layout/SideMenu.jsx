@@ -22,7 +22,14 @@ export default function SideMenu() {
         }
     }, []);
 
-    const isActive = (path) => pathname === path;
+    const isActive = (path) => {
+        if (!pathname) return false;
+        // Exact match or match with trailing slash
+        if (pathname === path || pathname === `${path}/`) return true;
+        // For sub-routes, but avoid dashboard matching everything
+        if (path !== "/dashboard" && pathname.startsWith(`${path}/`)) return true;
+        return false;
+    };
 
     return (
         <aside className="sidemenu">

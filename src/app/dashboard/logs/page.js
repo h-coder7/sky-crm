@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function LogsPage() {
     return (
-        <div className="container-fluid">
+        <div className="">
             <LogsClient initialLogs={mockLogs} />
         </div>
     );

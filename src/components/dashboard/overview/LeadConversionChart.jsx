@@ -7,21 +7,30 @@ import api from "@/app/api/api";
 // Dynamic import for ApexCharts to handle SSR properly
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
+// =======================
+// Original Data
+// =======================
+const FULL_DATA = [45, 52, 38, 65, 72, 58, 80, 75, 68, 82, 78, 85];
+const FULL_CATEGORIES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const MOBILE_DATA = [45, 38, 72, 80, 68, 78];
+const MOBILE_CATEGORIES = ['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'];
+
 export default function LeadConversionChart() {
     const [series, setSeries] = useState([
         {
             name: "Conversion Rate (%)",
-            data: [45, 52, 38, 65, 72, 58, 80, 75, 68, 82, 78, 85],
+            data: FULL_DATA,
         }
     ]);
 
-    const [options] = useState({
+    const [categories, setCategories] = useState(FULL_CATEGORIES);
+
+    const [options, setOptions] = useState({
         chart: {
             type: 'bar',
             height: 350,
-            toolbar: {
-                show: false
-            }
+            toolbar: { show: false }
         },
         plotOptions: {
             bar: {
@@ -29,19 +38,17 @@ export default function LeadConversionChart() {
                 columnWidth: '55%',
                 borderRadius: 10,
                 dataLabels: {
-                    position: 'top', // top, center, bottom
+                    position: 'top',
                 },
             }
         },
         dataLabels: {
             enabled: true,
-            formatter: function (val) {
-                return val + "%";
-            },
+            formatter: (val) => `${val}%`,
             offsetY: -20,
             style: {
                 fontSize: '12px',
-                colors: ["#26b562"] // Darker Green for readability
+                colors: ["#26b562"]
             }
         },
         stroke: {
@@ -50,7 +57,7 @@ export default function LeadConversionChart() {
             colors: ['transparent']
         },
         xaxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            categories: FULL_CATEGORIES,
         },
         yaxis: {
             title: {
@@ -64,19 +71,17 @@ export default function LeadConversionChart() {
                 shade: 'light',
                 type: "vertical",
                 shadeIntensity: 0.25,
-                gradientToColors: ["#2DD975"], // Brand Green
+                gradientToColors: ["#2DD975"],
                 inverseColors: false,
                 opacityFrom: 0.85,
                 opacityTo: 0.55,
                 stops: [0, 90, 100]
             },
         },
-        colors: ["#2DD975"], // Base color (Brand Green)
+        colors: ["#2DD975"],
         tooltip: {
             y: {
-                formatter: function (val) {
-                    return val + "%"
-                }
+                formatter: (val) => `${val}%`
             }
         },
         grid: {
@@ -84,49 +89,53 @@ export default function LeadConversionChart() {
         }
     });
 
-    /* ======================================================================
-       🔌 API READY: Laravel Integration
-       ====================================================================== */
-    /*
+    // =======================
+    // Responsive Logic
+    // =======================
     useEffect(() => {
-        const fetchConversionData = async () => {
-            try {
-                const res = await api.get('/charts/lead-conversion');
-                const data = res.data; // Expected format: [45, 52, ...]
-                
-                setSeries([{
-                    name: "Conversion Rate (%)",
-                    data: data
-                }]);
-            } catch (error) {
-                console.error("Failed to fetch conversion data:", error);
-            }
+        const handleResize = () => {
+            const isMobile = window.innerWidth < 768;
+
+            setSeries([{
+                name: "Conversion Rate (%)",
+                data: isMobile ? MOBILE_DATA : FULL_DATA
+            }]);
+
+            setOptions(prev => ({
+                ...prev,
+                xaxis: {
+                    categories: isMobile ? MOBILE_CATEGORIES : FULL_CATEGORIES
+                },
+                plotOptions: {
+                    bar: {
+                        ...prev.plotOptions.bar,
+                        columnWidth: isMobile ? '70%' : '55%',
+                    }
+                }
+            }));
         };
 
-        fetchConversionData();
+        handleResize(); // run on mount
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
-    */
 
     return (
         <div className="card border-0 radius-15 p-4 mt-4">
             <div className="card-title py-2 pb-1 border-bottom">
                 <div className="d-flex align-items-center justify-content-between mb-4">
                     <h5 className="mb-0 fsz-18">Lead Conversion Rate</h5>
-                    {/* <div className="dropdown">
-                        <button className="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            Monthly
-                        </button>
-                        <ul className="dropdown-menu">
-                            <li><button className="dropdown-item">Monthly</button></li>
-                            <li><button className="dropdown-item">Yearly</button></li>
-                        </ul>
-                    </div> */}
                 </div>
             </div>
+
             <div className="card-body">
-                <div id="chart">
-                    <Chart options={options} series={series} type="bar" height={350} />
-                </div>
+                <Chart
+                    options={options}
+                    series={series}
+                    type="bar"
+                    height={350}
+                />
             </div>
         </div>
     );

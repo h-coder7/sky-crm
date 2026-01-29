@@ -3702,6 +3702,7 @@ section {
                     display: none;
                 }
                 .sidemenu-links {
+                    padding: 0 10px;
                     .sub-title {
                         display: none;
                     }
@@ -3785,6 +3786,94 @@ section {
                     margin-top: 15px;
                 }
             }
+        }
+    }
+    
+    .sky-dashboard .dashboard .dashboard-body {
+        .title-wrapper {
+            border: 0;
+            margin-top: 10px;
+            border-radius: 15px;
+            padding: 15px;
+            .search-box {
+                flex: 0 0 100%;
+            }
+            .actions-wrapper .quick-create-grid {
+                max-width: calc(100vw - 85px);
+                right: -10px !important;
+            }
+        }
+        .nav-butns {
+            .d-flex {
+                &>div {
+                    width: 100%;
+                    .butn-st2 {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+        .page-header {
+            padding: 10px;
+            .nav-butns {
+                button {
+                    font-size: 9px !important;
+                    padding: 5px 5px !important;
+                    margin-inline-start: 1px !important;
+                    .txt {
+                        margin-inline-start: 2px !important;
+                    }
+                }
+            }
+        }
+        .react-pagination {
+            justify-content: center !important;
+            .text-muted {
+                display: none;
+            }
+        }
+    }
+    .sidemenu-links .links .lnk:hover, .sidemenu-links .links .lnk.active {
+        padding-inline-start: 10px !important;
+    }
+
+    .card-body {
+        padding: 0;
+    }
+
+    .sidemenu .sidemenu-links .links .lnk {
+        justify-content: center;
+        .icon {
+            margin-inline-end: 0 !important;
+        }
+    }
+
+    .log-item {
+        align-items: start !important;
+        .d-flex {
+            display: block !important;
+        }
+        .icon-40 {
+            flex-shrink: 0;
+        }
+        .badge {
+            display: block;
+            margin-top: 10px;
+            width: max-content;
+        }
+    }
+
+    .nav-butns {
+        .search-wrapper {
+            margin-inline-end: 10px !important;
+            .form-control {
+                min-width: 130px !important;
+                min-height: 20px !important;
+                padding: 4px 15px !important;
+            }
+        }
+        .alert {
+            flex-shrink: 0;
         }
     }
     

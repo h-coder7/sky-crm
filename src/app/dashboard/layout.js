@@ -8,7 +8,7 @@ export default function DashboardLayout({ children }) {
         <SideMenu />
         <div className="dashboard-body">
           <Navbar />
-          <div className="px-4">
+          <div className="px-lg-4">
             {children}
           </div>
         </div>

@@ -97,6 +97,7 @@ export default function LoginPage() {
                                             alt="Logo"
                                             width={80}
                                             height={80}
+                                            className="object-fit-contain"
                                         />
                                     </div>
                                     <h3 className="fw-bold mb-2 text-dark">Sign In</h3>

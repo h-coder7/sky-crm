@@ -84,7 +84,7 @@ export default function TitleWrapper() {
                         <div className="dropdown-menu dropdown-menu-end p-4 quick-create-grid">
                             <div className="row g-3">
                                 {quickCreateItems.map((item, idx) => (
-                                    <div className="col-3" key={idx}>
+                                    <div className="col-lg-3 col-6" key={idx}>
                                         <div
                                             className="grid-item text-center cursor-pointer"
                                             onClick={() => handleQuickCreate(item.path)}
