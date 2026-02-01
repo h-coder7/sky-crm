@@ -100,7 +100,7 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal, onRes
         columnActions: (
             <td key="columnActions" className="text-end">
                 <button
-                    className="btn btn-white icon-30 p-0 shadow-sm border-0 me-15"
+                    className="btn btn-white icon-30 p-0 border-0 me-10"
                     title="Clear All Filters"
                     onClick={handleReset}
                     type="button"

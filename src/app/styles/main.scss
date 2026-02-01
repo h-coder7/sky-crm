@@ -418,6 +418,9 @@ small.text {
                 border-inline-end: 1px solid #dee2e6;
                 border-top-right-radius: 10px;
                 border-bottom-right-radius: 10px;
+                width: 50px;
+                padding: 0;
+                padding-inline-end: 10px;
             }
         }
     }
@@ -488,6 +491,9 @@ small.text {
             &:last-of-type {
                 border-inline-end: 0;
                 padding-inline-end: 0;
+                // width: 50px;
+                background-color: #fff;
+                border-radius: 10px;
             }
         }
     }
