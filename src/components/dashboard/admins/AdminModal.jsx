@@ -2,6 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import FileUpload from "../../shared/FileUpload";
+
+const PERMISSIONS = [
+    "Dashboard Access",
+    "User Management",
+    "Admin Management",
+    "Settings",
+    "Reports & Analytics",
+    "Content Management"
+];
+
+const PHOTO_ACCEPT_TYPES = {
+    'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp']
+};
+
+const MAX_UPLOAD_FILES = 1;
 
 export default function AdminModal({ show, onClose, onSave, admin = null }) {
     const [formData, setFormData] = useState({
@@ -9,10 +25,13 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
         email: "",
         phone: "",
         role: "Admin",
-        image: "",
+        password: "",
+        confirmPassword: "",
+        permissions: [],
+        attachments: [], // Array of files
     });
 
-    const [imagePreview, setImagePreview] = useState("");
+    const [passwordError, setPasswordError] = useState("");
 
     useEffect(() => {
         if (admin) {
@@ -21,42 +40,87 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                 email: admin.email || "",
                 phone: admin.phone || "",
                 role: admin.role || "Admin",
-                image: admin.image || "",
+                password: "",
+                confirmPassword: "",
+                permissions: Array.isArray(admin.permissions) ? admin.permissions : [],
+                attachments: Array.isArray(admin.attachments) ? admin.attachments : (admin.image ? [{ preview: admin.image, type: 'image/jpeg', name: 'Admin Image' }] : []),
             });
-            setImagePreview(admin.image || "");
         } else {
             setFormData({
                 name: "",
                 email: "",
                 phone: "",
                 role: "Admin",
-                image: "",
+                password: "",
+                confirmPassword: "",
+                permissions: [],
+                attachments: [],
             });
-            setImagePreview("");
         }
+        setPasswordError("");
     }, [admin, show]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-    };
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            // Create a temporary URL for preview
-            const previewUrl = URL.createObjectURL(file);
-            setImagePreview(previewUrl);
-
-            // Update formData with the previewUrl so it shows in the table
-            setFormData((prev) => ({ ...prev, image: previewUrl }));
+        if (name === "password" || name === "confirmPassword") {
+            setPasswordError("");
         }
     };
 
+    const handlePermissionChange = (permission) => {
+        setFormData((prev) => {
+            const currentPermissions = Array.isArray(prev.permissions) ? prev.permissions : [];
+            const newPermissions = currentPermissions.includes(permission)
+                ? currentPermissions.filter((p) => p !== permission)
+                : [...currentPermissions, permission];
+            return { ...prev, permissions: newPermissions };
+        });
+    };
+
+    const handleSelectAllPermissions = (e) => {
+        if (e.target.checked) {
+            setFormData((prev) => ({ ...prev, permissions: [...PERMISSIONS] }));
+        } else {
+            setFormData((prev) => ({ ...prev, permissions: [] }));
+        }
+    };
+
+    const handleFilesChange = (newFiles) => {
+        setFormData((prev) => ({ ...prev, attachments: newFiles }));
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+
+        if (formData.password !== formData.confirmPassword) {
+            setPasswordError("Passwords do not match");
+            return;
+        }
+
+        if (!admin && !formData.password) {
+            setPasswordError("Password is required for new admins");
+            return;
+        }
+
+        const { confirmPassword, attachments, ...rest } = formData;
+        const submissionData = { ...rest };
+
+        // Link the photo to admin.image
+        if (attachments && attachments.length > 0) {
+            // For UI display, we use the preview URL (blob:...).
+            // For the API, we usually need the File object, so we save it as imageFile.
+            submissionData.image = attachments[0].preview;
+            if (attachments[0].file) {
+                submissionData.imageFile = attachments[0].file;
+            }
+        } else {
+            submissionData.image = ""; // Clear image if no attachments
+            submissionData.imageFile = null;
+        }
+
+        onSave(submissionData);
     };
 
     const [isMounted, setIsMounted] = useState(false);
@@ -66,6 +130,9 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
     }, []);
 
     if (!show || !isMounted) return null;
+
+    const selectedPermissions = Array.isArray(formData.permissions) ? formData.permissions : [];
+    const isAllPermissionsSelected = selectedPermissions.length === PERMISSIONS.length;
 
     return createPortal(
         <>
@@ -79,7 +146,7 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                 onClick={(e) => e.target === e.currentTarget && onClose()}
             >
                 <div className="modal-dialog modal-dialog-centered modal-lg">
-                    <div className="modal-content">
+                    <div className="modal-content border-0">
                         <div className="modal-header">
                             <h5 className="modal-title">
                                 {admin ? "Edit Admin" : "Add New Admin"}
@@ -95,9 +162,7 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                 <div className="row">
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
-                                            <label htmlFor="name" className="form-label">
-                                                Name
-                                            </label>
+                                            <label htmlFor="name" className="form-label">Name</label>
                                             <input
                                                 type="text"
                                                 className="form-control"
@@ -111,41 +176,7 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                     </div>
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
-                                            <label htmlFor="email" className="form-label">
-                                                Email
-                                            </label>
-                                            <input
-                                                type="email"
-                                                className="form-control"
-                                                id="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="phone" className="form-label">
-                                                Phone
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="phone"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="role" className="form-label">
-                                                Role
-                                            </label>
+                                            <label htmlFor="role" className="form-label">Role</label>
                                             <select
                                                 className="form-control form-select"
                                                 id="role"
@@ -160,41 +191,118 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                             </select>
                                         </div>
                                     </div>
-                                    <div className="col-lg-12">
-                                        <div className="form-group mb-3 upload-comp">
-                                            <label htmlFor="image" className="form-label">
-                                                Admin Image
+                                    <div className="col-lg-6">
+                                        <div className="form-group mb-3">
+                                            <label htmlFor="email" className="form-label">Email</label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                id="email"
+                                                name="email"
+                                                value={formData.email}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                        <div className="form-group mb-3">
+                                            <label htmlFor="phone" className="form-label">Phone</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="phone"
+                                                name="phone"
+                                                value={formData.phone}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="col-lg-6">
+                                        <div className="form-group mb-3">
+                                            <label htmlFor="password" className="form-label">
+                                                {admin ? "New Password (Optional)" : "Password"}
                                             </label>
-                                            <div className="upload-content">
-                                                <div className="row">
-                                                    <div className="col-4">
-                                                        <div className="inpt-cont">
-                                                            <input
-                                                                type="file"
-                                                                className="form-control"
-                                                                id="image"
-                                                                name="image"
-                                                                accept="image/*"
-                                                                onChange={handleImageChange}
-                                                            />
-                                                            <div className="float-txt">
-                                                                <i className="fal fa-upload"></i>
-                                                                <span className="d-block text-center">Upload Image</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-4">
-                                                        {imagePreview && (
-                                                            <div className="img-prev">
-                                                                <img src={imagePreview}
-                                                                    alt="Preview"
-                                                                    className=""
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
+                                            <input
+                                                type="password"
+                                                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+                                                id="password"
+                                                name="password"
+                                                value={formData.password}
+                                                onChange={handleChange}
+                                                required={!admin}
+                                            />
+                                            {passwordError && <div className="invalid-feedback">{passwordError}</div>}
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                        <div className="form-group mb-3">
+                                            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                                            <input
+                                                type="password"
+                                                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+                                                id="confirmPassword"
+                                                name="confirmPassword"
+                                                value={formData.confirmPassword}
+                                                onChange={handleChange}
+                                                required={!admin && formData.password}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Permissions Checkboxes */}
+                                    <div className="col-lg-12">
+                                        <div className="form-group mb-3">
+                                            <label className="form-label d-block mb-3">Permissions</label>
+
+                                            <div className="form-check mb-3">
+                                                <input
+                                                    className="form-check-input"
+                                                    type="checkbox"
+                                                    id="selectAllPermissions"
+                                                    checked={isAllPermissionsSelected}
+                                                    onChange={handleSelectAllPermissions}
+                                                />
+                                                <label className="form-check-label fsz-13" htmlFor="selectAllPermissions">
+                                                    Select All Permissions
+                                                </label>
                                             </div>
+
+                                            <hr className="mb-4 text-muted opacity-25" />
+
+                                            <div className="checks-modal">
+                                                {PERMISSIONS.map((permission, index) => (
+                                                    <div className="form-check" key={index}>
+                                                        <input
+                                                            className="form-check-input"
+                                                            type="checkbox"
+                                                            id={`permission-${index}`}
+                                                            checked={selectedPermissions.includes(permission)}
+                                                            onChange={() => handlePermissionChange(permission)}
+                                                        />
+                                                        <label
+                                                            className="form-check-label fsz-12"
+                                                            htmlFor={`permission-${index}`}
+                                                        >
+                                                            {permission}
+                                                        </label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-lg-12">
+                                        <div className="form-group mb-3">
+                                            <FileUpload
+                                                files={formData.attachments}
+                                                onFilesChange={handleFilesChange}
+                                                maxFiles={MAX_UPLOAD_FILES}
+                                                accept={PHOTO_ACCEPT_TYPES}
+                                                title="Photo"
+                                            />
                                         </div>
                                     </div>
                                 </div>

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import AdminsClient from "@/components/dashboard/admins/AdminsClient";
+import AdminsClient from "@/components/dashboard/admins/AdminsClient.jsx";
 import api from "@/app/api/api"; // 🔌 Import your configured axios instance
 
 /**

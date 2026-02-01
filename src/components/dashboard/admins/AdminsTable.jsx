@@ -343,7 +343,7 @@ export default function AdminsTable({
                                                                 onChange={row.getToggleSelectedHandler()}
                                                             />
                                                             <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor={`admin-${admin.id}`}>
-                                                                <div className="icon-40 p-1 rounded-circle border me-3 overflow-hidden shadow-sm">
+                                                                <div className="icon-40 p-1 rounded-circle border p-1 me-3 overflow-hidden bg-light">
                                                                     <img
                                                                         src={admin.image || "/crm-skybridge/images/fav.png"}
                                                                         alt={admin.name}
