@@ -149,7 +149,7 @@ export default function AdminsTable({
        ====================================================================== */
     const visibleColumnOrder = useMemo(() => {
         return columnOrder.filter(id => table.getColumn(id)?.getIsVisible());
-    }, [columnOrder, columnVisibility]);
+    }, [columnOrder, columnVisibility, table]);
 
     /* ======================================================================
        7. JSX
@@ -430,18 +430,25 @@ export default function AdminsTable({
                 </div>
             </div>
 
-            {/* Date Modal */}
+            {/* --- DATE MODAL (Portaled to body) --- */}
             {isMounted && showModal && createPortal(
                 <>
-                    <div className="modal-backdrop fade show" onClick={() => setShowModal(false)}></div>
-                    <div className="modal fade show d-block" tabIndex="-1" onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
+                    <div
+                        className="modal-backdrop fade show"
+                        onClick={() => setShowModal(false)}
+                    ></div>
+                    <div
+                        className="modal fade show d-block"
+                        tabIndex="-1"
+                        onClick={(e) => e.target === e.currentTarget && setShowModal(false)}
+                    >
                         <div className="modal-dialog modal-dialog-centered">
-                            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                                <div className="modal-header border-0 bg-light py-3">
-                                    <h6 className="modal-title fw-600">Select Date Range</h6>
-                                    <button className="btn-close fsz-10" onClick={() => setShowModal(false)} />
+                            <div className="modal-content border-0">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Select Date Range</h5>
+                                    <button className="btn-close" onClick={() => setShowModal(false)} />
                                 </div>
-                                <div className="modal-body px-0 d-flex justify-content-center">
+                                <div className="modal-body px-0">
                                     <DateRange
                                         ranges={tempRange}
                                         onChange={(ranges) => setTempRange([ranges.selection])}
@@ -449,9 +456,13 @@ export default function AdminsTable({
                                         moveRangeOnFirstSelection={false}
                                     />
                                 </div>
-                                <div className="modal-footer border-0 pb-4 justify-content-center gap-3">
-                                    <button className="btn btn-light rounded-pill px-4 fsz-12 fw-600" onClick={() => setShowModal(false)}>Cancel</button>
-                                    <button className="btn btn-primary rounded-pill px-4 fsz-12 fw-600 shadow-sm" onClick={confirmDateRange}>Confirm Selection</button>
+                                <div className="modal-footer">
+                                    <button className="alert alert-light rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0" onClick={() => setShowModal(false)}>
+                                        Cancel
+                                    </button>
+                                    <button className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0" onClick={confirmDateRange}>
+                                        Confirm
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -459,6 +470,7 @@ export default function AdminsTable({
                 </>,
                 document.body
             )}
+
         </>
     );
 }

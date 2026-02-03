@@ -17,7 +17,10 @@ export default function SortableTh({ id, disabled, className = "", children, ...
         isDragging,
     } = useSortable({
         id,
-        disabled: !!disabled
+        disabled: !!disabled,
+        data: {
+            disabled: !!disabled
+        }
     });
 
     const style = {

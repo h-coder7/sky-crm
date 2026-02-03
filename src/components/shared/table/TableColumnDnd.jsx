@@ -21,6 +21,12 @@ export default function TableColumnDnd({ onDragEnd, children }) {
 
     const handleDragEnd = (event) => {
         const { active, over } = event;
+
+        // Guard: If the 'over' item is marked as disabled in its dnd data, prevent reordering
+        if (over?.data?.current?.disabled) {
+            return;
+        }
+
         if (active.id !== over?.id && onDragEnd) {
             onDragEnd(active.id, over.id);
         }
