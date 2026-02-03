@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import PageHeader from "@/components/layout/PageHeader";
+import FileUpload from "@/components/shared/FileUpload";
 
 export default function SettingsClient() {
     const [formData, setFormData] = useState({
@@ -21,10 +22,15 @@ export default function SettingsClient() {
     });
 
     const [activeTab, setActiveTab] = useState("website");
+    const [videoFiles, setVideoFiles] = useState({});
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleVideoChange = (moduleName, files) => {
+        setVideoFiles((prev) => ({ ...prev, [moduleName]: files }));
     };
 
     const modules = [
@@ -46,7 +52,7 @@ export default function SettingsClient() {
             <div className="row mt-4">
                 <div className="col-lg-12">
                     {/* --- Bootstrap Tabs Navigation --- */}
-                    <ul className="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+                    <ul className="nav nav-pills settings-nav-pills mb-4" id="settingsTabs" role="tablist">
                         {tabs.map((tab) => (
                             <li className="nav-item" role="presentation" key={tab.id}>
                                 <button
@@ -80,15 +86,15 @@ export default function SettingsClient() {
                                             <label className="form-label fsz-12 text-muted">Keywords</label>
                                             <input type="text" className="form-control" name="keywords" value={formData.keywords} onChange={handleChange} />
                                         </div>
-                                        <div className="col-md-6">
+                                        <div className="col-md-4">
                                             <label className="form-label fsz-12 text-muted">Meta Description</label>
                                             <input type="text" className="form-control" name="metaDescription" value={formData.metaDescription} onChange={handleChange} />
                                         </div>
-                                        <div className="col-md-3">
+                                        <div className="col-md-4">
                                             <label className="form-label fsz-12 text-muted">Website Phone</label>
                                             <input type="text" className="form-control" name="websitePhone" value={formData.websitePhone} onChange={handleChange} />
                                         </div>
-                                        <div className="col-md-3">
+                                        <div className="col-md-4">
                                             <label className="form-label fsz-12 text-muted">Website Email</label>
                                             <input type="email" className="form-control" name="websiteEmail" value={formData.websiteEmail} onChange={handleChange} />
                                         </div>
@@ -147,18 +153,19 @@ export default function SettingsClient() {
                                         <i className="fal fa-video fsz-14"></i>
                                         Intro Videos Configuration
                                     </h6>
-                                    <div className="row gx-5">
+                                    <div className="row g-3">
                                         {modules.map((mod) => (
-                                            <div className="col-lg-6" key={mod}>
-                                                <div className="form-group mb-3">
-                                                    <label className="form-label fsz-12 text-muted">Intro {mod} Module Video</label>
-                                                    <div className="d-flex gap-2 align-items-center">
-                                                        <input type="file" className="form-control" style={{ minHeight: "40px", padding: "12px" }} />
-                                                        <button type="button" className="alert alert-info pt-10 pb-10 px-3 fsz-10 border-0 mb-0 rounded-3 flex-shrink-0">
-                                                            Show Video
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                            <div className="col-lg-4" key={mod}>
+                                                <FileUpload
+                                                    files={videoFiles[mod] || []}
+                                                    onFilesChange={(files) => handleVideoChange(mod, files)}
+                                                    maxFiles={1}
+                                                    title={`Intro ${mod} Module Video`}
+                                                    hint="Videos (Max 1)"
+                                                    accept={{
+                                                        'video/*': ['.mp4', '.webm', '.ogg', '.mov', '.avi']
+                                                    }}
+                                                />
                                             </div>
                                         ))}
                                     </div>

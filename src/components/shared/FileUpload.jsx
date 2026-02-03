@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import VideoLightbox from "./VideoLightbox";
 
 const isImageFile = (file) => {
     if (file.type?.startsWith('image/')) return true;
@@ -46,8 +47,12 @@ export default function FileUpload({
     onFilesChange,
     maxFiles = 10,
     accept = DEFAULT_ACCEPT,
-    title = "Attachments"
+    title = "Attachments",
+    hint = ""
 }) {
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [activeVideoUrl, setActiveVideoUrl] = useState("");
+
     const onDrop = useCallback((acceptedFiles) => {
         const newAttachments = acceptedFiles.map(file => ({
             file,
@@ -69,6 +74,15 @@ export default function FileUpload({
         onFilesChange(updatedFiles);
     };
 
+    const handleFileClick = (file) => {
+        const type = file.type || '';
+        const name = file.name || '';
+        if (type.startsWith('video/') || name.match(/\.(mp4|webm|ogg|mov|avi)$/i)) {
+            setActiveVideoUrl(file.preview);
+            setLightboxOpen(true);
+        }
+    };
+
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         accept,
@@ -84,25 +98,22 @@ export default function FileUpload({
             <div
                 {...getRootProps()}
                 className={`
-                    d-flex flex-column align-items-center justify-content-center p-4
-                    border-2 border-dashed rounded-4 transition-all cursor-pointer mb-3
+                    d-flex flex-column align-items-center justify-content-center p-2
+                    border-2 border-dashed rounded-4 transition-all cursor-pointer mb-2
                     ${isDragActive ? 'bg-primary-soft border-primary' : 'bg-light border-secondary-subtle'}
                 `}
                 style={{
-                    minHeight: '120px',
+                    minHeight: '80px',
                     transition: 'all 0.2s ease',
                     borderColor: isDragActive ? 'var(--bs-primary)' : '#e2e8f0'
                 }}
             >
                 <input {...getInputProps()} />
-                <div className={`icon-50 rounded-circle d-flex align-items-center justify-content-center mb-2 ${isDragActive ? 'bg-primary text-white' : 'bg-white text-primary shadow-sm'}`}>
-                    <i className={`fal ${isDragActive ? 'fa-box-open' : 'fa-cloud-upload'} fsz-20`}></i>
+                <div className={`icon-35 rounded-circle d-flex align-items-center justify-content-center mb-1 ${isDragActive ? 'bg-primary text-white' : 'bg-white text-primary shadow-sm'}`}>
+                    <i className={`fal ${isDragActive ? 'fa-box-open' : 'fa-cloud-upload'} fsz-16`}></i>
                 </div>
-                <h6 className="fsz-13 fw-600 mb-1 text-dark">
-                    {isDragActive ? "Drop files here" : "Click or Drag files to upload"}
-                </h6>
-                <p className="fsz-11 text-muted mb-0 text-center">
-                    Images, PDF, Doc, Excel, Video (Max {maxFiles} files)
+                <p className="fsz-10 text-muted mb-0 text-center">
+                    {hint || `Images, PDF, Doc, Excel, Video (Max ${maxFiles})`}
                 </p>
             </div>
 
@@ -110,7 +121,11 @@ export default function FileUpload({
             {files.length > 0 && (
                 <div className="d-flex flex-column gap-2 mt-3">
                     {files.map((file, index) => (
-                        <div key={index} className="position-relative p-2 rounded-3 border bg-white d-flex align-items-center gap-3">
+                        <div
+                            key={index}
+                            className="position-relative p-2 rounded-3 border bg-white d-flex align-items-center gap-3 cursor-pointer hover-bg-light"
+                            onClick={() => handleFileClick(file)}
+                        >
                             <div className="icon-40 rounded-3 overflow-hidden bg-light flex-shrink-0 border d-flex align-items-center justify-content-center text-primary">
                                 {isImageFile(file) ? (
                                     <img
@@ -140,6 +155,12 @@ export default function FileUpload({
                     ))}
                 </div>
             )}
+
+            <VideoLightbox
+                open={lightboxOpen}
+                close={() => setLightboxOpen(false)}
+                videoUrl={activeVideoUrl}
+            />
         </div>
     );
 }

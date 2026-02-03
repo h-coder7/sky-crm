@@ -302,6 +302,7 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                                 maxFiles={MAX_UPLOAD_FILES}
                                                 accept={PHOTO_ACCEPT_TYPES}
                                                 title="Photo"
+                                                hint="Image (Max 1)"
                                             />
                                         </div>
                                     </div>
