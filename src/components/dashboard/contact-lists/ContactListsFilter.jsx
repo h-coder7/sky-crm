@@ -1,8 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
 import SearchableSelect from "../../shared/SearchableSelect";
 
-export default function ContactListsFilter({ table, employees = [], dateRangeValue, onOpenModal }) {
-    // ... (rest of states remain the same)
+export default function ContactListsFilter({
+    table,
+    employees = [],
+    dateRangeValue,
+    onOpenModal,
+    onReset,
+    columnOrder
+}) {
+    // Local searches
     const [nameSearch, setNameSearch] = useState(table.getColumn("name")?.getFilterValue() || "");
     const [addressSearch, setAddressSearch] = useState(table.getColumn("address")?.getFilterValue() || "");
     const [phoneSearch, setPhoneSearch] = useState(table.getColumn("phone")?.getFilterValue() || "");
@@ -63,247 +70,290 @@ export default function ContactListsFilter({ table, employees = [], dateRangeVal
         setEmployeeSearch(table.getColumn("employee")?.getFilterValue() || "");
     }, [table.getState().columnFilters]);
 
-    return (
-        <tr className="search-tr fsz-12">
-            {/* Name */}
-            <td>
+    const handleReset = () => {
+        setNameSearch("");
+        setAddressSearch("");
+        setPhoneSearch("");
+        setEmailSearch("");
+        setCountrySearch("");
+        setCompanySearch("");
+        setJobTitleSearch("");
+        setSectorSearch("");
+        setBudgetSearch("");
+        setAvgStandsSearch("");
+        setAvgEventsSearch("");
+        setWebsiteSearch("");
+        setNotesSearch("");
+        setTopCustomerSearch("");
+        setDmStatusSearch("");
+        setStatusSearch("");
+        setEmployeeSearch("");
+        onReset?.();
+    };
+
+    const filterCells = {
+        name: (
+            <td key="name" className="sticky-col">
                 <input
                     className="form-control"
-                    placeholder="Search name..."
+                    placeholder="Name"
                     value={nameSearch}
                     onChange={(e) => {
                         setNameSearch(e.target.value);
-                        table.getColumn("name")?.setFilterValue(e.target.value);
+                        table.getColumn("name").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Address */}
-            <td>
+        ),
+        address: (
+            <td key="address">
                 <input
                     className="form-control"
-                    placeholder="Search address..."
+                    placeholder="Address"
                     value={addressSearch}
                     onChange={(e) => {
                         setAddressSearch(e.target.value);
-                        table.getColumn("address")?.setFilterValue(e.target.value);
+                        table.getColumn("address").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Phone */}
-            <td>
+        ),
+        phone: (
+            <td key="phone">
                 <input
                     className="form-control"
-                    placeholder="Search phone..."
+                    placeholder="Phone"
                     value={phoneSearch}
                     onChange={(e) => {
                         setPhoneSearch(e.target.value);
-                        table.getColumn("phone")?.setFilterValue(e.target.value);
+                        table.getColumn("phone").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Email */}
-            <td>
+        ),
+        email: (
+            <td key="email">
                 <input
                     className="form-control"
-                    placeholder="Search email..."
+                    placeholder="Email"
                     value={emailSearch}
                     onChange={(e) => {
                         setEmailSearch(e.target.value);
-                        table.getColumn("email")?.setFilterValue(e.target.value);
+                        table.getColumn("email").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Top Customer */}
-            <td>
+        ),
+        top_customer: (
+            <td key="top_customer">
                 <select
                     className="form-control form-select form-select-sm"
                     value={topCustomerSearch}
                     onChange={(e) => {
                         const val = e.target.value;
                         setTopCustomerSearch(val);
-                        table.getColumn("top_customer")?.setFilterValue(val === "" ? undefined : val === "true");
+                        table.getColumn("top_customer").setFilterValue(val === "" ? undefined : val === "true");
                     }}
                 >
-                    <option value="">All</option>
+                    <option value="">Top Cust.</option>
                     <option value="true">Yes</option>
                     <option value="false">No</option>
                 </select>
             </td>
-
-            {/* Decision Maker Status */}
-            <td>
+        ),
+        decision_maker_status: (
+            <td key="decision_maker_status">
                 <select
                     className="form-control form-select form-select-sm"
                     value={dmStatusSearch}
                     onChange={(e) => {
                         const val = e.target.value;
                         setDmStatusSearch(val);
-                        table.getColumn("decision_maker_status")?.setFilterValue(val === "" ? undefined : val);
+                        table.getColumn("decision_maker_status").setFilterValue(val === "" ? undefined : val);
                     }}
                 >
-                    <option value="">All</option>
+                    <option value="">D.M. Status</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                 </select>
             </td>
-
-            {/* Status */}
-            <td>
+        ),
+        status: (
+            <td key="status">
                 <SearchableSelect
                     options={statusOptions}
                     value={statusSearch}
                     onChange={(val) => {
                         setStatusSearch(val);
-                        table.getColumn("status")?.setFilterValue(val || undefined);
+                        table.getColumn("status").setFilterValue(val || undefined);
                     }}
                     placeholder="Status"
+                    instanceId="status-filter"
                 />
             </td>
-
-            {/* Employee */}
-            <td>
+        ),
+        employee: (
+            <td key="employee">
                 <SearchableSelect
                     options={employees}
                     value={employeeSearch}
                     onChange={(val) => {
                         setEmployeeSearch(val);
-                        table.getColumn("employee")?.setFilterValue(val || undefined);
+                        table.getColumn("employee").setFilterValue(val || undefined);
                     }}
                     placeholder="Employee"
+                    instanceId="employee-filter"
                 />
             </td>
-
-            {/* Country */}
-            <td>
+        ),
+        country: (
+            <td key="country">
                 <input
                     className="form-control"
-                    placeholder="Search country..."
+                    placeholder="Country"
                     value={countrySearch}
                     onChange={(e) => {
                         setCountrySearch(e.target.value);
-                        table.getColumn("country")?.setFilterValue(e.target.value);
+                        table.getColumn("country").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Company */}
-            <td>
+        ),
+        company: (
+            <td key="company">
                 <input
                     className="form-control"
-                    placeholder="Search company..."
+                    placeholder="Company"
                     value={companySearch}
                     onChange={(e) => {
                         setCompanySearch(e.target.value);
-                        table.getColumn("company")?.setFilterValue(e.target.value);
+                        table.getColumn("company").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Budget */}
-            <td>
+        ),
+        budget: (
+            <td key="budget">
                 <input
                     className="form-control"
                     placeholder="Budget"
                     value={budgetSearch}
                     onChange={(e) => {
                         setBudgetSearch(e.target.value);
-                        table.getColumn("budget")?.setFilterValue(e.target.value);
+                        table.getColumn("budget").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Avg Stands/Yr */}
-            <td>
+        ),
+        avg_stands_year: (
+            <td key="avg_stands_year">
                 <input
                     className="form-control"
                     placeholder="Stands/Yr"
                     value={avgStandsSearch}
                     onChange={(e) => {
                         setAvgStandsSearch(e.target.value);
-                        table.getColumn("avg_stands_year")?.setFilterValue(e.target.value);
+                        table.getColumn("avg_stands_year").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Avg Events/Yr */}
-            <td>
+        ),
+        avg_events_year: (
+            <td key="avg_events_year">
                 <input
                     className="form-control"
                     placeholder="Events/Yr"
                     value={avgEventsSearch}
                     onChange={(e) => {
                         setAvgEventsSearch(e.target.value);
-                        table.getColumn("avg_events_year")?.setFilterValue(e.target.value);
+                        table.getColumn("avg_events_year").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Website */}
-            <td>
+        ),
+        company_website_url: (
+            <td key="company_website_url">
                 <input
                     className="form-control"
                     placeholder="Website"
                     value={websiteSearch}
                     onChange={(e) => {
                         setWebsiteSearch(e.target.value);
-                        table.getColumn("company_website_url")?.setFilterValue(e.target.value);
+                        table.getColumn("company_website_url").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Job Title */}
-            <td>
+        ),
+        job_title: (
+            <td key="job_title">
                 <input
                     className="form-control"
                     placeholder="Job Title"
                     value={jobTitleSearch}
                     onChange={(e) => {
                         setJobTitleSearch(e.target.value);
-                        table.getColumn("job_title")?.setFilterValue(e.target.value);
+                        table.getColumn("job_title").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Sector */}
-            <td>
+        ),
+        sector: (
+            <td key="sector">
                 <input
                     className="form-control"
                     placeholder="Sector"
                     value={sectorSearch}
                     onChange={(e) => {
                         setSectorSearch(e.target.value);
-                        table.getColumn("sector")?.setFilterValue(e.target.value);
+                        table.getColumn("sector").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Notes */}
-            <td>
+        ),
+        notes: (
+            <td key="notes">
                 <input
                     className="form-control"
                     placeholder="Notes"
                     value={notesSearch}
                     onChange={(e) => {
                         setNotesSearch(e.target.value);
-                        table.getColumn("notes")?.setFilterValue(e.target.value);
+                        table.getColumn("notes").setFilterValue(e.target.value);
                     }}
                 />
             </td>
-
-            {/* Added On */}
-            <td colSpan={2}>
+        ),
+        created_at: (
+            <td key="created_at">
                 <input
                     className="form-control cursor-pointer"
-                    placeholder="Select range..."
+                    placeholder="Select Date Range"
                     readOnly
                     value={dateRangeValue}
                     onClick={onOpenModal}
                 />
             </td>
+        ),
+        columnActions: (
+            <td key="columnActions" className="text-end">
+                <button
+                    className="btn btn-white icon-30 p-0 border-0 me-10"
+                    title="Clear All Filters"
+                    onClick={handleReset}
+                    type="button"
+                >
+                    <i className="fal fa-filter-slash fsz-12 text-danger"></i>
+                </button>
+            </td>
+        ),
+    };
+
+    return (
+        <tr className="search-tr fsz-12">
+            {columnOrder
+                .filter(id => table.getColumn(id)?.getIsVisible() !== false)
+                .map((id) => filterCells[id])
+            }
         </tr>
     );
 }

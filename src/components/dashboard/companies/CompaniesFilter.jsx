@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import SearchableSelect from "../../shared/SearchableSelect";
 
-export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) {
+export default function CompaniesFilter({ table, dateRangeValue, onOpenModal, onReset, columnOrder = [] }) {
     // Search states
     const [titleSearch, setTitleSearch] = useState(table.getColumn("title")?.getFilterValue() || "");
     const [addressSearch, setAddressSearch] = useState(table.getColumn("address")?.getFilterValue() || "");
@@ -63,13 +63,22 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
         setCountrySearch(table.getColumn("country")?.getFilterValue() || "");
     }, [table.getState().columnFilters]);
 
-    return (
-        <tr className="search-tr fsz-12">
-            {/* Title */}
-            <td>
+    const handleReset = () => {
+        setTitleSearch("");
+        setAddressSearch("");
+        setDescriptionSearch("");
+        setDomainSearch("");
+        setSectorSearch("");
+        setCountrySearch("");
+        onReset?.();
+    };
+
+    const filterCells = {
+        title: (
+            <td key="title" className="sticky-col">
                 <input
                     className="form-control"
-                    placeholder="Search title..."
+                    placeholder="Title"
                     value={titleSearch}
                     onChange={(e) => {
                         setTitleSearch(e.target.value);
@@ -77,12 +86,12 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
                     }}
                 />
             </td>
-
-            {/* Address */}
-            <td>
+        ),
+        address: (
+            <td key="address">
                 <input
                     className="form-control"
-                    placeholder="Search address..."
+                    placeholder="Address"
                     value={addressSearch}
                     onChange={(e) => {
                         setAddressSearch(e.target.value);
@@ -90,12 +99,12 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
                     }}
                 />
             </td>
-
-            {/* Description */}
-            <td>
+        ),
+        description: (
+            <td key="description">
                 <input
                     className="form-control"
-                    placeholder="Search description..."
+                    placeholder="Description"
                     value={descriptionSearch}
                     onChange={(e) => {
                         setDescriptionSearch(e.target.value);
@@ -103,12 +112,12 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
                     }}
                 />
             </td>
-
-            {/* Domain */}
-            <td>
+        ),
+        domain: (
+            <td key="domain">
                 <input
                     className="form-control"
-                    placeholder="Search domain..."
+                    placeholder="Domain"
                     value={domainSearch}
                     onChange={(e) => {
                         setDomainSearch(e.target.value);
@@ -116,9 +125,9 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
                     }}
                 />
             </td>
-
-            {/* Sector */}
-            <td>
+        ),
+        sector: (
+            <td key="sector">
                 <SearchableSelect
                     options={sectorOptions}
                     value={sectorSearch}
@@ -127,11 +136,13 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
                         table.getColumn("sector")?.setFilterValue(val || undefined);
                     }}
                     placeholder="Sector"
+                    className="form-select-sm fsz-12"
+                    instanceId="sector-filter"
                 />
             </td>
-
-            {/* Country */}
-            <td>
+        ),
+        country: (
+            <td key="country">
                 <SearchableSelect
                     options={countryOptions}
                     value={countrySearch}
@@ -140,19 +151,42 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal }) 
                         table.getColumn("country")?.setFilterValue(val || undefined);
                     }}
                     placeholder="Country"
+                    className="form-select-sm fsz-12"
+                    instanceId="country-filter"
                 />
             </td>
-
-            {/* Added On */}
-            <td colSpan={2}>
+        ),
+        created_at: (
+            <td key="created_at">
                 <input
                     className="form-control cursor-pointer"
-                    placeholder="Select range..."
+                    placeholder="Select Date Range"
                     readOnly
                     value={dateRangeValue}
                     onClick={onOpenModal}
                 />
             </td>
+        ),
+        columnActions: (
+            <td key="columnActions" className="text-end">
+                <button
+                    className="btn btn-white icon-30 p-0 border-0 me-10"
+                    title="Clear All Filters"
+                    onClick={handleReset}
+                    type="button"
+                >
+                    <i className="fal fa-filter-slash fsz-12 text-danger"></i>
+                </button>
+            </td>
+        ),
+    };
+
+    return (
+        <tr className="search-tr fsz-12">
+            {columnOrder
+                .filter(id => table.getColumn(id)?.getIsVisible() !== false)
+                .map((id) => filterCells[id])
+            }
         </tr>
     );
 }

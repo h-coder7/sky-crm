@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function EmployeesFilter({ table, dateRangeValue, onOpenModal }) {
+export default function EmployeesFilter({ table, dateRangeValue, onOpenModal, onReset, columnOrder = [] }) {
     const [nameSearch, setNameSearch] = useState("");
     const [emailSearch, setEmailSearch] = useState("");
     const [phoneSearch, setPhoneSearch] = useState("");
@@ -34,9 +34,18 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal }) 
         table.getColumn("sector")?.setFilterValue(val || undefined);
     };
 
-    return (
-        <tr className="search-tr">
-            <td>
+    const handleReset = () => {
+        setNameSearch("");
+        setEmailSearch("");
+        setPhoneSearch("");
+        setRoleSearch("");
+        setSectorSearch("");
+        onReset?.();
+    };
+
+    const filterCells = {
+        name: (
+            <td key="name" className="sticky-col">
                 <input
                     className="form-control"
                     placeholder="Name"
@@ -44,7 +53,9 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal }) 
                     onChange={(e) => handleNameChange(e.target.value)}
                 />
             </td>
-            <td>
+        ),
+        email: (
+            <td key="email">
                 <input
                     className="form-control"
                     placeholder="Email"
@@ -52,7 +63,9 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal }) 
                     onChange={(e) => handleEmailChange(e.target.value)}
                 />
             </td>
-            <td>
+        ),
+        phone: (
+            <td key="phone">
                 <input
                     className="form-control"
                     placeholder="Phone"
@@ -60,13 +73,15 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal }) 
                     onChange={(e) => handlePhoneChange(e.target.value)}
                 />
             </td>
-            <td>
+        ),
+        role: (
+            <td key="role">
                 <select
-                    className="form-control form-select"
+                    className="form-control form-select form-select-sm fsz-12"
                     value={roleSearch}
                     onChange={(e) => handleRoleChange(e.target.value)}
                 >
-                    <option value="">All</option>
+                    <option value="">Role</option>
                     <option value="Head Department">Head Department</option>
                     <option value="Senior Business Development Manager">Senior Business Development Manager</option>
                     <option value="Business Development Manager">Business Development Manager</option>
@@ -74,7 +89,9 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal }) 
                     <option value="Business Development Executive">Business Development Executive</option>
                 </select>
             </td>
-            <td>
+        ),
+        sector: (
+            <td key="sector">
                 <input
                     className="form-control"
                     placeholder="Sector"
@@ -82,7 +99,9 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal }) 
                     onChange={(e) => handleSectorChange(e.target.value)}
                 />
             </td>
-            <td colSpan={2}>
+        ),
+        created_at: (
+            <td key="created_at">
                 <input
                     className="form-control cursor-pointer"
                     placeholder="Select Date Range"
@@ -91,6 +110,27 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal }) 
                     onClick={onOpenModal}
                 />
             </td>
+        ),
+        columnActions: (
+            <td key="columnActions" className="text-end">
+                <button
+                    className="btn btn-white icon-30 p-0 border-0 me-10"
+                    title="Clear All Filters"
+                    onClick={handleReset}
+                    type="button"
+                >
+                    <i className="fal fa-filter-slash fsz-12 text-danger"></i>
+                </button>
+            </td>
+        ),
+    };
+
+    return (
+        <tr className="search-tr fsz-12">
+            {columnOrder
+                .filter(id => table.getColumn(id)?.getIsVisible() !== false)
+                .map((id) => filterCells[id])
+            }
         </tr>
     );
 }

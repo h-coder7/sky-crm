@@ -10,6 +10,12 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
 } from "@tanstack/react-table";
+
+// Shared Reusable Table Components (Modular DnD)
+import TableColumnDnd from "../../../components/shared/table/TableColumnDnd";
+import SortableRow from "../../../components/shared/table/SortableRow";
+import SortableTh from "../../../components/shared/table/SortableTh";
+
 import ContactListsFilter from "./ContactListsFilter";
 
 /**
@@ -58,25 +64,16 @@ export default function ContactListsTable({
        3. Columns
        ====================================================================== */
     const columns = useMemo(() => [
-        {
-            id: "name",
-            accessorKey: "name",
-        },
-        {
-            id: "address",
-            accessorKey: "address",
-        },
-        {
-            id: "phone",
-            accessorKey: "phone",
-        },
-        {
-            id: "email",
-            accessorKey: "email",
-        },
+        { id: "name", accessorKey: "name", header: "Name", enableSorting: true, draggable: false },
+        { id: "address", accessorKey: "address", header: "Address", enableSorting: true, draggable: true },
+        { id: "phone", accessorKey: "phone", header: "Phone", enableSorting: true, draggable: true },
+        { id: "email", accessorKey: "email", header: "Email", enableSorting: true, draggable: true },
         {
             id: "top_customer",
             accessorKey: "top_customer",
+            header: "Top Cust.",
+            enableSorting: true,
+            draggable: true,
             filterFn: (row, columnId, filterValue) => {
                 if (filterValue === undefined || filterValue === "") return true;
                 return row.getValue(columnId) === filterValue;
@@ -85,6 +82,9 @@ export default function ContactListsTable({
         {
             id: "decision_maker_status",
             accessorKey: "decision_maker_status",
+            header: "D.M. Status",
+            enableSorting: true,
+            draggable: true,
             filterFn: (row, columnId, filterValue) => {
                 if (!filterValue) return true;
                 return row.getValue(columnId) === filterValue;
@@ -93,6 +93,9 @@ export default function ContactListsTable({
         {
             id: "status",
             accessorKey: "status",
+            header: "Status",
+            enableSorting: true,
+            draggable: true,
             filterFn: (row, columnId, filterValue) => {
                 if (!filterValue) return true;
                 return row.getValue(columnId) === filterValue;
@@ -101,51 +104,29 @@ export default function ContactListsTable({
         {
             id: "employee",
             accessorKey: "employee",
+            header: "Employee",
+            enableSorting: true,
+            draggable: true,
             filterFn: (row, columnId, filterValue) => {
                 if (!filterValue) return true;
                 return row.getValue(columnId) === filterValue;
             },
         },
-        {
-            id: "country",
-            accessorKey: "country",
-        },
-        {
-            id: "company",
-            accessorKey: "company",
-        },
-        {
-            id: "budget",
-            accessorKey: "budget",
-        },
-        {
-            id: "avg_stands_year",
-            accessorKey: "avg_stands_year",
-        },
-        {
-            id: "avg_events_year",
-            accessorKey: "avg_events_year",
-        },
-        {
-            id: "company_website_url",
-            accessorKey: "company_website_url",
-        },
-        {
-            id: "job_title",
-            accessorKey: "job_title",
-        },
-        {
-            id: "sector",
-            accessorKey: "sector",
-        },
-        {
-            id: "notes",
-            accessorKey: "notes",
-        },
+        { id: "country", accessorKey: "country", header: "Country", enableSorting: true, draggable: true },
+        { id: "company", accessorKey: "company", header: "Company", enableSorting: true, draggable: true },
+        { id: "budget", accessorKey: "budget", header: "Budget", enableSorting: true, draggable: true },
+        { id: "avg_stands_year", accessorKey: "avg_stands_year", header: "Stands/Yr", enableSorting: true, draggable: true },
+        { id: "avg_events_year", accessorKey: "avg_events_year", header: "Events/Yr", enableSorting: true, draggable: true },
+        { id: "company_website_url", accessorKey: "company_website_url", header: "Website", enableSorting: true, draggable: true },
+        { id: "job_title", accessorKey: "job_title", header: "Job Title", enableSorting: true, draggable: true },
+        { id: "sector", accessorKey: "sector", header: "Sector", enableSorting: true, draggable: true },
+        { id: "notes", accessorKey: "notes", header: "Notes", enableSorting: true, draggable: true },
         {
             id: "created_at",
             accessorKey: "created_at",
             header: "Added On",
+            enableSorting: true,
+            draggable: true,
             filterFn: (row, columnId, filterValue) => {
                 if (!filterValue || !filterValue[0] || !filterValue[1]) return true;
                 const rowDate = new Date(row.getValue(columnId));
@@ -158,7 +139,11 @@ export default function ContactListsTable({
                 return a > b ? 1 : a < b ? -1 : 0;
             },
         },
+        { id: "columnActions", header: "Actions", enableSorting: false, draggable: false },
     ], []);
+
+    const [columnOrder, setColumnOrder] = useState(columns.map(c => c.id));
+    const [columnVisibility, setColumnVisibility] = useState({});
 
     /* ======================================================================
        4. Table Instance
@@ -166,7 +151,7 @@ export default function ContactListsTable({
     const table = useReactTable({
         data,
         columns,
-        state: { sorting, columnFilters, rowSelection, pagination },
+        state: { sorting, columnFilters, rowSelection, pagination, columnOrder, columnVisibility },
         enableRowSelection: true,
         onRowSelectionChange: (updater) => {
             const nextSelection = typeof updater === "function" ? updater(rowSelection) : updater;
@@ -182,6 +167,8 @@ export default function ContactListsTable({
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         onPaginationChange: setPagination,
+        onColumnOrderChange: setColumnOrder,
+        onColumnVisibilityChange: setColumnVisibility,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -191,6 +178,20 @@ export default function ContactListsTable({
     /* ======================================================================
        5. Helpers
        ====================================================================== */
+    const handleColumnDragEnd = (activeId, overId) => {
+        setColumnOrder((items) => {
+            const oldIndex = items.indexOf(activeId);
+            const newIndex = items.indexOf(overId);
+            if (oldIndex !== -1 && newIndex !== -1) {
+                const newItems = [...items];
+                const [movedItem] = newItems.splice(oldIndex, 1);
+                newItems.splice(newIndex, 0, movedItem);
+                return newItems;
+            }
+            return items;
+        });
+    };
+
     const confirmDateRange = () => {
         setDateRange(tempRange);
         setShowModal(false);
@@ -204,6 +205,16 @@ export default function ContactListsTable({
             table.getColumn("created_at")?.setFilterValue(undefined);
         }
     };
+
+    const resetAllFilters = () => {
+        setDateRange([{ startDate: null, endDate: null, key: "selection" }]);
+        setTempRange([{ startDate: null, endDate: null, key: "selection" }]);
+        table.resetColumnFilters();
+    };
+
+    const visibleColumnOrder = useMemo(() => {
+        return columnOrder.filter(id => table.getColumn(id)?.getIsVisible());
+    }, [columnOrder, columnVisibility, table]);
 
     const formatDateRangeDisplay = () => {
         const { startDate, endDate } = dateRange[0];
@@ -226,442 +237,204 @@ export default function ContactListsTable({
 
             <div className="table-content">
                 <div className="table-responsive position-relative">
-                    <table className="table align-middle">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <div className="form-check">
-                                            <input
-                                                className="form-check-input"
-                                                id="select-all-contacts"
-                                                type="checkbox"
-                                                checked={table.getIsAllPageRowsSelected()}
-                                                onChange={table.getToggleAllPageRowsSelectedHandler()}
-                                            />
-                                            <label className="form-check-label ms-2" htmlFor="select-all-contacts">
-                                                Name
-                                            </label>
-                                        </div>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("name").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("name").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Address</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("address").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("address").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Phone</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("phone").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-numeric-up me-2"></i> Ascending
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("phone").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-numeric-down me-2"></i> Descending
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Email</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("email").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("email").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Top Cust.</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("top_customer").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-amount-up me-2"></i> (No → Yes)
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("top_customer").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-amount-down me-2"></i> (Yes → No)
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>D.M. Status</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("decision_maker_status").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> Ascending
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("decision_maker_status").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> Descending
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Status</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("status").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> Ascending
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("status").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> Descending
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Employee</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("employee").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("employee").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Country</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("country").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("country").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Company</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("company").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("company").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Budget</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("budget").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-numeric-up me-2"></i> Low → High
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("budget").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-numeric-down me-2"></i> High → Low
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Stands/Yr</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("avg_stands_year").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-numeric-up me-2"></i> Low → High
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("avg_stands_year").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-numeric-down me-2"></i> High → Low
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Events/Yr</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("avg_events_year").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-numeric-up me-2"></i> Low → High
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("avg_events_year").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-numeric-down me-2"></i> High → Low
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Website</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("company_website_url").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> Ascending
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("company_website_url").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> Descending
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Job Title</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("job_title").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("job_title").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Sector</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("sector").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> (A → Z)
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("sector").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> (Z → A)
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Notes</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("notes").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-alpha-up me-2"></i> Ascending
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("notes").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-alpha-down me-2"></i> Descending
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span>Added On</span>
-                                        <div className="dropdown">
-                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                <i className="fat fa-sort"></i>
-                                            </button>
-                                            <ul className="dropdown-menu">
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("created_at").toggleSorting(false)}>
-                                                    <i className="fal fa-sort-amount-up me-2"></i> Oldest First
-                                                </li>
-                                                <li className="dropdown-item cursor-pointer" onClick={() => table.getColumn("created_at").toggleSorting(true)}>
-                                                    <i className="fal fa-sort-amount-down me-2"></i> Newest First
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th></th>
-                            </tr>
+                    <TableColumnDnd onDragEnd={handleColumnDragEnd}>
+                        <table className="table align-middle">
+                            <thead>
+                                <SortableRow items={visibleColumnOrder}>
+                                    {/* Name Column */}
+                                    {table.getColumn("name").getIsVisible() && (
+                                        <SortableTh id="name" key="name" disabled className="sticky-col">
+                                            <div className="form-check">
+                                                <input
+                                                    className="form-check-input"
+                                                    id="select-all-contacts"
+                                                    type="checkbox"
+                                                    checked={table.getIsAllPageRowsSelected()}
+                                                    onChange={table.getToggleAllPageRowsSelectedHandler()}
+                                                />
+                                                <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor="select-all-contacts">
+                                                    Name
+                                                </label>
+                                            </div>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => table.getColumn("name").toggleSorting(false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
+                                                    </li>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => table.getColumn("name").toggleSorting(true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
 
-                            {/* Integrated ContactListsFilter */}
-                            <ContactListsFilter
-                                table={table}
-                                employees={employees}
-                                dateRangeValue={formatDateRangeDisplay()}
-                                onOpenModal={() => setShowModal(true)}
-                            />
-                        </thead>
+                                    {/* Other Columns (Generic Header) */}
+                                    {columnOrder.map(colId => {
+                                        if (colId === 'name' || colId === 'columnActions') return null;
+                                        const column = table.getColumn(colId);
+                                        if (!column || !column.getIsVisible()) return null;
 
-                        <tbody>
-                            {table.getRowModel().rows.length === 0 ? (
-                                <tr>
-                                    <td colSpan={19} className="text-center text-muted py-4">
-                                        No contacts found
-                                    </td>
-                                </tr>
-                            ) : (
-                                table.getRowModel().rows.map((row) => {
-                                    const item = row.original;
-
-                                    return (
-                                        <tr key={row.id}>
-                                            <td>
-                                                <div className="form-check">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="checkbox"
-                                                        id={`contact-${item.id}`}
-                                                        checked={row.getIsSelected()}
-                                                        onChange={row.getToggleSelectedHandler()}
-                                                    />
-                                                    <label
-                                                        className="form-check-label ms-2"
-                                                        htmlFor={`contact-${item.id}`}
-                                                    >
-                                                        {item.name}
-                                                    </label>
-                                                </div>
-                                            </td>
-                                            <td>{item.address}</td>
-                                            <td>{item.phone}</td>
-                                            <td>{item.email}</td>
-                                            <td>{item.top_customer ? "Yes" : "No"}</td>
-                                            <td>{item.decision_maker_status}</td>
-                                            <td>{item.status}</td>
-                                            <td>{item.employee}</td>
-                                            <td>{item.country}</td>
-                                            <td>{item.company}</td>
-                                            <td>{item.budget}</td>
-                                            <td>{item.avg_stands_year}</td>
-                                            <td>{item.avg_events_year}</td>
-                                            <td>{item.company_website_url}</td>
-                                            <td>{item.job_title}</td>
-                                            <td>{item.sector}</td>
-                                            <td>
-                                                <div className="text-pop fsz-12">
-                                                    {item.notes?.length > 20 ? item.notes.slice(0, 20) + "..." : item.notes}
-                                                    <span className="tooltip-text">{item.notes}</span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                {new Date(item.created_at).toLocaleDateString()}
-                                            </td>
-
-                                            <td>
-                                                <div className="dropdown">
+                                        return (
+                                            <SortableTh id={colId} key={colId}>
+                                                <span>{column.columnDef.header}</span>
+                                                <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                     <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                        <i className="fas fa-ellipsis"></i>
+                                                        <i className="fat fa-sort fsz-12"></i>
                                                     </button>
-                                                    <ul className="dropdown-menu">
-                                                        <li
-                                                            className="dropdown-item cursor-pointer"
-                                                            onClick={() => onEdit?.(item.id)}
-                                                        >
-                                                            <i className="fal fa-pen me-2"></i> Edit
+                                                    <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                        <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => column.toggleSorting(false)}>
+                                                            <i className="fal fa-sort-amount-up me-2 text-muted"></i> Asc
                                                         </li>
-                                                        <li
-                                                            className="dropdown-item cursor-pointer text-danger"
-                                                            onClick={() => onDelete?.(item.id)}
-                                                        >
-                                                            <i className="fal fa-trash me-2"></i> Delete
+                                                        <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => column.toggleSorting(true)}>
+                                                            <i className="fal fa-sort-amount-down me-2 text-muted"></i> Desc
                                                         </li>
                                                     </ul>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
+                                            </SortableTh>
+                                        )
+                                    })}
+
+                                    {/* Actions Header (Visibility Toggle) */}
+                                    {table.getColumn("columnActions").getIsVisible() && (
+                                        <SortableTh id="columnActions" key="columnActions" disabled>
+                                            <div className="dropdown icon-30 ms-auto">
+                                                <button className="btn bg-white border-0 p-0 icon-30" data-bs-toggle="dropdown" type="button" data-bs-auto-close="outside">
+                                                    <i className="fas fa-ellipsis-v fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-3 scrollable-dropdown" style={{ maxHeight: '400px', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
+                                                    <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Toggle Columns</h6>
+                                                    {table.getAllLeafColumns().map(column => {
+                                                        if (column.id === 'columnActions' || column.id === 'name') return null;
+                                                        return (
+                                                            <li key={column.id} className="mb-2 last-0">
+                                                                <div className="form-check fsz-12" onClick={(e) => e.stopPropagation()}>
+                                                                    <input
+                                                                        className="form-check-input"
+                                                                        type="checkbox"
+                                                                        checked={column.getIsVisible()}
+                                                                        onChange={(e) => column.getToggleVisibilityHandler()(e)}
+                                                                        id={`toggle-${column.id}`}
+                                                                    />
+                                                                    <label className="form-check-label ms-2 cursor-pointer fw-500" htmlFor={`toggle-${column.id}`}>
+                                                                        {column.columnDef.header || column.id}
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        )
+                                                    })}
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+                                </SortableRow>
+
+                                {/* Integrated ContactListsFilter */}
+                                <ContactListsFilter
+                                    table={table}
+                                    employees={employees}
+                                    dateRangeValue={formatDateRangeDisplay()}
+                                    onOpenModal={() => setShowModal(true)}
+                                    onReset={resetAllFilters}
+                                    columnOrder={columnOrder}
+                                />
+                            </thead>
+
+                            <tbody>
+                                {table.getRowModel().rows.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={visibleColumnOrder.length} className="text-center text-muted py-4 fsz-12">
+                                            No contacts found
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    table.getRowModel().rows.map((row) => {
+                                        const item = row.original;
+                                        return (
+                                            <SortableRow key={row.id} items={visibleColumnOrder} disabled>
+                                                {visibleColumnOrder.map(colId => {
+                                                    const column = table.getColumn(colId);
+                                                    if (!column || !column.getIsVisible()) return null;
+
+                                                    if (colId === 'name') {
+                                                        return (
+                                                            <td key={colId} id={colId} className="sticky-col">
+                                                                <div className="form-check">
+                                                                    <input
+                                                                        className="form-check-input"
+                                                                        type="checkbox"
+                                                                        id={`contact-${item.id}`}
+                                                                        checked={row.getIsSelected()}
+                                                                        onChange={row.getToggleSelectedHandler()}
+                                                                    />
+                                                                    <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor={`contact-${item.id}`}>
+                                                                        {item.name}
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                        );
+                                                    }
+
+                                                    if (colId === 'top_customer') {
+                                                        return <td key={colId} id={colId} className="fsz-13 text-muted">{item.top_customer ? "Yes" : "No"}</td>;
+                                                    }
+
+                                                    if (colId === 'notes') {
+                                                        return (
+                                                            <td key={colId} id={colId} className="fsz-13 text-muted">
+                                                                <div className="text-pop fsz-13">
+                                                                    {item.notes?.length > 20 ? item.notes.slice(0, 20) + "..." : item.notes}
+                                                                    <span className="tooltip-text">{item.notes}</span>
+                                                                </div>
+                                                            </td>
+                                                        );
+                                                    }
+
+                                                    if (colId === 'created_at') {
+                                                        return <td key={colId} id={colId} className="fsz-13 text-muted">{new Date(item.created_at).toLocaleDateString()}</td>;
+                                                    }
+
+                                                    if (colId === 'columnActions') {
+                                                        return (
+                                                            <td key={colId} id={colId}>
+                                                                <div className="dropdown">
+                                                                    <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                                        <i className="fas fa-ellipsis fsz-14 text-muted"></i>
+                                                                    </button>
+                                                                    <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                                        <li>
+                                                                            <button className="dropdown-item fsz-12 py-2" onClick={() => onEdit?.(item.id)}>
+                                                                                <i className="fal fa-pen me-2 text-muted"></i> Edit
+                                                                            </button>
+                                                                        </li>
+                                                                        <li>
+                                                                            <button className="dropdown-item text-danger fsz-12 py-2" onClick={() => onDelete?.(item.id)}>
+                                                                                <i className="fal fa-trash me-2 text-muted"></i> Delete
+                                                                            </button>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </td>
+                                                        );
+                                                    }
+
+                                                    // Default cell rendering
+                                                    return <td key={colId} id={colId} className="fsz-13 text-muted">{item[column.columnDef.accessorKey] || "-"}</td>;
+                                                })}
+                                            </SortableRow>
+                                        );
+                                    })
+                                )}
+                            </tbody>
+                        </table>
+                    </TableColumnDnd>
                 </div>
             </div>
 
-            {/* --- PAGINATION CONTROLS --- */}
+            {/* Pagination */}
             <div className="d-flex justify-content-between align-items-center mt-3 react-pagination">
                 <div className="text-muted fsz-12">
                     Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
@@ -672,35 +445,19 @@ export default function ContactListsTable({
                     of {table.getFilteredRowModel().rows.length} entries
                 </div>
                 <div className="d-flex gap-2">
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.setPageIndex(0)}
-                        disabled={!table.getCanPreviousPage()}
-                    >
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
                         <i className="fal fa-angle-double-left"></i>
                     </button>
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
                         <i className="fal fa-angle-left"></i>
                     </button>
-                    <span className="d-flex align-items-center px-3 fsz-12">
+                    <span className="d-flex align-items-center px-3 fsz-12 fw-500">
                         Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </span>
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
                         <i className="fal fa-angle-right"></i>
                     </button>
-                    <button
-                        className="btn btn-sm btn-outline-secondary"
-                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                        disabled={!table.getCanNextPage()}
-                    >
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()}>
                         <i className="fal fa-angle-double-right"></i>
                     </button>
                 </div>

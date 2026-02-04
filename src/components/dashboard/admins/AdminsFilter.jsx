@@ -77,6 +77,7 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal, onRes
         role: (
             <td key="role">
                 <Select
+                    instanceId="admins-role-filter"
                     options={roleOptions}
                     value={roleSearch}
                     onChange={handleRoleChange}

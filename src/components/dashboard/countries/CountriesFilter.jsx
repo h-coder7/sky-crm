@@ -2,38 +2,62 @@
 
 import { useState } from "react";
 
-export default function CountriesFilter({ table, dateRangeValue, onOpenModal }) {
+export default function CountriesFilter({ table, dateRangeValue, onOpenModal, onReset, columnOrder = [] }) {
     // Local states for inputs to ensure they are always responsive/writable
     const [titleSearch, setTitleSearch] = useState(table.getColumn("title")?.getFilterValue() || "");
-    
-    /* ======================================================================
-       Helpers
-       ====================================================================== */
+
     const handleTitleChange = (val) => {
         setTitleSearch(val);
         table.getColumn("title")?.setFilterValue(val);
     };
 
-    return (
-        <tr className="search-tr">
-            <td>
+    const handleReset = () => {
+        setTitleSearch("");
+        onReset?.();
+    };
+
+    const filterCells = {
+        title: (
+            <td key="title" className="sticky-col">
                 <input
                     className="form-control"
-                    placeholder="Search name..."
+                    placeholder="Name"
                     value={titleSearch}
                     onChange={(e) => handleTitleChange(e.target.value)}
                 />
             </td>
-
-            <td colSpan={3}>
+        ),
+        created_at: (
+            <td key="created_at">
                 <input
                     className="form-control cursor-pointer"
-                    placeholder="Select range..."
+                    placeholder="Select Date Range"
                     readOnly
                     value={dateRangeValue}
                     onClick={onOpenModal}
                 />
             </td>
+        ),
+        columnActions: (
+            <td key="columnActions" className="text-end">
+                <button
+                    className="btn btn-white icon-30 p-0 border-0 me-10"
+                    title="Clear All Filters"
+                    onClick={handleReset}
+                    type="button"
+                >
+                    <i className="fal fa-filter-slash fsz-12 text-danger"></i>
+                </button>
+            </td>
+        ),
+    };
+
+    return (
+        <tr className="search-tr">
+            {columnOrder
+                .filter(id => table.getColumn(id)?.getIsVisible() !== false)
+                .map((id) => filterCells[id])
+            }
         </tr>
     );
 }

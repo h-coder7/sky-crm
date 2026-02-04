@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export default function TargetFilter({ table }) {
+export default function TargetFilter({ table, onReset, columnOrder = [] }) {
     // Local states
     const [employeeSearch, setEmployeeSearch] = useState(table.getColumn("employee")?.getFilterValue() || "");
     const [yearSearch, setYearSearch] = useState(table.getColumn("year")?.getFilterValue() || "");
@@ -16,9 +16,17 @@ export default function TargetFilter({ table }) {
         setTargetSearch(table.getColumn("target")?.getFilterValue() || "");
     }, [table.getState().columnFilters]);
 
-    return (
-        <tr className="search-tr fsz-12">
-            <td>
+    const handleReset = () => {
+        setEmployeeSearch("");
+        setYearSearch("");
+        setProductSearch("");
+        setTargetSearch("");
+        onReset?.();
+    };
+
+    const filterCells = {
+        employee: (
+            <td key="employee" className="sticky-col">
                 <input
                     className="form-control"
                     placeholder="Search..."
@@ -29,7 +37,9 @@ export default function TargetFilter({ table }) {
                     }}
                 />
             </td>
-            <td>
+        ),
+        year: (
+            <td key="year">
                 <input
                     className="form-control"
                     placeholder="Search..."
@@ -40,7 +50,9 @@ export default function TargetFilter({ table }) {
                     }}
                 />
             </td>
-            <td>
+        ),
+        product: (
+            <td key="product">
                 <input
                     className="form-control"
                     placeholder="Search..."
@@ -51,7 +63,9 @@ export default function TargetFilter({ table }) {
                     }}
                 />
             </td>
-            <td colSpan={2}>
+        ),
+        target: (
+            <td key="target">
                 <input
                     className="form-control"
                     placeholder="Search..."
@@ -62,6 +76,27 @@ export default function TargetFilter({ table }) {
                     }}
                 />
             </td>
+        ),
+        columnActions: (
+            <td key="columnActions" className="text-end">
+                <button
+                    className="btn btn-white icon-30 p-0 border-0 me-10"
+                    title="Clear All Filters"
+                    onClick={handleReset}
+                    type="button"
+                >
+                    <i className="fal fa-filter-slash fsz-12 text-danger"></i>
+                </button>
+            </td>
+        ),
+    };
+
+    return (
+        <tr className="search-tr fsz-12">
+            {columnOrder
+                .filter(id => table.getColumn(id)?.getIsVisible() !== false)
+                .map((id) => filterCells[id])
+            }
         </tr>
     );
 }

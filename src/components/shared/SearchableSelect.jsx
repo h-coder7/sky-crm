@@ -62,12 +62,14 @@ export default function SearchableSelect({
     placeholder = "Select...",
     isClearable = true,
     className = "",
+    instanceId,
 }) {
     // Map existing value to react-select format { value, label }
     const selectedOption = options.find((opt) => opt.value === value) || null;
 
     return (
         <Select
+            instanceId={instanceId}
             className={className}
             options={options}
             value={selectedOption}

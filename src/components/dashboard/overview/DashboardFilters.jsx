@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { DateRange } from "react-date-range";
 import SearchableSelect from "@/components/shared/SearchableSelect";
@@ -16,6 +16,11 @@ export default function DashboardFilters() {
         { startDate: null, endDate: null, key: "selection" },
     ]);
     const [showDateModal, setShowDateModal] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // Mock Options
     const employeeOptions = [
@@ -40,7 +45,7 @@ export default function DashboardFilters() {
     const formatDateRangeDisplay = () => {
         const { startDate, endDate } = dateRange[0];
         if (!startDate || !endDate) return "Select Date Range";
-        return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
+        return isMounted ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}` : "Select Date Range";
     };
 
     const confirmDateRange = () => {
@@ -62,6 +67,7 @@ export default function DashboardFilters() {
                             console.log("Employee filter:", val);
                         }}
                         placeholder="Search Employee..."
+                        instanceId="dashboard-employee-filter"
                     />
                 </div>
 
@@ -75,6 +81,7 @@ export default function DashboardFilters() {
                             console.log("Industry filter:", val);
                         }}
                         placeholder="Search Industry..."
+                        instanceId="dashboard-industry-filter"
                     />
                 </div>
 
@@ -88,6 +95,7 @@ export default function DashboardFilters() {
                             console.log("Period changed:", val);
                         }}
                         placeholder="Time Period"
+                        instanceId="dashboard-period-filter"
                     />
                 </div>
 
@@ -105,7 +113,7 @@ export default function DashboardFilters() {
             </div>
 
             {/* Date Range Modal (Portaled) */}
-            {showDateModal &&
+            {isMounted && showDateModal &&
                 createPortal(
                     <>
                         <div

@@ -32,6 +32,7 @@ export default function RegionsFilter({ table, countries = [], dateRangeValue, o
                         table.getColumn("country")?.setFilterValue(val || undefined);
                     }}
                     placeholder="Country"
+                    instanceId="country-filter"
                 />
             </td>
             <td colSpan={2}>
