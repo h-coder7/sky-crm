@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { DateRange } from "react-date-range";
 import SearchableSelect from "@/components/shared/SearchableSelect";
+import DateRangeModal from "@/components/shared/DateRangeModal";
 
 export default function DashboardFilters() {
     const [employeeFilter, setEmployeeFilter] = useState(null);
@@ -48,10 +47,11 @@ export default function DashboardFilters() {
         return isMounted ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}` : "Select Date Range";
     };
 
-    const confirmDateRange = () => {
-        setDateRange(tempRange);
+    const confirmDateRange = (newRange) => {
+        setDateRange(newRange);
+        setTempRange(newRange);
         setShowDateModal(false);
-        console.log("Date range confirmed:", tempRange);
+        console.log("Date range confirmed:", newRange);
     };
 
     return (
@@ -113,58 +113,13 @@ export default function DashboardFilters() {
             </div>
 
             {/* Date Range Modal (Portaled) */}
-            {isMounted && showDateModal &&
-                createPortal(
-                    <>
-                        <div
-                            className="modal-backdrop fade show"
-                            onClick={() => setShowDateModal(false)}
-                        ></div>
-                        <div
-                            className="modal fade show d-block"
-                            tabIndex="-1"
-                            onClick={(e) =>
-                                e.target === e.currentTarget && setShowDateModal(false)
-                            }
-                        >
-                            <div className="modal-dialog modal-dialog-centered">
-                                <div className="modal-content border-0">
-                                    <div className="modal-header">
-                                        <h5 className="modal-title">Select Date Range</h5>
-                                        <button
-                                            className="btn-close"
-                                            onClick={() => setShowDateModal(false)}
-                                        />
-                                    </div>
-                                    <div className="modal-body px-0">
-                                        <DateRange
-                                            ranges={tempRange}
-                                            onChange={(ranges) => setTempRange([ranges.selection])}
-                                            editableDateInputs={true}
-                                            moveRangeOnFirstSelection={false}
-                                            rangeColors={['#0d6efd']}
-                                        />
-                                    </div>
-                                    <div className="modal-footer">
-                                        <button
-                                            className="alert alert-light rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
-                                            onClick={() => setShowDateModal(false)}
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
-                                            onClick={confirmDateRange}
-                                        >
-                                            Confirm
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </>,
-                    document.body
-                )}
+            {/* Date Range Modal (Shared) */}
+            <DateRangeModal
+                show={showDateModal}
+                initialRange={tempRange}
+                onClose={() => setShowDateModal(false)}
+                onApply={confirmDateRange}
+            />
         </>
     );
 }

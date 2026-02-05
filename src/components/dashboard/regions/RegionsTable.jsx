@@ -1,8 +1,6 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { DateRange } from "react-date-range";
 import {
     useReactTable,
     getCoreRowModel,
@@ -15,6 +13,8 @@ import {
 import TableColumnDnd from "../../../components/shared/table/TableColumnDnd";
 import SortableRow from "../../../components/shared/table/SortableRow";
 import SortableTh from "../../../components/shared/table/SortableTh";
+import DateRangeModal from "../../../components/shared/DateRangeModal";
+
 
 import RegionsFilter from "./RegionsFilter";
 
@@ -128,14 +128,16 @@ export default function RegionsTable({
         });
     };
 
-    const confirmDateRange = () => {
-        setDateRange(tempRange);
+    const confirmDateRange = (newRange) => {
+        const selectedRange = newRange[0];
+        setDateRange(newRange);
+        setTempRange(newRange);
         setShowModal(false);
 
-        if (tempRange[0].startDate && tempRange[0].endDate) {
+        if (selectedRange.startDate && selectedRange.endDate) {
             table.getColumn("created_at")?.setFilterValue([
-                tempRange[0].startDate,
-                tempRange[0].endDate,
+                selectedRange.startDate,
+                selectedRange.endDate,
             ]);
         } else {
             table.getColumn("created_at")?.setFilterValue(undefined);
@@ -388,45 +390,13 @@ export default function RegionsTable({
             </div>
 
             {/* --- DATE MODAL (Portaled to body) --- */}
-            {isMounted && showModal && createPortal(
-                <>
-                    <div
-                        className="modal-backdrop fade show"
-                        onClick={() => setShowModal(false)}
-                    ></div>
-                    <div
-                        className="modal fade show d-block"
-                        tabIndex="-1"
-                        onClick={(e) => e.target === e.currentTarget && setShowModal(false)}
-                    >
-                        <div className="modal-dialog modal-dialog-centered">
-                            <div className="modal-content border-0">
-                                <div className="modal-header">
-                                    <h5 className="modal-title">Select Date Range</h5>
-                                    <button className="btn-close" onClick={() => setShowModal(false)} />
-                                </div>
-                                <div className="modal-body px-0">
-                                    <DateRange
-                                        ranges={tempRange}
-                                        onChange={(ranges) => setTempRange([ranges.selection])}
-                                        editableDateInputs
-                                        moveRangeOnFirstSelection={false}
-                                    />
-                                </div>
-                                <div className="modal-footer">
-                                    <button className="alert alert-light rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0" onClick={() => setShowModal(false)}>
-                                        Cancel
-                                    </button>
-                                    <button className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0" onClick={confirmDateRange}>
-                                        Confirm
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </>,
-                document.body
-            )}
+            {/* --- DATE MODAL (New Component) --- */}
+            <DateRangeModal
+                show={showModal}
+                initialRange={tempRange}
+                onClose={() => setShowModal(false)}
+                onApply={confirmDateRange}
+            />
 
         </>
     );
