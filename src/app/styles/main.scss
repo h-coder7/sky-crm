@@ -4154,9 +4154,10 @@ section {
         cursor: grab;
         transition: box-shadow 0.2s, transform 0.2s;
         background-color: #fff; /* Default */
-        height: 100%;
+        // height: 100%;
         display: flex;
         flex-direction: column;
+        gap: 5px 0;
         justify-content: space-around;
         border-radius: 10px;
         padding: 20px;
@@ -4170,9 +4171,35 @@ section {
         
         &:active {
             cursor: grabbing;
+            opacity: 0.4 !important;
         }
     }
 }
+
+.drag-overlay {
+        // position: relative;
+        cursor: grab;
+        transition: box-shadow 0.2s, transform 0.2s;
+        background-color: #fff; /* Default */
+        // height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px 0;
+        justify-content: space-around;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 5px 5px 20px #0001;
+        z-index: 30;
+        // opacity: 0.1;
+        &:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+            transform: translateY(-2px);
+        }
+        
+        &:active {
+            cursor: grabbing;
+        }
+    }
 
 /* --------------- login page --------------- */
 .login-page {}

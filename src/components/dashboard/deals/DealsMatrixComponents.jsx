@@ -7,7 +7,8 @@ import { useState } from "react";
 
 // Map status IDs to Column Indexes or Keys
 // Map status IDs to Column Indexes or Keys
-const STATUS_COLUMNS = [
+// Export STATUS_COLUMNS so it can be used in DealsMatrix
+export const STATUS_COLUMNS = [
     { id: "1", name: "Briefing Phase", color: "bg-primary-subtle text-primary" },
     { id: "7", name: "Proposal Phase", color: "bg-info-subtle text-info" },
     { id: "10", name: "Quotation", color: "bg-warning-subtle text-warning" }, // 10: Quotation Submitted
@@ -15,6 +16,47 @@ const STATUS_COLUMNS = [
     { id: "12", name: "Rejected", color: "bg-danger-subtle text-danger" }, // 12: Rejected
     { id: "13", name: "Task Done", color: "bg-secondary-subtle text-secondary" } // 13: Payment Received (treating as Task Done)
 ];
+
+// ... (rest of imports and helper functions, keeping MONTH_NAMES and getDealMonthName as is but ensuring they don't break)
+
+export function DealCard({ deal, color, style, innerRef, ...props }) {
+    return (
+        <div
+            ref={innerRef}
+            style={style}
+            className={`deal-bubble ${color || ''}`}
+            {...props}
+        >
+            <div className="fw-bold fsz-12 text-truncate">{deal.title}</div>
+            <div className="fsz-11 mt-1"><i className="fas fa-dollar-sign fsz-10 me-1"></i>{deal.amount?.toLocaleString()}</div>
+            <div className="fsz-10 text-muted mt-1"><i className="fas fa-user fsz-10 me-1"></i>{deal.employee}</div>
+            <div className="fsz-10 text-muted"><i className="fas fa-building fsz-10 me-1"></i>{deal.company}</div>
+        </div>
+    );
+}
+
+export function DealBubble({ deal, color }) {
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+        id: deal.id,
+        data: deal
+    });
+
+    const style = {
+        transform: isDragging ? undefined : CSS.Transform.toString(transform),
+        opacity: isDragging ? 0 : 1,
+    };
+
+    return (
+        <DealCard
+            deal={deal}
+            color={color}
+            innerRef={setNodeRef}
+            style={style}
+            {...listeners}
+            {...attributes}
+        />
+    );
+}
 
 // Helper to get deal month name from ID
 // Mock data: month: "1" -> January
@@ -104,32 +146,7 @@ export function DroppableCell({ statusId, monthName, deals, color }) {
     );
 }
 
-export function DealBubble({ deal, color }) {
-    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-        id: deal.id,
-        data: deal
-    });
 
-    const style = {
-        transform: isDragging ? undefined : CSS.Transform.toString(transform),
-        opacity: isDragging ? 0 : 1,
-    };
-
-    return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            {...listeners}
-            {...attributes}
-            className={`deal-bubble ${color}`} // Inherit color class
-        >
-            <div className="fw-bold fsz-12 text-truncate">{deal.title}</div>
-            <div className="fsz-11 mt-1"><i className="fas fa-dollar-sign fsz-10 me-1"></i>{deal.amount?.toLocaleString()}</div>
-            <div className="fsz-10 text-muted mt-1"><i className="fas fa-user fsz-10 me-1"></i>{deal.employee}</div>
-            <div className="fsz-10 text-muted"><i className="fas fa-building fsz-10 me-1"></i>{deal.company}</div>
-        </div>
-    );
-}
 
 
 

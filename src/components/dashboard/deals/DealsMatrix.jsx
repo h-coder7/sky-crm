@@ -11,7 +11,7 @@ import {
     useSensors,
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { QuarterRow } from "./DealsMatrixComponents";
+import { QuarterRow, DealCard, STATUS_COLUMNS } from "./DealsMatrixComponents";
 
 export default function DealsMatrix({ deals, onUpdateDeal }) {
     const [activeId, setActiveId] = useState(null);
@@ -122,14 +122,16 @@ export default function DealsMatrix({ deals, onUpdateDeal }) {
                 {activeId ? (
                     (() => {
                         const activeDeal = deals.find(d => d.id === activeId);
-                        return activeDeal ? (
-                            <div className="deal-bubble p-2 rounded shadow-lg border bg-white" style={{ width: '150px' }}>
-                                <div className="fw-bold fsz-12 text-truncate">{activeDeal.title}</div>
-                                <div className="fsz-11 mt-1"><i className="fas fa-dollar-sign fsz-10 me-1"></i>{activeDeal.amount?.toLocaleString()}</div>
-                                <div className="fsz-10 text-muted mt-1"><i className="fas fa-user fsz-10 me-1"></i>{activeDeal.employee}</div>
-                                <div className="fsz-10 text-muted"><i className="fas fa-building fsz-10 me-1"></i>{activeDeal.company}</div>
+                        if (!activeDeal) return null;
+
+                        const statusCol = STATUS_COLUMNS.find(c => c.id === activeDeal.status);
+                        const color = statusCol ? statusCol.color : "";
+
+                        return (
+                            <div>
+                                <DealCard deal={activeDeal} color={color} className={`deal-bubble ${color || ''} drag-overlay`} />
                             </div>
-                        ) : null;
+                        );
                     })()
                 ) : null}
             </DragOverlay>
