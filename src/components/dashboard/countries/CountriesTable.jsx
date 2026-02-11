@@ -176,7 +176,7 @@ export default function CountriesTable({
 
             <div className="table-content">
                 <div className="table-responsive position-relative">
-                    <TableColumnDnd onDragEnd={handleColumnDragEnd}>
+                    <TableColumnDnd id="countries-table" onDragEnd={handleColumnDragEnd}>
                         <table className="table align-middle">
                             <thead>
                                 <SortableRow items={visibleColumnOrder}>

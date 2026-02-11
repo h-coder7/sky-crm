@@ -168,7 +168,7 @@ export default function ProductsTable({
 
             <div className="table-content">
                 <div className="table-responsive position-relative">
-                    <TableColumnDnd table={table}>
+                    <TableColumnDnd table={table} id="products-table" onDragEnd={handleColumnDragEnd}>
                         <table className="table align-middle">
                             <thead>
                                 <SortableRow items={visibleColumnOrder}>

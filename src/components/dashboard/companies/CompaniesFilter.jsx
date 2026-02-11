@@ -55,6 +55,7 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal, on
 
     // 🔄 Sync local state with table filters
     useEffect(() => {
+        // Ensure mounted to prevent hydration mismatch if filters were somehow persistent (unlikely but safe)
         setTitleSearch(table.getColumn("title")?.getFilterValue() || "");
         setAddressSearch(table.getColumn("address")?.getFilterValue() || "");
         setDescriptionSearch(table.getColumn("description")?.getFilterValue() || "");

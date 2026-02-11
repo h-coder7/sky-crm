@@ -153,7 +153,7 @@ export default function EmployeesTable({ data = [], selectedIds = [], onSelectio
 
             <div className="table-content">
                 <div className="table-responsive position-relative">
-                    <TableColumnDnd onDragEnd={handleColumnDragEnd}>
+                    <TableColumnDnd id="employees-table" onDragEnd={handleColumnDragEnd}>
                         <table className="table align-middle">
                             <thead>
                                 <SortableRow items={visibleColumnOrder}>

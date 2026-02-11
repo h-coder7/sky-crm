@@ -13,7 +13,7 @@ import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
 /**
  * 🧱 TableColumnDnd: Provides the DndContext for the table.
  */
-export default function TableColumnDnd({ onDragEnd, children }) {
+export default function TableColumnDnd({ id, onDragEnd, children }) {
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
         useSensor(KeyboardSensor, { coordinateGetter: (e) => null }) // Keyboard disabled for simplicity in this specific structure
@@ -34,6 +34,7 @@ export default function TableColumnDnd({ onDragEnd, children }) {
 
     return (
         <DndContext
+            id={id}
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}

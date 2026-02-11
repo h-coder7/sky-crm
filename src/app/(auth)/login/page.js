@@ -75,12 +75,11 @@ export default function LoginPage() {
                                 {/* Left Side - Image/Branding */}
                                 <div className="col-md-6 d-none d-md-block p-5 d-flex flex-column justify-content-center align-items-center position-relative border-end">
                                     <div className="z-1 text-center">
-                                        <div className="logo icon-100 mx-auto mb-4">
+                                        <div className="logo icon-100 mx-auto mb-4 position-relative" style={{ width: '100px', height: '100px' }}>
                                             <Image
                                                 src="/crm-skybridge/images/sky-logo.png"
                                                 alt="Logo"
-                                                width={100}
-                                                height={100}
+                                                fill
                                                 className="img-contain"
                                             />
                                         </div>
@@ -91,12 +90,11 @@ export default function LoginPage() {
 
                                 {/* Right Side - Login Form */}
                                 <div className="col-md-6 bg-white p-5">
-                                    <div className="text-center mb-5 d-md-none">
+                                    <div className="text-center mb-5 d-md-none position-relative mx-auto" style={{ width: '80px', height: '80px' }}>
                                         <Image
                                             src="/crm-skybridge/images/sky-logo.png"
                                             alt="Logo"
-                                            width={80}
-                                            height={80}
+                                            fill
                                             className="object-fit-contain"
                                         />
                                     </div>

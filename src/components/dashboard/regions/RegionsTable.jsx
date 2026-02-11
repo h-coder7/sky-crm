@@ -175,7 +175,7 @@ export default function RegionsTable({
         <>
             <div className="table-content">
                 <div className="table-responsive position-relative">
-                    <TableColumnDnd onDragEnd={handleColumnDragEnd}>
+                    <TableColumnDnd id="regions-table" onDragEnd={handleColumnDragEnd}>
                         <table className="table align-middle">
                             <thead>
                                 <SortableRow items={visibleColumnOrder}>

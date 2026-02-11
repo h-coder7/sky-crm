@@ -37,12 +37,11 @@ export default function SideMenu() {
             <div className="top-cont">
 
                 <div className="logo-wrapper">
-                    <Link href="/" className="logo ">
+                    <Link href="/" className="logo position-relative d-block" style={{ width: '40px', height: '40px' }}>
                         <Image
                             src="/crm-skybridge/images/sky-logo.png"
                             alt="Logo"
-                            width={40}
-                            height={40}
+                            fill
                             className="img-contain"
                         />
                     </Link>
@@ -188,12 +187,12 @@ export default function SideMenu() {
             <div className="btm-cont px-3">
 
                 <div className="user-wrapper">
-                    <div className="avatar">
+                    <div className="avatar position-relative" style={{ width: '40px', height: '40px' }}>
                         <Image
                             src="/crm-skybridge/images/av2.png"
                             alt="User Avatar"
-                            width={40}
-                            height={40}
+                            fill
+                            className="object-fit-cover rounded-circle"
                         />
                     </div>
 

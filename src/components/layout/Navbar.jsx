@@ -122,8 +122,8 @@ export default function TitleWrapper() {
                     {/* Profile */}
                     <div className="dropdown profile-wrapper ms-2">
                         <div className="avatar dropdown-toggle after-none" data-bs-toggle="dropdown">
-                            <div className="icon-40 p-10 rounded-circle bg-grad1">
-                                <Image src="/crm-skybridge/images/sky-logo.png" alt="" width={40} height={40} className="img-contain" />
+                            <div className="icon-40 p-10 rounded-circle bg-grad1 position-relative">
+                                <Image src="/crm-skybridge/images/sky-logo.png" alt="" fill className="img-contain" />
                             </div>
                         </div>
                         <ul className="dropdown-menu dropdown-menu-end mt-2 border-0 shadow-sm overflow-hidden">

@@ -197,7 +197,7 @@ export default function DealsTable({
 
             <div className="table-content">
                 <div className="table-responsive position-relative">
-                    <TableColumnDnd onDragEnd={handleColumnDragEnd}>
+                    <TableColumnDnd id="deals-table" onDragEnd={handleColumnDragEnd}>
                         <table className="table align-middle">
                             <thead>
                                 <SortableRow items={visibleColumnOrder}>

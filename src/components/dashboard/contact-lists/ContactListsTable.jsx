@@ -238,7 +238,7 @@ export default function ContactListsTable({
 
             <div className="table-content">
                 <div className="table-responsive position-relative">
-                    <TableColumnDnd onDragEnd={handleColumnDragEnd}>
+                    <TableColumnDnd id="contact-lists-table" onDragEnd={handleColumnDragEnd}>
                         <table className="table align-middle">
                             <thead>
                                 <SortableRow items={visibleColumnOrder}>

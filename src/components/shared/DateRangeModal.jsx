@@ -7,10 +7,16 @@ import { addDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, sub
 
 export default function DateRangeModal({ show, onClose, onApply, initialRange }) {
     const [range, setRange] = useState([{
-        startDate: new Date(),
-        endDate: new Date(),
+        startDate: null,
+        endDate: null,
         key: 'selection'
     }]);
+
+    useEffect(() => {
+        if (!initialRange) {
+            setRange([{ startDate: new Date(), endDate: new Date(), key: 'selection' }]);
+        }
+    }, [initialRange]);
 
     const [activePreset, setActivePreset] = useState("today");
     const [isMounted, setIsMounted] = useState(false);
