@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import DealsTable from "@/components/dashboard/deals/DealsTable";
+import DealsMatrix from "@/components/dashboard/deals/DealsMatrix";
 import DealsModal from "@/components/dashboard/deals/DealsModal";
 import TrashModal from "@/components/dashboard/deals/TrashModal";
 import { confirmAction } from "@/utils/confirm";
@@ -16,6 +17,7 @@ export default function DealsClient({ initialDeals = [] }) {
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'matrix'
 
   const [trashDeals, setTrashDeals] = useState([]);
   const [showTrashModal, setShowTrashModal] = useState(false);
@@ -108,9 +110,32 @@ export default function DealsClient({ initialDeals = [] }) {
     });
   };
 
+  const handleUpdateDeal = (updatedDeal) => {
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+  };
+
   return (
     <>
-      <PageHeader title="Deals" icon="fal fa-check-circle">
+      <PageHeader title="Deals"
+        icon="fal fa-check-circle"
+        titleCol="col-lg-4"
+        actionCol="col-lg-8">
+        {/* View Switcher */}
+        <div className="btn-group me-3 bg-white shadow-sm rounded-pill p-1">
+          <button
+            className={`btn btn-sm rounded-pill px-3 border-0 ${viewMode === 'list' ? 'bg-dark text-white' : 'text-muted'}`}
+            onClick={() => setViewMode('list')}
+          >
+            <i className="fal fa-list me-2"></i> List
+          </button>
+          <button
+            className={`btn btn-sm rounded-pill px-3 border-0 ${viewMode === 'matrix' ? 'bg-dark text-white' : 'text-muted'}`}
+            onClick={() => setViewMode('matrix')}
+          >
+            <i className="fal fa-th me-2"></i> Calendar
+          </button>
+        </div>
+
         <button
           type="button"
           className="alert alert-success rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
@@ -123,14 +148,16 @@ export default function DealsClient({ initialDeals = [] }) {
           <span className="txt ms-2">Add Deal</span>
         </button>
 
-        <button
-          type="button"
-          className="alert alert-danger rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
-          onClick={handleBulkDelete}
-        >
-          <i className="fal fa-trash"></i>
-          <span className="txt ms-2">Delete ({selectedIds.length})</span>
-        </button>
+        {viewMode === 'list' && (
+          <button
+            type="button"
+            className="alert alert-danger rounded-pill py-2 px-3 fsz-12 ms-2 border-0 mb-0"
+            onClick={handleBulkDelete}
+          >
+            <i className="fal fa-trash"></i>
+            <span className="txt ms-2">Delete ({selectedIds.length})</span>
+          </button>
+        )}
 
         <button
           type="button"
@@ -142,13 +169,20 @@ export default function DealsClient({ initialDeals = [] }) {
         </button>
       </PageHeader>
 
-      <DealsTable
-        data={deals}
-        selectedIds={selectedIds}
-        onSelectionChange={setSelectedIds}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      {viewMode === 'list' ? (
+        <DealsTable
+          data={deals}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      ) : (
+        <DealsMatrix
+          deals={deals}
+          onUpdateDeal={handleUpdateDeal}
+        />
+      )}
 
       <DealsModal
         show={showModal}
