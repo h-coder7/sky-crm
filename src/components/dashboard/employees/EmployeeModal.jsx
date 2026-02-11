@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import Select from "react-select";
 
 const SECTORS = [
     "Manufacturing",
@@ -19,6 +20,14 @@ const SECTORS = [
     "Automotive & Autotech",
     "Tech & Cybersecurity",
     "Pharmaceutical, Medical & MedTech"
+];
+
+const ROLE_OPTIONS = [
+    { value: "Head Department", label: "Head Department" },
+    { value: "Senior Business Development Manager", label: "Senior Business Development Manager" },
+    { value: "Business Development Manager", label: "Business Development Manager" },
+    { value: "Senior Business Development Executive", label: "Senior Business Development Executive" },
+    { value: "Business Development Executive", label: "Business Development Executive" },
 ];
 
 export default function EmployeeModal({ show, onClose, onSave, employee = null }) {
@@ -58,6 +67,10 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleRoleChange = (selectedOption) => {
+        setFormData((prev) => ({ ...prev, role: selectedOption?.value || "" }));
     };
 
     const handleSectorChange = (sector) => {
@@ -179,20 +192,15 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                                             <label htmlFor="role" className="form-label">
                                                 Role
                                             </label>
-                                            <select
-                                                className="form-control form-select"
-                                                id="role"
-                                                name="role"
-                                                value={formData.role}
-                                                onChange={handleChange}
+                                            <Select
+                                                instanceId="employee-role-select"
+                                                options={ROLE_OPTIONS}
+                                                value={ROLE_OPTIONS.find(opt => opt.value === formData.role)}
+                                                onChange={handleRoleChange}
+                                                placeholder="Select Role"
+                                                classNamePrefix="react-select"
                                                 required
-                                            >
-                                                <option value="Head Department">Head Department</option>
-                                                <option value="Senior Business Development Manager">Senior Business Development Manager</option>
-                                                <option value="Business Development Manager">Business Development Manager</option>
-                                                <option value="Senior Business Development Executive">Senior Business Development Executive</option>
-                                                <option value="Business Development Executive">Business Development Executive</option>
-                                            </select>
+                                            />
                                         </div>
                                     </div>
                                     <div className="col-lg-12">

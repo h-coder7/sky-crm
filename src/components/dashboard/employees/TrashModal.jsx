@@ -1,10 +1,15 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { confirmAction } from "@/utils/confirm";
 
-export default function TrashModal({ show, onClose, trashEmployees, onRestore, onPermanentDelete }) {
+export default function TrashModal({
+    show,
+    trashEmployees = [],
+    onClose,
+    onRestore,
+    onPermanentDelete,
+}) {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -15,83 +20,64 @@ export default function TrashModal({ show, onClose, trashEmployees, onRestore, o
 
     return createPortal(
         <>
-            <div 
-                className="modal-backdrop fade show" 
+            <div
+                className="modal-backdrop fade show"
                 onClick={onClose}
             ></div>
-            <div 
-                className="modal fade show d-block" 
-                tabIndex="-1" 
+            <div
+                className="modal fade show d-block"
+                tabIndex="-1"
                 onClick={(e) => e.target === e.currentTarget && onClose()}
             >
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">Employees Trash Can</h5>
+                            <h5 className="modal-title">Recycle Bin</h5>
                             <button
                                 type="button"
                                 className="btn-close"
                                 onClick={onClose}
                             ></button>
                         </div>
-                        <div className="modal-body p-0">
-                            <div className="table-responsive">
-                                <table className="table mb-0">
-                                    <thead className="bg-light">
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th className="text-end">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {trashEmployees.length === 0 ? (
+                        <div className="modal-body">
+                            {trashEmployees.length === 0 ? (
+                                <div className="text-center py-5 text-muted">
+                                    <i className="fal fa-trash-alt fa-3x mb-3"></i>
+                                    <p>Trash is empty</p>
+                                </div>
+                            ) : (
+                                <div className="table-responsive">
+                                    <table className="table align-middle mb-0">
+                                        <thead className="bg-light">
                                             <tr>
-                                                <td colSpan="4" className="text-center py-4 text-muted">
-                                                    Trash is empty
-                                                </td>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                                <th>Actions</th>
                                             </tr>
-                                        ) : (
-                                            trashEmployees.map((emp) => (
-                                                <tr key={emp.id}>
-                                                    <td>{emp.name}</td>
-                                                    <td>{emp.email}</td>
+                                        </thead>
+                                        <tbody>
+                                            {trashEmployees.map((employee) => (
+                                                <tr key={employee.id}>
+                                                    <td>{employee.name}</td>
+                                                    <td>{employee.email}</td>
+                                                    <td>{employee.role}</td>
                                                     <td>
-                                                        {(() => {
-                                                            const getRoleBadgeClass = (role) => {
-                                                                switch (role) {
-                                                                    case "Head Department": return "alert-warning";
-                                                                    case "Senior Business Development Manager": return "alert-success";
-                                                                    case "Business Development Manager": return "alert-secondary";
-                                                                    case "Senior Business Development Executive": return "role-purple";
-                                                                    case "Business Development Executive": return "role-teal";
-                                                                    default: return "alert-primary";
-                                                                }
-                                                            };
-                                                            return (
-                                                                <span className={`alert rounded-pill py-1 px-3 fsz-10 border-0 mb-0 ${getRoleBadgeClass(emp.role)}`}>
-                                                                    {emp.role}
-                                                                </span>
-                                                            );
-                                                        })()}
-                                                    </td>
-                                                    <td className="text-end">
-                                                        <button 
+                                                        <button
                                                             className="btn btn-sm btn-outline-success me-2"
-                                                            onClick={() => onRestore(emp.id)}
+                                                            onClick={() => onRestore(employee.id)}
                                                             title="Restore"
                                                         >
                                                             <i className="fal fa-trash-undo"></i>
                                                         </button>
-                                                        <button 
+                                                        <button
                                                             className="btn btn-sm btn-outline-danger"
                                                             onClick={() => {
                                                                 confirmAction({
                                                                     title: "Delete Permanently?",
                                                                     message: "This action cannot be undone. Are you sure?",
                                                                     confirmLabel: "Delete Forever",
-                                                                    onConfirm: () => onPermanentDelete(emp.id),
+                                                                    onConfirm: () => onPermanentDelete(employee.id),
                                                                 });
                                                             }}
                                                             title="Delete Permanently"
@@ -100,20 +86,11 @@ export default function TrashModal({ show, onClose, trashEmployees, onRestore, o
                                                         </button>
                                                     </td>
                                                 </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="butn-st2 butn-md line-butn"
-                                onClick={onClose}
-                            >
-                                Close
-                            </button>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
