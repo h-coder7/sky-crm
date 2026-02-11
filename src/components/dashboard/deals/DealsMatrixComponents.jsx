@@ -81,7 +81,7 @@ export function QuarterRow({ quarter, deals }) {
     const quarterTotal = quarterDeals.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
 
     return (
-        <div className="quarter-section border-bottom">
+        <div className="quarter-section">
             <div
                 className="quarter-header"
                 onClick={toggleExpand}
@@ -107,7 +107,7 @@ export function MonthRow({ monthName, quarterId, deals }) {
     const monthDeals = deals.filter(d => getDealMonthName(d) === monthName);
 
     return (
-        <div className="month-row d-flex border-bottom" style={{ minHeight: '150px' }}>
+        <div className="month-row d-flex">
             <div className="period-col">
                 {monthName}
             </div>
@@ -134,14 +134,14 @@ export function DroppableCell({ statusId, monthName, deals, color }) {
     return (
         <div
             ref={setNodeRef}
-            className={`flex-fill p-2 border-end position-relative ${isOver ? 'bg-light-subtle ring-2 ring-primary' : ''}`}
+            className={`flex-fill ${isOver ? 'bg-light-subtle ring-2 ring-primary' : ''}`}
             style={{ minWidth: '150px' }}
         >
-            <div className="d-flex flex-column gap-2 w-100 h-100">
-                {deals.map(deal => (
-                    <DealBubble key={deal.id} deal={deal} color={color} />
-                ))}
-            </div>
+            {deals.map(deal => (
+                <DealBubble key={deal.id} deal={deal} color={color} />
+            ))}
+            {/* <div className="d-flex flex-column gap-2 w-100 h-100">
+            </div> */}
         </div>
     );
 }

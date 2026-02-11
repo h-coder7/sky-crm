@@ -4093,11 +4093,29 @@ section {
 
     .matrix-header {
         border-bottom: 1px solid #dee2e6;
-        min-width: 100%; /* Ensure alignment */
+        min-width: 100%;
+        .status-col, .period-col {
+            border: 0;
+            padding: 10px !important;
+            font-size: 12px;
+        }
     }
 
     .matrix-body {
         min-width: 100%; /* Ensure alignment */
+    }
+
+    .quarter-section {
+        // border-bottom: 5px solid #fff;
+        // padding-bottom: 10px;
+    }
+
+    .month-row {
+        border-bottom: 2px dashed #fff;
+        min-height: 150px;
+        &:last-of-type {
+            border-bottom: 0;
+        }
     }
 
     .quarter-header {
@@ -4140,13 +4158,19 @@ section {
         }
     }
 
-    .status-col, .flex-fill {
+    .flex-fill {
         // min-width: 150px;
+        position: relative;
         width: 100%;
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
+        border-inline-end: 2px dashed #fff;
+        padding: 5px;
+        &:last-of-type {
+            border-inline-end: 0;
+        }
     }
     
     .deal-bubble {
@@ -4163,6 +4187,7 @@ section {
         padding: 20px;
         box-shadow: 5px 5px 20px #0001;
         z-index: 30;
+        width: 100%;
         
         &:hover {
             box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;

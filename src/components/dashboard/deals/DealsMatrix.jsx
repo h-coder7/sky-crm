@@ -104,12 +104,12 @@ export default function DealsMatrix({ deals, onUpdateDeal }) {
 
                 <div className="matrix-header d-flex text-uppercase fsz-12">
                     <div className="period-col fw-bold p-3">PERIOD</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#e6f7ff', color: '#0050b3' }}>BRIEFING PHASE</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#f9f0ff', color: '#531dab' }}>PROPOSAL PHASE</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#fff7e6', color: '#d46b08' }}>QUOTATION</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#f6ffed', color: '#389e0d' }}>CONFIRMED</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#fff1f0', color: '#cf1322' }}>REJECTED</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#f0f5ff', color: '#1d39c4' }}>TASK DONE</div>
+                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#cfe2ff', color: '#0d6efd' }}>BRIEFING PHASE</div>
+                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#cff4fc', color: '#0DCAF0' }}>PROPOSAL PHASE</div>
+                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#FFF3CD', color: '#FFC20A' }}>QUOTATION</div>
+                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#D1E7DD', color: '#198754' }}>CONFIRMED</div>
+                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#F8D7DA', color: '#DC3545' }}>REJECTED</div>
+                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#E2E3E5', color: '#6C757D' }}>TASK DONE</div>
                 </div>
 
                 <div className="matrix-body">
