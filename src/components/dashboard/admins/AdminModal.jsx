@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import Select from "react-select";
 import FileUpload from "../../shared/FileUpload";
+
+const ROLE_OPTIONS = [
+    { value: "Admin", label: "Admin" },
+    { value: "Super Admin", label: "Super Admin" },
+    { value: "Sub Admin", label: "Sub Admin" }
+];
 
 const PERMISSIONS = [
     "Dashboard Access",
@@ -12,6 +19,8 @@ const PERMISSIONS = [
     "Reports & Analytics",
     "Content Management"
 ];
+
+const PERMISSION_OPTIONS = PERMISSIONS.map(p => ({ value: p, label: p }));
 
 const PHOTO_ACCEPT_TYPES = {
     'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp']
@@ -69,14 +78,9 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
         }
     };
 
-    const handlePermissionChange = (permission) => {
-        setFormData((prev) => {
-            const currentPermissions = Array.isArray(prev.permissions) ? prev.permissions : [];
-            const newPermissions = currentPermissions.includes(permission)
-                ? currentPermissions.filter((p) => p !== permission)
-                : [...currentPermissions, permission];
-            return { ...prev, permissions: newPermissions };
-        });
+    const handlePermissionChange = (selectedOptions) => {
+        const permissions = selectedOptions ? selectedOptions.map(option => option.value) : [];
+        setFormData((prev) => ({ ...prev, permissions }));
     };
 
     const handleSelectAllPermissions = (e) => {
@@ -177,18 +181,15 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
                                             <label htmlFor="role" className="form-label">Role</label>
-                                            <select
-                                                className="form-control form-select"
-                                                id="role"
+                                            <Select
                                                 name="role"
-                                                value={formData.role}
-                                                onChange={handleChange}
+                                                options={ROLE_OPTIONS}
+                                                className="react-select-container"
+                                                classNamePrefix="react-select"
+                                                value={ROLE_OPTIONS.find(option => option.value === formData.role)}
+                                                onChange={(option) => setFormData(prev => ({ ...prev, role: option.value }))}
                                                 required
-                                            >
-                                                <option value="Admin">Admin</option>
-                                                <option value="Super Admin">Super Admin</option>
-                                                <option value="Sub Admin">Sub Admin</option>
-                                            </select>
+                                            />
                                         </div>
                                     </div>
                                     <div className="col-lg-6">
@@ -252,45 +253,35 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                         </div>
                                     </div>
 
-                                    {/* Permissions Checkboxes */}
+                                    {/* Permissions Select */}
                                     <div className="col-lg-12">
                                         <div className="form-group mb-3">
-                                            <label className="form-label d-block mb-3">Permissions</label>
-
-                                            <div className="form-check mb-3">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="checkbox"
-                                                    id="selectAllPermissions"
-                                                    checked={isAllPermissionsSelected}
-                                                    onChange={handleSelectAllPermissions}
-                                                />
-                                                <label className="form-check-label fsz-13" htmlFor="selectAllPermissions">
-                                                    Select All Permissions
-                                                </label>
+                                            <div className="d-flex align-items-center justify-content-between mb-2">
+                                                <label className="form-label mb-0">Permissions</label>
+                                                <div className="form-check m-0">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="checkbox"
+                                                        id="selectAllPermissions"
+                                                        checked={isAllPermissionsSelected}
+                                                        onChange={handleSelectAllPermissions}
+                                                    />
+                                                    <label className="form-check-label fsz-12" htmlFor="selectAllPermissions">
+                                                        Select All
+                                                    </label>
+                                                </div>
                                             </div>
 
-                                            <hr className="mb-4 text-muted op-1" />
-
-                                            <div className="checks-modal">
-                                                {PERMISSIONS.map((permission, index) => (
-                                                    <div className="form-check" key={index}>
-                                                        <input
-                                                            className="form-check-input"
-                                                            type="checkbox"
-                                                            id={`permission-${index}`}
-                                                            checked={selectedPermissions.includes(permission)}
-                                                            onChange={() => handlePermissionChange(permission)}
-                                                        />
-                                                        <label
-                                                            className="form-check-label fsz-12"
-                                                            htmlFor={`permission-${index}`}
-                                                        >
-                                                            {permission}
-                                                        </label>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                            <Select
+                                                isMulti
+                                                name="permissions"
+                                                options={PERMISSION_OPTIONS}
+                                                className="react-select-container"
+                                                classNamePrefix="react-select"
+                                                placeholder="Select Permissions..."
+                                                value={PERMISSION_OPTIONS.filter(option => selectedPermissions.includes(option.value))}
+                                                onChange={handlePermissionChange}
+                                            />
                                         </div>
                                     </div>
 
