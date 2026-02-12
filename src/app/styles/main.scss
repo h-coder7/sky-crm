@@ -3678,6 +3678,7 @@ section {
 }
 
 .modal {
+    backdrop-filter: blur(5px);
     .modal-content {
         border: 0;
         border-radius: 30px;
@@ -4869,4 +4870,34 @@ html[dir="ltr"] {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
+}
+
+/* --------------- modal transition --------------- */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes backdropFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 0.5;
+    }
+}
+
+.modal.show .modal-dialog {
+    animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+.modal-backdrop.show {
+    opacity: 0.5;
+    animation: backdropFadeIn 0.3s ease-out forwards;
 }
