@@ -109,7 +109,7 @@ export function MonthRow({ monthName, quarterId, deals }) {
     return (
         <div className="month-row d-flex">
             <div className="period-col">
-                {monthName}
+                <span className="txt"> {monthName} </span>
             </div>
 
             {STATUS_COLUMNS.map(status => (

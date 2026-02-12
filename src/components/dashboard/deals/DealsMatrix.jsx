@@ -102,14 +102,15 @@ export default function DealsMatrix({ deals, onUpdateDeal }) {
                     </div>
                 </div>
 
-                <div className="matrix-header d-flex text-uppercase fsz-12">
-                    <div className="period-col fw-bold p-3">PERIOD</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#cfe2ff', color: '#0d6efd' }}>BRIEFING PHASE</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#cff4fc', color: '#0DCAF0' }}>PROPOSAL PHASE</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#FFF3CD', color: '#FFC20A' }}>QUOTATION</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#D1E7DD', color: '#198754' }}>CONFIRMED</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#F8D7DA', color: '#DC3545' }}>REJECTED</div>
-                    <div className="status-col flex-fill text-center p-2 fw-bold" style={{ backgroundColor: '#E2E3E5', color: '#6C757D' }}>TASK DONE</div>
+                <div className="matrix-header d-flex text-capitalize fw-500 fsz-12">
+                    {/* <div className="period-col p-3">Period</div> */}
+                    <div className="period-col bg-transparent p-3"></div>
+                    <div className="status-col flex-fill text-center p-2" style={{ backgroundColor: '#cfe2ff', color: '#0d6efd' }}>Briefing Phase</div>
+                    <div className="status-col flex-fill text-center p-2" style={{ backgroundColor: '#cff4fc', color: '#0DCAF0' }}>Proposal Phase</div>
+                    <div className="status-col flex-fill text-center p-2" style={{ backgroundColor: '#FFF3CD', color: '#FFC20A' }}>Quotation</div>
+                    <div className="status-col flex-fill text-center p-2" style={{ backgroundColor: '#D1E7DD', color: '#198754' }}>Confirmed</div>
+                    <div className="status-col flex-fill text-center p-2" style={{ backgroundColor: '#F8D7DA', color: '#DC3545' }}>Rejected</div>
+                    <div className="status-col flex-fill text-center p-2" style={{ backgroundColor: '#E2E3E5', color: '#6C757D' }}>Task Done</div>
                 </div>
 
                 <div className="matrix-body">
