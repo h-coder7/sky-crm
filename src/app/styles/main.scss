@@ -395,6 +395,9 @@ small.text {
         white-space: nowrap;
         font-size: 12px;
         background-color: #fff;
+        .react-select__single-value {
+            max-width: 150px;
+        }
     }
 
     thead {
@@ -650,6 +653,7 @@ small.text {
     border-radius: 10px !important;
     box-shadow: 5px 5px 20px #0001 !important;
     padding: 10px !important;
+    min-width: max-content;
     .react-select__option {
         padding: 10px !important;
         border-radius: 10px !important;
@@ -3734,9 +3738,9 @@ section {
         border: 1px solid #9993;
         margin: 10px 0 0;
         border-radius: 10px;
-        max-height: 70vh;
-        overflow-x: hidden;
-        overflow-y: auto;
+        // max-height: 70vh;
+        // overflow-x: hidden;
+        // overflow-y: auto;
         &::-webkit-scrollbar {
             height: 0;
             width: 0;
@@ -3774,7 +3778,7 @@ section {
         justify-content: center;
         margin-top: 10px;
         button {
-            min-width: 180px;
+            width: 180px;
             max-width: 40vw;
             border-radius: 10px;
         }

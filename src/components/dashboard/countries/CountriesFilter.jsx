@@ -5,14 +5,21 @@ import { useState } from "react";
 export default function CountriesFilter({ table, dateRangeValue, onOpenModal, onReset, columnOrder = [] }) {
     // Local states for inputs to ensure they are always responsive/writable
     const [titleSearch, setTitleSearch] = useState(table.getColumn("title")?.getFilterValue() || "");
+    const [countryKeySearch, setCountryKeySearch] = useState(table.getColumn("country_key")?.getFilterValue() || "");
 
     const handleTitleChange = (val) => {
         setTitleSearch(val);
         table.getColumn("title")?.setFilterValue(val);
     };
 
+    const handleCountryKeyChange = (val) => {
+        setCountryKeySearch(val);
+        table.getColumn("country_key")?.setFilterValue(val);
+    };
+
     const handleReset = () => {
         setTitleSearch("");
+        setCountryKeySearch("");
         onReset?.();
     };
 
@@ -24,6 +31,16 @@ export default function CountriesFilter({ table, dateRangeValue, onOpenModal, on
                     placeholder="Name"
                     value={titleSearch}
                     onChange={(e) => handleTitleChange(e.target.value)}
+                />
+            </td>
+        ),
+        country_key: (
+            <td key="country_key">
+                <input
+                    className="form-control"
+                    placeholder="Key"
+                    value={countryKeySearch}
+                    onChange={(e) => handleCountryKeyChange(e.target.value)}
                 />
             </td>
         ),

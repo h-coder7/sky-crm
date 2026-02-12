@@ -64,6 +64,7 @@ export default function CountriesTable({
        ====================================================================== */
     const columns = useMemo(() => [
         { id: "title", accessorKey: "title", header: "Name", enableSorting: true, draggable: false },
+        { id: "country_key", accessorKey: "country_key", header: "Country Key", enableSorting: true, draggable: true },
         {
             id: "created_at",
             accessorKey: "created_at",
@@ -212,6 +213,26 @@ export default function CountriesTable({
                                         </SortableTh>
                                     )}
 
+                                    {/* Country Key Column */}
+                                    {table.getColumn("country_key").getIsVisible() && (
+                                        <SortableTh id="country_key" key="country_key">
+                                            <span>Country Key</span>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => table.getColumn("country_key").toggleSorting(false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
+                                                    </li>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => table.getColumn("country_key").toggleSorting(true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+
                                     {/* Added On Column */}
                                     {table.getColumn("created_at").getIsVisible() && (
                                         <SortableTh id="created_at" key="created_at">
@@ -301,6 +322,12 @@ export default function CountriesTable({
                                                                 {item.title}
                                                             </label>
                                                         </div>
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("country_key").getIsVisible() && (
+                                                    <td id="country_key" key="country_key" className="fsz-13 text-muted">
+                                                        {item.country_key || "-"}
                                                     </td>
                                                 )}
 

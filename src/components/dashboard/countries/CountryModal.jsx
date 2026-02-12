@@ -7,6 +7,7 @@ export default function CountryModal({ show, onClose, onSave, country = null }) 
   const [isMounted, setIsMounted] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
+    country_key: "",
   });
 
   useEffect(() => {
@@ -17,10 +18,12 @@ export default function CountryModal({ show, onClose, onSave, country = null }) 
     if (country) {
       setFormData({
         title: country.title || "",
+        country_key: country.country_key || "",
       });
     } else {
       setFormData({
         title: "",
+        country_key: "",
       });
     }
   }, [country, show]);
@@ -39,13 +42,13 @@ export default function CountryModal({ show, onClose, onSave, country = null }) 
 
   return createPortal(
     <>
-      <div 
-        className="modal-backdrop fade show" 
+      <div
+        className="modal-backdrop fade show"
         onClick={onClose}
       ></div>
-      <div 
-        className="modal fade show d-block" 
-        tabIndex="-1" 
+      <div
+        className="modal fade show d-block"
+        tabIndex="-1"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <div className="modal-dialog modal-dialog-centered">
@@ -72,6 +75,20 @@ export default function CountryModal({ show, onClose, onSave, country = null }) 
                     id="title"
                     name="title"
                     value={formData.title}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="country_key" className="form-label">
+                    Country Key
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="country_key"
+                    name="country_key"
+                    value={formData.country_key}
                     onChange={handleChange}
                     required
                   />

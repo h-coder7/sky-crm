@@ -1,6 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import Select from "react-select";
+
+const ROLE_OPTIONS = [
+    { value: "", label: "Role" },
+    { value: "Head Department", label: "Head Department" },
+    { value: "Senior Business Development Manager", label: "Senior Business Development Manager" },
+    { value: "Business Development Manager", label: "Business Development Manager" },
+    { value: "Senior Business Development Executive", label: "Senior Business Development Executive" },
+    { value: "Business Development Executive", label: "Business Development Executive" },
+];
 
 export default function EmployeesFilter({ table, dateRangeValue, onOpenModal, onReset, columnOrder = [] }) {
     const [nameSearch, setNameSearch] = useState("");
@@ -24,7 +34,8 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal, on
         table.getColumn("phone")?.setFilterValue(val || undefined);
     };
 
-    const handleRoleChange = (val) => {
+    const handleRoleChange = (selectedOption) => {
+        const val = selectedOption?.value || "";
         setRoleSearch(val);
         table.getColumn("role")?.setFilterValue(val || undefined);
     };
@@ -76,18 +87,14 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal, on
         ),
         role: (
             <td key="role">
-                <select
-                    className="form-control form-select form-select-sm fsz-12"
-                    value={roleSearch}
-                    onChange={(e) => handleRoleChange(e.target.value)}
-                >
-                    <option value="">Role</option>
-                    <option value="Head Department">Head Department</option>
-                    <option value="Senior Business Development Manager">Senior Business Development Manager</option>
-                    <option value="Business Development Manager">Business Development Manager</option>
-                    <option value="Senior Business Development Executive">Senior Business Development Executive</option>
-                    <option value="Business Development Executive">Business Development Executive</option>
-                </select>
+                <Select
+                    options={ROLE_OPTIONS}
+                    classNamePrefix="react-select"
+                    value={ROLE_OPTIONS.find(opt => opt.value === roleSearch)}
+                    onChange={handleRoleChange}
+                    isSearchable={false}
+                    placeholder="Role"
+                />
             </td>
         ),
         sector: (

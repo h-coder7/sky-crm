@@ -4,24 +4,6 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Select from "react-select";
 
-const SECTORS = [
-    "Manufacturing",
-    "Banking. Insurance & FinTech",
-    "Telecomm, Media & Entertainment",
-    "Beauty, Cosmetics & BeautyTech",
-    "Defense & Security",
-    "FMCGs, F&B, Foodtech & Aggregators",
-    "Aviation, Hospitality & TravelTech",
-    "Real Estate & Proptech",
-    "Luxury, Fashion & RetailTech",
-    "Renewable Energy, Oil & Gas",
-    "Business Services, Auditing & Consultancy",
-    "Government",
-    "Automotive & Autotech",
-    "Tech & Cybersecurity",
-    "Pharmaceutical, Medical & MedTech"
-];
-
 const ROLE_OPTIONS = [
     { value: "Head Department", label: "Head Department" },
     { value: "Senior Business Development Manager", label: "Senior Business Development Manager" },
@@ -30,28 +12,40 @@ const ROLE_OPTIONS = [
     { value: "Business Development Executive", label: "Business Development Executive" },
 ];
 
+const PERMISSIONS = [
+    "Dashboard Access",
+    "User Management",
+    "Admin Management",
+    "Settings",
+    "Reports & Analytics",
+    "Content Management"
+];
+
+const PERMISSION_OPTIONS = PERMISSIONS.map(p => ({ value: p, label: p }));
+
 export default function EmployeeModal({ show, onClose, onSave, employee = null }) {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         phone: "",
         role: "Business Development Executive",
-        sector: [],
+        password: "",
+        confirmPassword: "",
+        permissions: [],
     });
+
+    const [passwordError, setPasswordError] = useState("");
 
     useEffect(() => {
         if (employee) {
-            // Intelligent parsing of the sector string by matching against known sectors
-            const savedSectors = typeof employee.sector === "string"
-                ? SECTORS.filter(s => employee.sector.includes(s))
-                : (Array.isArray(employee.sector) ? employee.sector : []);
-
             setFormData({
                 name: employee.name || "",
                 email: employee.email || "",
                 phone: employee.phone || "",
                 role: employee.role || "Business Development Executive",
-                sector: savedSectors,
+                password: "",
+                confirmPassword: "",
+                permissions: Array.isArray(employee.permissions) ? employee.permissions : [],
             });
         } else {
             setFormData({
@@ -59,46 +53,54 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                 email: "",
                 phone: "",
                 role: "Business Development Executive",
-                sector: [],
+                password: "",
+                confirmPassword: "",
+                permissions: [],
             });
         }
+        setPasswordError("");
     }, [employee, show]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+
+        if (name === "password" || name === "confirmPassword") {
+            setPasswordError("");
+        }
     };
 
     const handleRoleChange = (selectedOption) => {
         setFormData((prev) => ({ ...prev, role: selectedOption?.value || "" }));
     };
 
-    const handleSectorChange = (sector) => {
-        setFormData((prev) => {
-            const currentSectors = Array.isArray(prev.sector) ? prev.sector : [];
-            const newSectors = currentSectors.includes(sector)
-                ? currentSectors.filter((s) => s !== sector)
-                : [...currentSectors, sector];
-            return { ...prev, sector: newSectors };
-        });
+    const handlePermissionChange = (selectedOptions) => {
+        const permissions = selectedOptions ? selectedOptions.map(option => option.value) : [];
+        setFormData((prev) => ({ ...prev, permissions }));
     };
 
-    const handleSelectAllSectors = (e) => {
+    const handleSelectAllPermissions = (e) => {
         if (e.target.checked) {
-            setFormData((prev) => ({ ...prev, sector: [...SECTORS] }));
+            setFormData((prev) => ({ ...prev, permissions: [...PERMISSIONS] }));
         } else {
-            setFormData((prev) => ({ ...prev, sector: [] }));
+            setFormData((prev) => ({ ...prev, permissions: [] }));
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Join sectors with a distinct delimiter for saving/displaying
-        // Using "; " to avoid confusion with commas inside names
-        const submissionData = {
-            ...formData,
-            sector: formData.sector.join(", ")
-        };
+
+        if (formData.password !== formData.confirmPassword) {
+            setPasswordError("Passwords do not match");
+            return;
+        }
+
+        if (!employee && !formData.password) {
+            setPasswordError("Password is required for new employees");
+            return;
+        }
+
+        const { confirmPassword, ...submissionData } = formData;
         onSave(submissionData);
     };
 
@@ -110,8 +112,8 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
 
     if (!show || !isMounted) return null;
 
-    const selectedSectors = Array.isArray(formData.sector) ? formData.sector : [];
-    const isAllSelected = selectedSectors.length === SECTORS.length;
+    const selectedPermissions = Array.isArray(formData.permissions) ? formData.permissions : [];
+    const isAllPermissionsSelected = selectedPermissions.length === PERMISSIONS.length;
 
     return createPortal(
         <>
@@ -141,9 +143,7 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                                 <div className="row">
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
-                                            <label htmlFor="name" className="form-label">
-                                                Name
-                                            </label>
+                                            <label htmlFor="name" className="form-label">Name</label>
                                             <input
                                                 type="text"
                                                 className="form-control"
@@ -157,9 +157,22 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                                     </div>
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
-                                            <label htmlFor="email" className="form-label">
-                                                Email
-                                            </label>
+                                            <label htmlFor="phone" className="form-label">Phone</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="phone"
+                                                name="phone"
+                                                value={formData.phone}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="col-lg-6">
+                                        <div className="form-group mb-3">
+                                            <label htmlFor="email" className="form-label">Email</label>
                                             <input
                                                 type="email"
                                                 className="form-control"
@@ -173,25 +186,7 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                                     </div>
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
-                                            <label htmlFor="phone" className="form-label">
-                                                Phone
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="phone"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="role" className="form-label">
-                                                Role
-                                            </label>
+                                            <label htmlFor="role" className="form-label">Role</label>
                                             <Select
                                                 instanceId="employee-role-select"
                                                 options={ROLE_OPTIONS}
@@ -203,44 +198,67 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                                             />
                                         </div>
                                     </div>
+                                    <div className="col-lg-6">
+                                        <div className="form-group mb-3">
+                                            <label htmlFor="password" className="form-label">
+                                                {employee ? "New Password (Optional)" : "Password"}
+                                            </label>
+                                            <input
+                                                type="password"
+                                                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+                                                id="password"
+                                                name="password"
+                                                value={formData.password}
+                                                onChange={handleChange}
+                                                required={!employee}
+                                            />
+                                            {passwordError && <div className="invalid-feedback">{passwordError}</div>}
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                        <div className="form-group mb-3">
+                                            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                                            <input
+                                                type="password"
+                                                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+                                                id="confirmPassword"
+                                                name="confirmPassword"
+                                                value={formData.confirmPassword}
+                                                onChange={handleChange}
+                                                required={!employee && formData.password}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Permissions Select */}
                                     <div className="col-lg-12">
                                         <div className="form-group mb-3">
-                                            <label className="form-label d-block mb-3">Sector</label>
-
-                                            <div className="form-check mb-3">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="checkbox"
-                                                    id="selectAllSectors"
-                                                    checked={isAllSelected}
-                                                    onChange={handleSelectAllSectors}
-                                                />
-                                                <label className="form-check-label fsz-13" htmlFor="selectAllSectors">
-                                                    Select All Sectors
-                                                </label>
+                                            <div className="d-flex align-items-center justify-content-between mb-2">
+                                                <label className="form-label mb-0">Permissions</label>
+                                                <div className="form-check m-0">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="checkbox"
+                                                        id="selectAllPermissions"
+                                                        checked={isAllPermissionsSelected}
+                                                        onChange={handleSelectAllPermissions}
+                                                    />
+                                                    <label className="form-check-label fsz-12" htmlFor="selectAllPermissions">
+                                                        Select All
+                                                    </label>
+                                                </div>
                                             </div>
 
-                                            <hr className="mb-4 text-muted op-1" />
-
-                                            <div className="checks-modal">
-                                                {SECTORS.map((sector, index) => (
-                                                    <div className="form-check">
-                                                        <input
-                                                            className="form-check-input"
-                                                            type="checkbox"
-                                                            id={`sector-${index}`}
-                                                            checked={selectedSectors.includes(sector)}
-                                                            onChange={() => handleSectorChange(sector)}
-                                                        />
-                                                        <label
-                                                            className="form-check-label fsz-12"
-                                                            htmlFor={`sector-${index}`}
-                                                        >
-                                                            {sector}
-                                                        </label>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                            <Select
+                                                isMulti
+                                                name="permissions"
+                                                options={PERMISSION_OPTIONS}
+                                                className="react-select-container"
+                                                classNamePrefix="react-select"
+                                                placeholder="Select Permissions..."
+                                                value={PERMISSION_OPTIONS.filter(option => selectedPermissions.includes(option.value))}
+                                                onChange={handlePermissionChange}
+                                            />
                                         </div>
                                     </div>
                                 </div>

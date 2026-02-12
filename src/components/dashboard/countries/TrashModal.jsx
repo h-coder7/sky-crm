@@ -20,13 +20,13 @@ export default function TrashModal({
 
   return createPortal(
     <>
-      <div 
-        className="modal-backdrop fade show" 
+      <div
+        className="modal-backdrop fade show"
         onClick={onClose}
       ></div>
-      <div 
-        className="modal fade show d-block" 
-        tabIndex="-1" 
+      <div
+        className="modal fade show d-block"
+        tabIndex="-1"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <div className="modal-dialog modal-dialog-centered modal-lg">
@@ -51,6 +51,7 @@ export default function TrashModal({
                     <thead className="bg-light">
                       <tr>
                         <th>Name</th>
+                        <th>Country Key</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -58,6 +59,7 @@ export default function TrashModal({
                       {trashCountries.map((country) => (
                         <tr key={country.id}>
                           <td>{country.title}</td>
+                          <td>{country.country_key || "-"}</td>
                           <td>
                             <button
                               className="btn btn-sm btn-outline-success me-2"

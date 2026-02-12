@@ -91,6 +91,7 @@ export default function CountriesClient({ initialCountries = [] }) {
             const newCountry = {
                 id: Date.now(),
                 title: data.title,
+                country_key: data.country_key,
                 created_at: new Date().toISOString().split("T")[0],
             };
             setCountries((prev) => [newCountry, ...prev]);
