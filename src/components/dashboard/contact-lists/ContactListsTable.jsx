@@ -64,62 +64,66 @@ export default function ContactListsTable({
        ====================================================================== */
     const columns = useMemo(() => [
         { id: "name", accessorKey: "name", header: "Name", enableSorting: true, draggable: false },
+        { id: "gender", accessorKey: "gender", header: "Gender", enableSorting: true, draggable: true },
+        { id: "company", accessorKey: "company", header: "Company", enableSorting: true, draggable: true },
+        { id: "job_title", accessorKey: "job_title", header: "Job Title", enableSorting: true, draggable: true },
+        { id: "employee", accessorKey: "employee", header: "Employee", enableSorting: true, draggable: true },
+        { id: "status", accessorKey: "status", header: "Status", enableSorting: true, draggable: true },
+        { id: "top_customer", accessorKey: "top_customer", header: "Top Cust.", enableSorting: true, draggable: true },
+        { id: "decision_maker_status", accessorKey: "decision_maker_status", header: "D.M. Status", enableSorting: true, draggable: true },
+        { id: "country", accessorKey: "country", header: "Country", enableSorting: true, draggable: true },
         { id: "address", accessorKey: "address", header: "Address", enableSorting: true, draggable: true },
-        { id: "phone", accessorKey: "phone", header: "Phone", enableSorting: true, draggable: true },
         { id: "email", accessorKey: "email", header: "Email", enableSorting: true, draggable: true },
         {
-            id: "top_customer",
-            accessorKey: "top_customer",
-            header: "Top Cust.",
-            enableSorting: true,
+            id: "phones",
+            accessorKey: "phones",
+            header: "Phone Numbers",
+            enableSorting: false,
             draggable: true,
             filterFn: (row, columnId, filterValue) => {
-                if (filterValue === undefined || filterValue === "") return true;
-                return row.getValue(columnId) === filterValue;
-            },
+                const val = row.getValue(columnId);
+                if (!filterValue) return true;
+                if (Array.isArray(val)) {
+                    return val.some(v => v?.toLowerCase().includes(filterValue.toLowerCase()));
+                }
+                return String(val || "").toLowerCase().includes(filterValue.toLowerCase());
+            }
         },
         {
-            id: "decision_maker_status",
-            accessorKey: "decision_maker_status",
-            header: "D.M. Status",
-            enableSorting: true,
+            id: "landlines",
+            accessorKey: "landlines",
+            header: "Landline Numbers",
+            enableSorting: false,
             draggable: true,
             filterFn: (row, columnId, filterValue) => {
+                const val = row.getValue(columnId);
                 if (!filterValue) return true;
-                return row.getValue(columnId) === filterValue;
-            },
+                if (Array.isArray(val)) {
+                    return val.some(v => v?.toLowerCase().includes(filterValue.toLowerCase()));
+                }
+                return String(val || "").toLowerCase().includes(filterValue.toLowerCase());
+            }
         },
-        {
-            id: "status",
-            accessorKey: "status",
-            header: "Status",
-            enableSorting: true,
-            draggable: true,
-            filterFn: (row, columnId, filterValue) => {
-                if (!filterValue) return true;
-                return row.getValue(columnId) === filterValue;
-            },
-        },
-        {
-            id: "employee",
-            accessorKey: "employee",
-            header: "Employee",
-            enableSorting: true,
-            draggable: true,
-            filterFn: (row, columnId, filterValue) => {
-                if (!filterValue) return true;
-                return row.getValue(columnId) === filterValue;
-            },
-        },
-        { id: "country", accessorKey: "country", header: "Country", enableSorting: true, draggable: true },
-        { id: "company", accessorKey: "company", header: "Company", enableSorting: true, draggable: true },
-        { id: "budget", accessorKey: "budget", header: "Budget", enableSorting: true, draggable: true },
-        { id: "avg_stands_year", accessorKey: "avg_stands_year", header: "Stands/Yr", enableSorting: true, draggable: true },
-        { id: "avg_events_year", accessorKey: "avg_events_year", header: "Events/Yr", enableSorting: true, draggable: true },
-        { id: "company_website_url", accessorKey: "company_website_url", header: "Website", enableSorting: true, draggable: true },
-        { id: "job_title", accessorKey: "job_title", header: "Job Title", enableSorting: true, draggable: true },
-        { id: "sector", accessorKey: "sector", header: "Sector", enableSorting: true, draggable: true },
         { id: "notes", accessorKey: "notes", header: "Notes", enableSorting: true, draggable: true },
+        { id: "budget", accessorKey: "budget", header: "Budget", enableSorting: true, draggable: true },
+        { id: "avg_events_year", accessorKey: "avg_events_year", header: "Events/Yr", enableSorting: true, draggable: true },
+        { id: "avg_stands_year", accessorKey: "avg_stands_year", header: "Stands/Yr", enableSorting: true, draggable: true },
+        { id: "company_website_url", accessorKey: "company_website_url", header: "Website", enableSorting: true, draggable: true },
+        {
+            id: "social_links",
+            accessorKey: "social_links",
+            header: "Social Links",
+            enableSorting: false,
+            draggable: true,
+            filterFn: (row, columnId, filterValue) => {
+                const val = row.getValue(columnId);
+                if (!filterValue) return true;
+                if (Array.isArray(val)) {
+                    return val.some(v => v?.toLowerCase().includes(filterValue.toLowerCase()));
+                }
+                return String(val || "").toLowerCase().includes(filterValue.toLowerCase());
+            }
+        },
         {
             id: "created_at",
             accessorKey: "created_at",
@@ -135,8 +139,8 @@ export default function ContactListsTable({
             sortingFn: (rowA, rowB, columnId) => {
                 const a = new Date(rowA.getValue(columnId));
                 const b = new Date(rowB.getValue(columnId));
-                return a > b ? 1 : a < b ? -1 : 0;
-            },
+                return a.getTime() - b.getTime();
+            }
         },
         { id: "columnActions", header: "Actions", enableSorting: false, draggable: false },
     ], []);
@@ -372,6 +376,13 @@ export default function ContactListsTable({
                                                                         onChange={row.getToggleSelectedHandler()}
                                                                     />
                                                                     <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor={`contact-${item.id}`}>
+                                                                        <div className="icon-40 p-1 rounded-circle border p-1 me-3 overflow-hidden bg-light">
+                                                                            <img
+                                                                                src={item.image || "/crm-skybridge/images/fav.png"}
+                                                                                alt={item.name}
+                                                                                className="img-contain h-100 w-100"
+                                                                            />
+                                                                        </div>
                                                                         {item.name}
                                                                     </label>
                                                                 </div>
@@ -379,14 +390,30 @@ export default function ContactListsTable({
                                                         );
                                                     }
 
-                                                    if (colId === 'top_customer') {
-                                                        return <td key={colId} id={colId} className="fsz-13 text-muted">{item.top_customer ? "Yes" : "No"}</td>;
+                                                    if (colId === 'top_customer' || colId === 'decision_maker_status') {
+                                                        const isYes = item[colId] === true || item[colId] === "Yes";
+                                                        return <td key={colId} id={colId} >
+                                                            <span className={`alert rounded-pill py-1 px-3 fsz-12 ms-2 border-0 mb-0 ${isYes ? 'alert-success' : 'alert-danger'}`}>
+                                                                {isYes ? "Yes" : "No"}
+                                                            </span>
+                                                        </td>;
+                                                    }
+
+                                                    if (colId === 'phones' || colId === 'landlines' || colId === 'social_links') {
+                                                        const val = Array.isArray(item[colId]) ? item[colId].filter(Boolean).join(", ") : (item[colId] || "-");
+                                                        return (
+                                                            <td key={colId} id={colId} className="">
+                                                                <div className="text-truncate" title={val}>
+                                                                    {val || "-"}
+                                                                </div>
+                                                            </td>
+                                                        );
                                                     }
 
                                                     if (colId === 'notes') {
                                                         return (
-                                                            <td key={colId} id={colId} className="fsz-13 text-muted">
-                                                                <div className="text-pop fsz-13">
+                                                            <td key={colId} id={colId} className="">
+                                                                <div className="text-pop">
                                                                     {item.notes?.length > 20 ? item.notes.slice(0, 20) + "..." : item.notes}
                                                                     <span className="tooltip-text">{item.notes}</span>
                                                                 </div>
@@ -395,7 +422,7 @@ export default function ContactListsTable({
                                                     }
 
                                                     if (colId === 'created_at') {
-                                                        return <td key={colId} id={colId} className="fsz-13 text-muted">{new Date(item.created_at).toLocaleDateString()}</td>;
+                                                        return <td key={colId} id={colId} className="">{new Date(item.created_at).toLocaleDateString()}</td>;
                                                     }
 
                                                     if (colId === 'columnActions') {
@@ -423,7 +450,8 @@ export default function ContactListsTable({
                                                     }
 
                                                     // Default cell rendering
-                                                    return <td key={colId} id={colId} className="fsz-13 text-muted">{item[column.columnDef.accessorKey] || "-"}</td>;
+                                                    const accessorKey = column.columnDef.accessorKey;
+                                                    return <td key={colId} id={colId} className="">{item[accessorKey] || "-"}</td>;
                                                 })}
                                             </SortableRow>
                                         );

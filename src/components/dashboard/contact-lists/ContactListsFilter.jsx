@@ -12,12 +12,14 @@ export default function ContactListsFilter({
     // Local searches
     const [nameSearch, setNameSearch] = useState(table.getColumn("name")?.getFilterValue() || "");
     const [addressSearch, setAddressSearch] = useState(table.getColumn("address")?.getFilterValue() || "");
-    const [phoneSearch, setPhoneSearch] = useState(table.getColumn("phone")?.getFilterValue() || "");
+    const [genderSearch, setGenderSearch] = useState(table.getColumn("gender")?.getFilterValue() || "");
+    const [phonesSearch, setPhonesSearch] = useState(table.getColumn("phones")?.getFilterValue() || "");
+    const [landlinesSearch, setLandlinesSearch] = useState(table.getColumn("landlines")?.getFilterValue() || "");
+    const [socialLinksSearch, setSocialLinksSearch] = useState(table.getColumn("social_links")?.getFilterValue() || "");
     const [emailSearch, setEmailSearch] = useState(table.getColumn("email")?.getFilterValue() || "");
     const [countrySearch, setCountrySearch] = useState(table.getColumn("country")?.getFilterValue() || "");
     const [companySearch, setCompanySearch] = useState(table.getColumn("company")?.getFilterValue() || "");
     const [jobTitleSearch, setJobTitleSearch] = useState(table.getColumn("job_title")?.getFilterValue() || "");
-    const [sectorSearch, setSectorSearch] = useState(table.getColumn("sector")?.getFilterValue() || "");
     const [budgetSearch, setBudgetSearch] = useState(table.getColumn("budget")?.getFilterValue() || "");
     const [avgStandsSearch, setAvgStandsSearch] = useState(table.getColumn("avg_stands_year")?.getFilterValue() || "");
     const [avgEventsSearch, setAvgEventsSearch] = useState(table.getColumn("avg_events_year")?.getFilterValue() || "");
@@ -25,7 +27,7 @@ export default function ContactListsFilter({
     const [notesSearch, setNotesSearch] = useState(table.getColumn("notes")?.getFilterValue() || "");
 
     // 🔄 Local state for selects to ensure immediate UI updates
-    const [topCustomerSearch, setTopCustomerSearch] = useState(table.getColumn("top_customer")?.getFilterValue()?.toString() || "");
+    const [topCustomerSearch, setTopCustomerSearch] = useState(table.getColumn("top_customer")?.getFilterValue() || "");
     const [dmStatusSearch, setDmStatusSearch] = useState(table.getColumn("decision_maker_status")?.getFilterValue() || "");
     const [statusSearch, setStatusSearch] = useState(table.getColumn("status")?.getFilterValue() || "");
     const [employeeSearch, setEmployeeSearch] = useState(table.getColumn("employee")?.getFilterValue() || "");
@@ -47,16 +49,28 @@ export default function ContactListsFilter({
         { value: "Project Lost", label: "Project Lost" },
     ], []);
 
+    const genderOptions = useMemo(() => [
+        { value: "Male", label: "Male" },
+        { value: "Female", label: "Female" },
+    ], []);
+
+    const yesNoOptions = useMemo(() => [
+        { value: "Yes", label: "Yes" },
+        { value: "No", label: "No" },
+    ], []);
+
     // 🔄 Sync local state with table filters
     useEffect(() => {
         setNameSearch(table.getColumn("name")?.getFilterValue() || "");
+        setGenderSearch(table.getColumn("gender")?.getFilterValue() || "");
         setAddressSearch(table.getColumn("address")?.getFilterValue() || "");
-        setPhoneSearch(table.getColumn("phone")?.getFilterValue() || "");
+        setPhonesSearch(table.getColumn("phones")?.getFilterValue() || "");
+        setLandlinesSearch(table.getColumn("landlines")?.getFilterValue() || "");
+        setSocialLinksSearch(table.getColumn("social_links")?.getFilterValue() || "");
         setEmailSearch(table.getColumn("email")?.getFilterValue() || "");
         setCountrySearch(table.getColumn("country")?.getFilterValue() || "");
         setCompanySearch(table.getColumn("company")?.getFilterValue() || "");
         setJobTitleSearch(table.getColumn("job_title")?.getFilterValue() || "");
-        setSectorSearch(table.getColumn("sector")?.getFilterValue() || "");
         setBudgetSearch(table.getColumn("budget")?.getFilterValue() || "");
         setAvgStandsSearch(table.getColumn("avg_stands_year")?.getFilterValue() || "");
         setAvgEventsSearch(table.getColumn("avg_events_year")?.getFilterValue() || "");
@@ -64,7 +78,7 @@ export default function ContactListsFilter({
         setNotesSearch(table.getColumn("notes")?.getFilterValue() || "");
 
         // Sync selects
-        setTopCustomerSearch(table.getColumn("top_customer")?.getFilterValue()?.toString() || "");
+        setTopCustomerSearch(table.getColumn("top_customer")?.getFilterValue() || "");
         setDmStatusSearch(table.getColumn("decision_maker_status")?.getFilterValue() || "");
         setStatusSearch(table.getColumn("status")?.getFilterValue() || "");
         setEmployeeSearch(table.getColumn("employee")?.getFilterValue() || "");
@@ -72,13 +86,15 @@ export default function ContactListsFilter({
 
     const handleReset = () => {
         setNameSearch("");
+        setGenderSearch("");
         setAddressSearch("");
-        setPhoneSearch("");
+        setPhonesSearch("");
+        setLandlinesSearch("");
+        setSocialLinksSearch("");
         setEmailSearch("");
         setCountrySearch("");
         setCompanySearch("");
         setJobTitleSearch("");
-        setSectorSearch("");
         setBudgetSearch("");
         setAvgStandsSearch("");
         setAvgEventsSearch("");
@@ -118,16 +134,56 @@ export default function ContactListsFilter({
                 />
             </td>
         ),
-        phone: (
-            <td key="phone">
+        phones: (
+            <td key="phones">
                 <input
                     className="form-control"
-                    placeholder="Phone"
-                    value={phoneSearch}
+                    placeholder="Phones"
+                    value={phonesSearch}
                     onChange={(e) => {
-                        setPhoneSearch(e.target.value);
-                        table.getColumn("phone").setFilterValue(e.target.value);
+                        setPhonesSearch(e.target.value);
+                        table.getColumn("phones").setFilterValue(e.target.value);
                     }}
+                />
+            </td>
+        ),
+        landlines: (
+            <td key="landlines">
+                <input
+                    className="form-control"
+                    placeholder="Landlines"
+                    value={landlinesSearch}
+                    onChange={(e) => {
+                        setLandlinesSearch(e.target.value);
+                        table.getColumn("landlines").setFilterValue(e.target.value);
+                    }}
+                />
+            </td>
+        ),
+        social_links: (
+            <td key="social_links">
+                <input
+                    className="form-control"
+                    placeholder="Social Links"
+                    value={socialLinksSearch}
+                    onChange={(e) => {
+                        setSocialLinksSearch(e.target.value);
+                        table.getColumn("social_links").setFilterValue(e.target.value);
+                    }}
+                />
+            </td>
+        ),
+        gender: (
+            <td key="gender">
+                <SearchableSelect
+                    options={genderOptions}
+                    value={genderSearch}
+                    onChange={(val) => {
+                        setGenderSearch(val);
+                        table.getColumn("gender").setFilterValue(val || undefined);
+                    }}
+                    placeholder="Gender"
+                    instanceId="gender-filter"
                 />
             </td>
         ),
@@ -146,36 +202,30 @@ export default function ContactListsFilter({
         ),
         top_customer: (
             <td key="top_customer">
-                <select
-                    className="form-control form-select form-select-sm"
+                <SearchableSelect
+                    options={yesNoOptions}
                     value={topCustomerSearch}
-                    onChange={(e) => {
-                        const val = e.target.value;
+                    onChange={(val) => {
                         setTopCustomerSearch(val);
-                        table.getColumn("top_customer").setFilterValue(val === "" ? undefined : val === "true");
+                        table.getColumn("top_customer").setFilterValue(val || undefined);
                     }}
-                >
-                    <option value="">Top Cust.</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                </select>
+                    placeholder="Top Cust."
+                    instanceId="top-customer-filter"
+                />
             </td>
         ),
         decision_maker_status: (
             <td key="decision_maker_status">
-                <select
-                    className="form-control form-select form-select-sm"
+                <SearchableSelect
+                    options={yesNoOptions}
                     value={dmStatusSearch}
-                    onChange={(e) => {
-                        const val = e.target.value;
+                    onChange={(val) => {
                         setDmStatusSearch(val);
-                        table.getColumn("decision_maker_status").setFilterValue(val === "" ? undefined : val);
+                        table.getColumn("decision_maker_status").setFilterValue(val || undefined);
                     }}
-                >
-                    <option value="">D.M. Status</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                </select>
+                    placeholder="D.M. Status"
+                    instanceId="dm-status-filter"
+                />
             </td>
         ),
         status: (
@@ -293,19 +343,6 @@ export default function ContactListsFilter({
                     onChange={(e) => {
                         setJobTitleSearch(e.target.value);
                         table.getColumn("job_title").setFilterValue(e.target.value);
-                    }}
-                />
-            </td>
-        ),
-        sector: (
-            <td key="sector">
-                <input
-                    className="form-control"
-                    placeholder="Sector"
-                    value={sectorSearch}
-                    onChange={(e) => {
-                        setSectorSearch(e.target.value);
-                        table.getColumn("sector").setFilterValue(e.target.value);
                     }}
                 />
             </td>
