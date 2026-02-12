@@ -3679,11 +3679,31 @@ section {
 
 .modal {
     backdrop-filter: blur(5px);
+
     .modal-content {
         border: 0;
-        border-radius: 30px;
         background-color: #f7f7f7;
+        border-radius: 20px;
+        padding: 10px;
+    }
+    
+    .modal-header {
+        background: linear-gradient(45deg, #2dd97522, #0f044322);
+        // background-color: #fff;
+        border-radius: 30px;
+        padding: 10px 15px;
+        border: 0;
+        // border: 1px solid #9993;
+        h5 {
+            font-size: 13px;
+        }
+    }
+
+    .modal-body {
         padding: 15px;
+        border: 1px solid #9993;
+        margin: 15px 0;
+        border-radius: 15px;
     }
 
     .modal-form {}
@@ -3701,6 +3721,25 @@ section {
     .table-responsive {
         min-height: max-content;
     }
+
+    .btn-close {
+        font-size: 10px;
+    }
+
+    .modal-footer {
+        // background-color: #fff;
+        border-radius: 15px;
+        // padding: 10px 15px;
+        padding: 5px;
+        border: 0;
+        justify-content: center;
+        button {
+            min-width: 180px;
+            max-width: 40vw;
+            border-radius: 10px;
+        }
+    }
+    
 }
 
 .checks-modal {

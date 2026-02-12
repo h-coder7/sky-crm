@@ -220,7 +220,7 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                                                 </label>
                                             </div>
 
-                                            <hr className="mb-4 text-muted opacity-25" />
+                                            <hr className="mb-4 text-muted op-1" />
 
                                             <div className="checks-modal">
                                                 {SECTORS.map((sector, index) => (

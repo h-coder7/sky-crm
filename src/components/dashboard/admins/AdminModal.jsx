@@ -270,7 +270,7 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                                 </label>
                                             </div>
 
-                                            <hr className="mb-4 text-muted opacity-25" />
+                                            <hr className="mb-4 text-muted op-1" />
 
                                             <div className="checks-modal">
                                                 {PERMISSIONS.map((permission, index) => (
