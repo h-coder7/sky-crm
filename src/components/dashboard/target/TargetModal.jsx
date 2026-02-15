@@ -7,9 +7,10 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
     const [isMounted, setIsMounted] = useState(false);
     const [formData, setFormData] = useState({
         employee: "",
-        year: "",
         product: "",
-        target: "",
+        year: "",
+        length: "",
+        values: "",
     });
 
     useEffect(() => {
@@ -22,14 +23,16 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
                 employee: target.employee || "",
                 year: target.year || "",
                 product: target.product || "",
-                target: target.target || "",
+                length: target.length || "",
+                values: target.values || "",
             });
         } else {
             setFormData({
                 employee: "",
                 year: "",
                 product: "",
-                target: "",
+                length: "",
+                values: "",
             });
         }
     }, [target, show]);
@@ -72,7 +75,7 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body">
                                 <div className="row g-3">
-                                    <div className="col-md-6">
+                                    <div className="col-md-4">
                                         <label className="form-label">Employee</label>
                                         <input
                                             type="text"
@@ -83,18 +86,7 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
                                             required
                                         />
                                     </div>
-                                    <div className="col-md-6">
-                                        <label className="form-label">Year</label>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            name="year"
-                                            value={formData.year}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="col-md-6">
+                                    <div className="col-md-4">
                                         <label className="form-label">Product</label>
                                         <input
                                             type="text"
@@ -105,13 +97,35 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
                                             required
                                         />
                                     </div>
-                                    <div className="col-md-6">
-                                        <label className="form-label">Target</label>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Year</label>
                                         <input
                                             type="number"
                                             className="form-control"
-                                            name="target"
-                                            value={formData.target}
+                                            name="year"
+                                            value={formData.year}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Length</label>
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            name="length"
+                                            value={formData.length}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Values</label>
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            name="values"
+                                            value={formData.values}
                                             onChange={handleChange}
                                             required
                                         />

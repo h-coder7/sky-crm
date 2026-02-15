@@ -72,9 +72,16 @@ export default function TargetTable({
             draggable: true,
         },
         {
-            id: "target",
-            accessorKey: "target",
-            header: "Target",
+            id: "length",
+            accessorKey: "length",
+            header: "Length",
+            enableSorting: true,
+            draggable: true,
+        },
+        {
+            id: "values",
+            accessorKey: "values",
+            header: "Values",
             enableSorting: true,
             draggable: true,
         },
@@ -89,9 +96,10 @@ export default function TargetTable({
     const [columnOrder, setColumnOrder] = useState(columns.map(c => c.id));
     const [columnVisibility, setColumnVisibility] = useState({
         employee: true,
-        year: true,
         product: true,
-        target: true,
+        year: true,
+        length: true,
+        values: true,
         columnActions: true,
     });
 
@@ -207,7 +215,7 @@ export default function TargetTable({
                                                             <i className="fat fa-sort fsz-12"></i>
                                                         </button>
                                                         <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                                                            {id === 'year' || id === 'target' ? (
+                                                            {id === 'year' || id === 'length' || id === 'values' ? (
                                                                 <>
                                                                     <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => column.toggleSorting(false)}>
                                                                         <i className="fal fa-sort-numeric-up me-2 text-muted"></i> {id === 'year' ? 'Ascending' : 'Lowest First'}

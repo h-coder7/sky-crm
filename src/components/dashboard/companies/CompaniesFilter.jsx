@@ -11,6 +11,8 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal, on
     const [domainSearch, setDomainSearch] = useState(table.getColumn("domain")?.getFilterValue() || "");
     const [sectorSearch, setSectorSearch] = useState(table.getColumn("sector")?.getFilterValue() || "");
     const [countrySearch, setCountrySearch] = useState(table.getColumn("country")?.getFilterValue() || "");
+    const [regionSearch, setRegionSearch] = useState(table.getColumn("region")?.getFilterValue() || "");
+    const [locationSearch, setLocationSearch] = useState(table.getColumn("location")?.getFilterValue() || "");
 
     // Sector options
     const sectorOptions = useMemo(() => [
@@ -34,34 +36,23 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal, on
     // Country options (Mocked from countries module)
     const countryOptions = useMemo(() => [
         { value: "United Arab Emirates", label: "United Arab Emirates" },
-        { value: "saudia arabia", label: "saudia arabia" },
-        { value: "Afghanistan", label: "Afghanistan" },
-        { value: "Aland Islands", label: "Aland Islands" },
-        { value: "Albania", label: "Albania" },
-        { value: "Algeria", label: "Algeria" },
-        { value: "American Samoa", label: "American Samoa" },
-        { value: "Andorra", label: "Andorra" },
-        { value: "Angola", label: "Angola" },
-        { value: "Anguilla", label: "Anguilla" },
-        { value: "Antarctica", label: "Antarctica" },
-        { value: "Antigua and Barbuda", label: "Antigua and Barbuda" },
-        { value: "Argentina", label: "Argentina" },
-        { value: "Armenia", label: "Armenia" },
-        { value: "Aruba", label: "Aruba" },
-        { value: "Australia", label: "Australia" },
-        { value: "Austria", label: "Austria" },
-        { value: "Azerbaijan", label: "Azerbaijan" },
+        { value: "Saudi Arabia", label: "Saudi Arabia" },
+        { value: "Kuwait", label: "Kuwait" },
+        { value: "Qatar", label: "Qatar" },
+        { value: "Oman", label: "Oman" },
+        { value: "Egypt", label: "Egypt" },
     ], []);
 
     // 🔄 Sync local state with table filters
     useEffect(() => {
-        // Ensure mounted to prevent hydration mismatch if filters were somehow persistent (unlikely but safe)
         setTitleSearch(table.getColumn("title")?.getFilterValue() || "");
         setAddressSearch(table.getColumn("address")?.getFilterValue() || "");
         setDescriptionSearch(table.getColumn("description")?.getFilterValue() || "");
         setDomainSearch(table.getColumn("domain")?.getFilterValue() || "");
         setSectorSearch(table.getColumn("sector")?.getFilterValue() || "");
         setCountrySearch(table.getColumn("country")?.getFilterValue() || "");
+        setRegionSearch(table.getColumn("region")?.getFilterValue() || "");
+        setLocationSearch(table.getColumn("location")?.getFilterValue() || "");
     }, [table.getState().columnFilters]);
 
     const handleReset = () => {
@@ -71,6 +62,8 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal, on
         setDomainSearch("");
         setSectorSearch("");
         setCountrySearch("");
+        setRegionSearch("");
+        setLocationSearch("");
         onReset?.();
     };
 
@@ -154,6 +147,32 @@ export default function CompaniesFilter({ table, dateRangeValue, onOpenModal, on
                     placeholder="Country"
                     className="form-select-sm fsz-12"
                     instanceId="country-filter"
+                />
+            </td>
+        ),
+        region: (
+            <td key="region">
+                <input
+                    className="form-control"
+                    placeholder="Region"
+                    value={regionSearch}
+                    onChange={(e) => {
+                        setRegionSearch(e.target.value);
+                        table.getColumn("region")?.setFilterValue(e.target.value);
+                    }}
+                />
+            </td>
+        ),
+        location: (
+            <td key="location">
+                <input
+                    className="form-control"
+                    placeholder="Location"
+                    value={locationSearch}
+                    onChange={(e) => {
+                        setLocationSearch(e.target.value);
+                        table.getColumn("location")?.setFilterValue(e.target.value);
+                    }}
                 />
             </td>
         ),

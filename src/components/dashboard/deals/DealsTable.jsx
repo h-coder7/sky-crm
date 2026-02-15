@@ -17,6 +17,22 @@ import DateRangeModal from "../../../components/shared/DateRangeModal";
 
 import DealsFilter from "./DealsFilter";
 
+const STATUS_MAP = {
+    "1": "Brief Submitted",
+    "2": "Amending Brief",
+    "3": "Moodboard Requested",
+    "4": "Moodboard Submitted",
+    "5": "Amending Moodboard",
+    "6": "3D Render Requested",
+    "7": "Proposal Submitted",
+    "8": "Amending Proposal",
+    "9": "Quotation Requested",
+    "10": "Quotation Submitted",
+    "11": "Confirmed",
+    "12": "Rejected",
+    "13": "Payment Received"
+};
+
 export default function DealsTable({
     data = [],
     selectedIds = [],
@@ -49,13 +65,13 @@ export default function DealsTable({
 
     const columns = useMemo(() => [
         { id: "title", accessorKey: "title", header: "Title", enableSorting: true, draggable: false },
-        { id: "description", accessorKey: "description", header: "Description", enableSorting: true, draggable: true },
-        { id: "start_date", accessorKey: "start_date", header: "Start Date", enableSorting: true, draggable: true },
-        { id: "end_date", accessorKey: "end_date", header: "End Date", enableSorting: true, draggable: true },
+        { id: "sector", accessorKey: "sector", header: "Sector", enableSorting: true, draggable: true },
+        { id: "company", accessorKey: "company", header: "Company", enableSorting: true, draggable: true },
+        { id: "contact_list", accessorKey: "contact_list", header: "Contact List", enableSorting: true, draggable: true },
         { id: "employee", accessorKey: "employee", header: "Employee", enableSorting: true, draggable: true },
         { id: "product", accessorKey: "product", header: "Product", enableSorting: true, draggable: true },
-        { id: "contact_list", accessorKey: "contact_list", header: "Contact List", enableSorting: true, draggable: true },
-        { id: "company", accessorKey: "company", header: "Company", enableSorting: true, draggable: true },
+        { id: "start_date", accessorKey: "start_date", header: "Start Date", enableSorting: true, draggable: true },
+        { id: "end_date", accessorKey: "end_date", header: "End Date", enableSorting: true, draggable: true },
         {
             id: "status",
             accessorKey: "status",
@@ -65,11 +81,17 @@ export default function DealsTable({
             filterFn: (row, columnId, filterValue) => {
                 if (!filterValue) return true;
                 return String(row.getValue(columnId)) === String(filterValue);
-            },
-            sortingFn: (rowA, rowB, columnId) => {
-                const a = parseInt(rowA.getValue(columnId)) || 0;
-                const b = parseInt(rowB.getValue(columnId)) || 0;
-                return a - b;
+            }
+        },
+        {
+            id: "payment_status",
+            accessorKey: "payment_status",
+            header: "Payment Status",
+            enableSorting: true,
+            draggable: true,
+            filterFn: (row, columnId, filterValue) => {
+                if (!filterValue) return true;
+                return String(row.getValue(columnId)) === String(filterValue);
             }
         },
         {
@@ -80,22 +102,7 @@ export default function DealsTable({
             draggable: true,
             sortingFn: "basic"
         },
-        {
-            id: "month",
-            accessorKey: "month",
-            header: "Month",
-            enableSorting: true,
-            draggable: true,
-            filterFn: (row, columnId, filterValue) => {
-                if (!filterValue) return true;
-                return String(row.getValue(columnId)) === String(filterValue);
-            },
-            sortingFn: (rowA, rowB, columnId) => {
-                const a = parseInt(rowA.getValue(columnId)) || 0;
-                const b = parseInt(rowB.getValue(columnId)) || 0;
-                return a - b;
-            }
-        },
+        { id: "description", accessorKey: "description", header: "Description", enableSorting: true, draggable: true },
         {
             id: "created_at",
             accessorKey: "created_at",
@@ -233,19 +240,99 @@ export default function DealsTable({
                                         </SortableTh>
                                     )}
 
-                                    {/* Description Column */}
-                                    {table.getColumn("description").getIsVisible() && (
-                                        <SortableTh id="description" key="description">
-                                            <span>Description</span>
+                                    {/* Sector Column */}
+                                    {table.getColumn("sector")?.getIsVisible() && (
+                                        <SortableTh id="sector" key="sector">
+                                            <span>Sector</span>
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                                     <i className="fat fa-sort fsz-12"></i>
                                                 </button>
                                                 <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("description", false)}>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("sector", false)}>
                                                         <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
                                                     </li>
-                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("description", true)}>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("sector", true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+
+                                    {/* Company Column */}
+                                    {table.getColumn("company").getIsVisible() && (
+                                        <SortableTh id="company" key="company">
+                                            <span>Company</span>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("company", false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
+                                                    </li>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("company", true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+
+                                    {/* Contact List Column */}
+                                    {table.getColumn("contact_list").getIsVisible() && (
+                                        <SortableTh id="contact_list" key="contact_list">
+                                            <span>Contact List</span>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("contact_list", false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
+                                                    </li>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("contact_list", true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+
+                                    {/* Employee Column */}
+                                    {table.getColumn("employee").getIsVisible() && (
+                                        <SortableTh id="employee" key="employee">
+                                            <span>Employee</span>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("employee", false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
+                                                    </li>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("employee", true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+
+                                    {/* Product Column */}
+                                    {table.getColumn("product").getIsVisible() && (
+                                        <SortableTh id="product" key="product">
+                                            <span>Product</span>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("product", false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
+                                                    </li>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("product", true)}>
                                                         <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
                                                     </li>
                                                 </ul>
@@ -293,86 +380,6 @@ export default function DealsTable({
                                         </SortableTh>
                                     )}
 
-                                    {/* Employee Column */}
-                                    {table.getColumn("employee").getIsVisible() && (
-                                        <SortableTh id="employee" key="employee">
-                                            <span>Employee</span>
-                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
-                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                    <i className="fat fa-sort fsz-12"></i>
-                                                </button>
-                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("employee", false)}>
-                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
-                                                    </li>
-                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("employee", true)}>
-                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </SortableTh>
-                                    )}
-
-                                    {/* Product Column */}
-                                    {table.getColumn("product").getIsVisible() && (
-                                        <SortableTh id="product" key="product">
-                                            <span>Product</span>
-                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
-                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                    <i className="fat fa-sort fsz-12"></i>
-                                                </button>
-                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("product", false)}>
-                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
-                                                    </li>
-                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("product", true)}>
-                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </SortableTh>
-                                    )}
-
-                                    {/* Contact List Column */}
-                                    {table.getColumn("contact_list").getIsVisible() && (
-                                        <SortableTh id="contact_list" key="contact_list">
-                                            <span>Contact List</span>
-                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
-                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                    <i className="fat fa-sort fsz-12"></i>
-                                                </button>
-                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("contact_list", false)}>
-                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
-                                                    </li>
-                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("contact_list", true)}>
-                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </SortableTh>
-                                    )}
-
-                                    {/* Company Column */}
-                                    {table.getColumn("company").getIsVisible() && (
-                                        <SortableTh id="company" key="company">
-                                            <span>Company</span>
-                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
-                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                    <i className="fat fa-sort fsz-12"></i>
-                                                </button>
-                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("company", false)}>
-                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
-                                                    </li>
-                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("company", true)}>
-                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </SortableTh>
-                                    )}
-
                                     {/* Status Column */}
                                     {table.getColumn("status").getIsVisible() && (
                                         <SortableTh id="status" key="status">
@@ -382,11 +389,31 @@ export default function DealsTable({
                                                     <i className="fat fa-sort fsz-12"></i>
                                                 </button>
                                                 <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                                                    <li className="dropdown-item fsz-12 py-2 cursor-pointer" onClick={() => handleSort("status", false)}>
-                                                        <i className="fal fa-sort-numeric-up me-2 text-muted"></i> Lowest
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("status", false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
                                                     </li>
-                                                    <li className="dropdown-item fsz-12 py-2 cursor-pointer" onClick={() => handleSort("status", true)}>
-                                                        <i className="fal fa-sort-numeric-down me-2 text-muted"></i> Highest
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("status", true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </SortableTh>
+                                    )}
+
+                                    {/* Payment Status Column */}
+                                    {table.getColumn("payment_status")?.getIsVisible() && (
+                                        <SortableTh id="payment_status" key="payment_status">
+                                            <span>Payment Status</span>
+                                            <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
+                                                <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                    <i className="fat fa-sort fsz-12"></i>
+                                                </button>
+                                                <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("payment_status", false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
+                                                    </li>
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("payment_status", true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
                                                     </li>
                                                 </ul>
                                             </div>
@@ -413,20 +440,20 @@ export default function DealsTable({
                                         </SortableTh>
                                     )}
 
-                                    {/* Month Column */}
-                                    {table.getColumn("month").getIsVisible() && (
-                                        <SortableTh id="month" key="month">
-                                            <span>Month</span>
+                                    {/* Description Column */}
+                                    {table.getColumn("description").getIsVisible() && (
+                                        <SortableTh id="description" key="description">
+                                            <span>Description</span>
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                                     <i className="fat fa-sort fsz-12"></i>
                                                 </button>
                                                 <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                                                    <li className="dropdown-item fsz-12 py-2 cursor-pointer" onClick={() => handleSort("month", false)}>
-                                                        <i className="fal fa-sort-numeric-up me-2 text-muted"></i> Lowest
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("description", false)}>
+                                                        <i className="fal fa-sort-alpha-up me-2 text-muted"></i> (A → Z)
                                                     </li>
-                                                    <li className="dropdown-item fsz-12 py-2 cursor-pointer" onClick={() => handleSort("month", true)}>
-                                                        <i className="fal fa-sort-numeric-down me-2 text-muted"></i> Highest
+                                                    <li className="dropdown-item cursor-pointer fsz-12 py-2" onClick={() => handleSort("description", true)}>
+                                                        <i className="fal fa-sort-alpha-down me-2 text-muted"></i> (Z → A)
                                                     </li>
                                                 </ul>
                                             </div>
@@ -525,48 +552,52 @@ export default function DealsTable({
                                                     </td>
                                                 )}
 
-                                                {table.getColumn("description").getIsVisible() && (
-                                                    <td id="description" key="description" className="fsz-13 text-muted text-nowrap">{item.description}</td>
-                                                )}
-
-                                                {table.getColumn("start_date").getIsVisible() && (
-                                                    <td id="start_date" key="start_date" className="fsz-13 text-muted text-nowrap">{item.start_date}</td>
-                                                )}
-
-                                                {table.getColumn("end_date").getIsVisible() && (
-                                                    <td id="end_date" key="end_date" className="fsz-13 text-muted text-nowrap">{item.end_date}</td>
-                                                )}
-
-                                                {table.getColumn("employee").getIsVisible() && (
-                                                    <td id="employee" key="employee" className="fsz-13 text-muted text-nowrap">{item.employee}</td>
-                                                )}
-
-                                                {table.getColumn("product").getIsVisible() && (
-                                                    <td id="product" key="product" className="fsz-13 text-muted text-nowrap">{item.product}</td>
-                                                )}
-
-                                                {table.getColumn("contact_list").getIsVisible() && (
-                                                    <td id="contact_list" key="contact_list" className="fsz-13 text-muted text-nowrap">{item.contact_list}</td>
+                                                {table.getColumn("sector")?.getIsVisible() && (
+                                                    <td id="sector" key="sector" className="">{item.sector}</td>
                                                 )}
 
                                                 {table.getColumn("company").getIsVisible() && (
-                                                    <td id="company" key="company" className="fsz-13 text-muted text-nowrap">{item.company}</td>
+                                                    <td id="company" key="company" className="">{item.company}</td>
+                                                )}
+
+                                                {table.getColumn("contact_list").getIsVisible() && (
+                                                    <td id="contact_list" key="contact_list" className="">{item.contact_list}</td>
+                                                )}
+
+                                                {table.getColumn("employee").getIsVisible() && (
+                                                    <td id="employee" key="employee" className="">{item.employee}</td>
+                                                )}
+
+                                                {table.getColumn("product").getIsVisible() && (
+                                                    <td id="product" key="product" className="">{item.product}</td>
+                                                )}
+
+                                                {table.getColumn("start_date").getIsVisible() && (
+                                                    <td id="start_date" key="start_date" className="">{item.start_date}</td>
+                                                )}
+
+                                                {table.getColumn("end_date").getIsVisible() && (
+                                                    <td id="end_date" key="end_date" className="">{item.end_date}</td>
                                                 )}
 
                                                 {table.getColumn("status").getIsVisible() && (
-                                                    <td id="status" key="status" className="fsz-13 text-muted text-nowrap">{item.status}</td>
+                                                    <td id="status" key="status" className="">{STATUS_MAP[item.status] || item.status || ""}</td>
+                                                )}
+
+                                                {table.getColumn("payment_status")?.getIsVisible() && (
+                                                    <td id="payment_status" key="payment_status" className="">{item.payment_status || ""}</td>
                                                 )}
 
                                                 {table.getColumn("amount").getIsVisible() && (
-                                                    <td id="amount" key="amount" className="fsz-13 text-muted text-nowrap">{item.amount}</td>
+                                                    <td id="amount" key="amount" className="">{item.amount}</td>
                                                 )}
 
-                                                {table.getColumn("month").getIsVisible() && (
-                                                    <td id="month" key="month" className="fsz-13 text-muted text-nowrap">{item.month}</td>
+                                                {table.getColumn("description").getIsVisible() && (
+                                                    <td id="description" key="description" className="">{item.description}</td>
                                                 )}
 
                                                 {table.getColumn("created_at").getIsVisible() && (
-                                                    <td id="created_at" key="created_at" className="fsz-13 text-muted text-nowrap">
+                                                    <td id="created_at" key="created_at" className="">
                                                         {item.created_at}
                                                     </td>
                                                 )}

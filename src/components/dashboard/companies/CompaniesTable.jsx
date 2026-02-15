@@ -65,27 +65,6 @@ export default function CompaniesTable({
             draggable: false,
         },
         {
-            id: "address",
-            accessorKey: "address",
-            header: "Address",
-            enableSorting: true,
-            draggable: true,
-        },
-        {
-            id: "description",
-            accessorKey: "description",
-            header: "Description",
-            enableSorting: true,
-            draggable: true,
-        },
-        {
-            id: "domain",
-            accessorKey: "domain",
-            header: "Domain",
-            enableSorting: true,
-            draggable: true,
-        },
-        {
             id: "sector",
             accessorKey: "sector",
             header: "Sector",
@@ -106,6 +85,41 @@ export default function CompaniesTable({
                 if (!filterValue) return true;
                 return row.getValue(columnId) === filterValue;
             },
+        },
+        {
+            id: "region",
+            accessorKey: "region",
+            header: "Region",
+            enableSorting: true,
+            draggable: true,
+        },
+        {
+            id: "address",
+            accessorKey: "address",
+            header: "Address",
+            enableSorting: true,
+            draggable: true,
+        },
+        {
+            id: "domain",
+            accessorKey: "domain",
+            header: "Domain",
+            enableSorting: true,
+            draggable: true,
+        },
+        {
+            id: "location",
+            accessorKey: "location",
+            header: "Location",
+            enableSorting: true,
+            draggable: true,
+        },
+        {
+            id: "description",
+            accessorKey: "description",
+            header: "Description",
+            enableSorting: true,
+            draggable: true,
         },
         {
             id: "created_at",
@@ -354,10 +368,29 @@ export default function CompaniesTable({
                                                                         checked={row.getIsSelected()}
                                                                         onChange={row.getToggleSelectedHandler()}
                                                                     />
-                                                                    <label className="form-check-label ms-2 mb-0" htmlFor={`company-${item.id}`}>
-                                                                        {item.title}
+                                                                    <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor={`company-${item.id}`}>
+                                                                        <div className="icon-40 p-1 rounded-circle border me-3 overflow-hidden bg-light d-flex align-items-center justify-content-center">
+                                                                            {item.image ? (
+                                                                                <img src={item.image} alt="" className="img-contain h-100 w-100" />
+                                                                            ) : (
+                                                                                <i className="fas fa-building text-muted"></i>
+                                                                            )}
+                                                                        </div>
+                                                                        <span className="">{item.title}</span>
                                                                     </label>
                                                                 </div>
+                                                            </td>
+                                                        );
+                                                    }
+
+                                                    if (colId === 'location') {
+                                                        return (
+                                                            <td key={colId} id={colId}>
+                                                                {item.location ? (
+                                                                    <a href={item.location.startsWith('http') ? item.location : `https://www.google.com/maps/search/${encodeURIComponent(item.location)}`} target="_blank" rel="noopener noreferrer" className="text-decoration-underline">
+                                                                        <i className="fas fa-map-marker-alt me-1"></i> View Map
+                                                                    </a>
+                                                                ) : "-"}
                                                             </td>
                                                         );
                                                     }
@@ -377,7 +410,7 @@ export default function CompaniesTable({
                                                         return (
                                                             <td key={colId} id={colId}>
                                                                 {item.domain ? (
-                                                                    <a href={item.domain} target="_blank" rel="noopener noreferrer" className="text-primary fsz-13">
+                                                                    <a href={item.domain} target="_blank" rel="noopener noreferrer" className="text-decoration-underline">
                                                                         {item.domain.replace(/^https?:\/\//, '').split('/')[0]}
                                                                     </a>
                                                                 ) : "-"}
@@ -387,7 +420,7 @@ export default function CompaniesTable({
 
                                                     if (colId === 'created_at') {
                                                         return (
-                                                            <td key={colId} id={colId} className="fsz-13 text-muted">
+                                                            <td key={colId} id={colId} className="">
                                                                 {isMounted ? new Date(item.created_at).toLocaleDateString() : "-"}
                                                             </td>
                                                         );
@@ -419,7 +452,7 @@ export default function CompaniesTable({
 
                                                     // Default cell
                                                     return (
-                                                        <td key={colId} id={colId} className="fsz-13 text-muted text-nowrap">
+                                                        <td key={colId} id={colId} className="">
                                                             {item[column.columnDef.accessorKey] || "-"}
                                                         </td>
                                                     );
@@ -434,7 +467,6 @@ export default function CompaniesTable({
                 </div>
             </div>
 
-            {/* --- PAGINATION CONTROLS --- */}
             {/* --- PAGINATION CONTROLS --- */}
             <div className="d-flex justify-content-between align-items-center mt-3 react-pagination">
                 <div className="text-muted fsz-12">
@@ -452,7 +484,7 @@ export default function CompaniesTable({
                     <button className="btn btn-sm btn-outline-secondary" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
                         <i className="fal fa-angle-left"></i>
                     </button>
-                    <span className="d-flex align-items-center px-3 fsz-12">
+                    <span className="d-flex align-items-center px-3 fsz-12 fw-500">
                         Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </span>
                     <button className="btn btn-sm btn-outline-secondary" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>

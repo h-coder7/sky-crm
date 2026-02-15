@@ -156,6 +156,20 @@ export default function ProductsTable({
         return `${startDate.toISOString().split("T")[0]} to ${endDate.toISOString().split("T")[0]}`;
     };
 
+    const handleColumnDragEnd = (activeId, overId) => {
+        setColumnOrder((items) => {
+            const oldIndex = items.indexOf(activeId);
+            const newIndex = items.indexOf(overId);
+            if (oldIndex !== -1 && newIndex !== -1) {
+                const newItems = [...items];
+                const [movedItem] = newItems.splice(oldIndex, 1);
+                newItems.splice(newIndex, 0, movedItem);
+                return newItems;
+            }
+            return items;
+        });
+    };
+
     const resetAllFilters = () => {
         setColumnFilters([]);
         setSorting([]);
@@ -168,7 +182,7 @@ export default function ProductsTable({
 
             <div className="table-content">
                 <div className="table-responsive position-relative">
-                    <TableColumnDnd table={table} id="products-table" onDragEnd={handleColumnDragEnd}>
+                    <TableColumnDnd id="products-table" onDragEnd={handleColumnDragEnd}>
                         <table className="table align-middle">
                             <thead>
                                 <SortableRow items={visibleColumnOrder}>

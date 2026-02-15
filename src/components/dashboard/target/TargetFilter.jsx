@@ -5,22 +5,25 @@ import { useState, useEffect } from "react";
 export default function TargetFilter({ table, onReset, columnOrder = [] }) {
     // Local states
     const [employeeSearch, setEmployeeSearch] = useState(table.getColumn("employee")?.getFilterValue() || "");
-    const [yearSearch, setYearSearch] = useState(table.getColumn("year")?.getFilterValue() || "");
     const [productSearch, setProductSearch] = useState(table.getColumn("product")?.getFilterValue() || "");
-    const [targetSearch, setTargetSearch] = useState(table.getColumn("target")?.getFilterValue() || "");
+    const [yearSearch, setYearSearch] = useState(table.getColumn("year")?.getFilterValue() || "");
+    const [lengthSearch, setLengthSearch] = useState(table.getColumn("length")?.getFilterValue() || "");
+    const [valuesSearch, setValuesSearch] = useState(table.getColumn("values")?.getFilterValue() || "");
 
     useEffect(() => {
         setEmployeeSearch(table.getColumn("employee")?.getFilterValue() || "");
         setYearSearch(table.getColumn("year")?.getFilterValue() || "");
         setProductSearch(table.getColumn("product")?.getFilterValue() || "");
-        setTargetSearch(table.getColumn("target")?.getFilterValue() || "");
+        setLengthSearch(table.getColumn("length")?.getFilterValue() || "");
+        setValuesSearch(table.getColumn("values")?.getFilterValue() || "");
     }, [table.getState().columnFilters]);
 
     const handleReset = () => {
         setEmployeeSearch("");
         setYearSearch("");
         setProductSearch("");
-        setTargetSearch("");
+        setLengthSearch("");
+        setValuesSearch("");
         onReset?.();
     };
 
@@ -38,19 +41,6 @@ export default function TargetFilter({ table, onReset, columnOrder = [] }) {
                 />
             </td>
         ),
-        year: (
-            <td key="year">
-                <input
-                    className="form-control"
-                    placeholder="Search..."
-                    value={yearSearch}
-                    onChange={(e) => {
-                        setYearSearch(e.target.value);
-                        table.getColumn("year")?.setFilterValue(e.target.value);
-                    }}
-                />
-            </td>
-        ),
         product: (
             <td key="product">
                 <input
@@ -64,15 +54,41 @@ export default function TargetFilter({ table, onReset, columnOrder = [] }) {
                 />
             </td>
         ),
-        target: (
-            <td key="target">
+        year: (
+            <td key="year">
                 <input
                     className="form-control"
                     placeholder="Search..."
-                    value={targetSearch}
+                    value={yearSearch}
                     onChange={(e) => {
-                        setTargetSearch(e.target.value);
-                        table.getColumn("target")?.setFilterValue(e.target.value);
+                        setYearSearch(e.target.value);
+                        table.getColumn("year")?.setFilterValue(e.target.value);
+                    }}
+                />
+            </td>
+        ),
+        length: (
+            <td key="length">
+                <input
+                    className="form-control"
+                    placeholder="Search..."
+                    value={lengthSearch}
+                    onChange={(e) => {
+                        setLengthSearch(e.target.value);
+                        table.getColumn("length")?.setFilterValue(e.target.value);
+                    }}
+                />
+            </td>
+        ),
+        values: (
+            <td key="values">
+                <input
+                    className="form-control"
+                    placeholder="Search..."
+                    value={valuesSearch}
+                    onChange={(e) => {
+                        setValuesSearch(e.target.value);
+                        table.getColumn("values")?.setFilterValue(e.target.value);
                     }}
                 />
             </td>

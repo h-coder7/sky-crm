@@ -1,6 +1,37 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import Select from "react-select";
+
+const STATUS_OPTIONS = [
+    { value: "1", label: "Brief Submitted" },
+    { value: "2", label: "Amending Brief" },
+    { value: "3", label: "Moodboard Requested" },
+    { value: "4", label: "Moodboard Submitted" },
+    { value: "5", label: "Amending Moodboard" },
+    { value: "6", label: "3D Render Requested" },
+    { value: "7", label: "Proposal Submitted" },
+    { value: "8", label: "Amending Proposal" },
+    { value: "9", label: "Quotation Requested" },
+    { value: "10", label: "Quotation Submitted" },
+    { value: "11", label: "Confirmed" },
+    { value: "12", label: "Rejected" },
+    { value: "13", label: "Payment Received" },
+];
+
+const SECTOR_OPTIONS = [
+    { value: "Real Estate", label: "Real Estate" },
+    { value: "Technology", label: "Technology" },
+    { value: "Healthcare", label: "Healthcare" },
+    { value: "Education", label: "Education" },
+    { value: "Finance", label: "Finance" },
+];
+
+const PAYMENT_STATUS_OPTIONS = [
+    { value: "Pending", label: "Pending" },
+    { value: "Partial", label: "Partial" },
+    { value: "Paid", label: "Paid" },
+];
 
 export default function DealsFilter({ table, dateRangeValue, onOpenModal, onReset, columnOrder }) {
     const [titleSearch, setTitleSearch] = useState("");
@@ -10,7 +41,8 @@ export default function DealsFilter({ table, dateRangeValue, onOpenModal, onRese
     const [contactSearch, setContactSearch] = useState("");
     const [compSearch, setCompSearch] = useState("");
     const [statusSearch, setStatusSearch] = useState("");
-    const [monthSearch, setMonthSearch] = useState("");
+    const [sectorSearch, setSectorSearch] = useState("");
+    const [paymentStatusSearch, setPaymentStatusSearch] = useState("");
     const [amountSearch, setAmountSearch] = useState("");
     const [startDateSearch, setStartDateSearch] = useState("");
     const [endDateSearch, setEndDateSearch] = useState("");
@@ -28,7 +60,8 @@ export default function DealsFilter({ table, dateRangeValue, onOpenModal, onRese
         setContactSearch("");
         setCompSearch("");
         setStatusSearch("");
-        setMonthSearch("");
+        setSectorSearch("");
+        setPaymentStatusSearch("");
         setAmountSearch("");
         setStartDateSearch("");
         setEndDateSearch("");
@@ -46,7 +79,8 @@ export default function DealsFilter({ table, dateRangeValue, onOpenModal, onRese
             setContactSearch("");
             setCompSearch("");
             setStatusSearch("");
-            setMonthSearch("");
+            setSectorSearch("");
+            setPaymentStatusSearch("");
             setAmountSearch("");
             setStartDateSearch("");
             setEndDateSearch("");
@@ -57,6 +91,18 @@ export default function DealsFilter({ table, dateRangeValue, onOpenModal, onRese
         title: (
             <td key="title" className="sticky-col">
                 <input className="form-control" placeholder="Title" value={titleSearch} onChange={(e) => handleFilter("title", e.target.value, setTitleSearch)} />
+            </td>
+        ),
+        sector: (
+            <td key="sector">
+                <Select
+                    options={SECTOR_OPTIONS}
+                    classNamePrefix="custom-select"
+                    isClearable
+                    placeholder="Sector"
+                    value={SECTOR_OPTIONS.find(o => o.value === sectorSearch)}
+                    onChange={(o) => handleFilter("sector", o ? o.value : "", setSectorSearch)}
+                />
             </td>
         ),
         description: (
@@ -96,46 +142,31 @@ export default function DealsFilter({ table, dateRangeValue, onOpenModal, onRese
         ),
         status: (
             <td key="status">
-                <select className="form-control form-select form-select-sm" value={statusSearch} onChange={(e) => handleFilter("status", e.target.value, setStatusSearch)}>
-                    <option value="">All</option>
-                    <option value="1">Brief Submitted</option>
-                    <option value="2">Amending Brief</option>
-                    <option value="3">Moodboard Requested</option>
-                    <option value="4">Moodboard Submitted</option>
-                    <option value="5">Amending Moodboard</option>
-                    <option value="6">3D Render Requested</option>
-                    <option value="7">Proposal Submitted</option>
-                    <option value="8">Amending Proposal</option>
-                    <option value="9">Quotation Requested</option>
-                    <option value="10">Quotation Submitted</option>
-                    <option value="11">Confirmed</option>
-                    <option value="12">Rejected</option>
-                    <option value="13">Payment Received</option>
-                </select>
+                <Select
+                    options={STATUS_OPTIONS}
+                    classNamePrefix="custom-select"
+                    isClearable
+                    placeholder="Status"
+                    value={STATUS_OPTIONS.find(o => o.value === statusSearch)}
+                    onChange={(o) => handleFilter("status", o ? o.value : "", setStatusSearch)}
+                />
+            </td>
+        ),
+        payment_status: (
+            <td key="payment_status">
+                <Select
+                    options={PAYMENT_STATUS_OPTIONS}
+                    classNamePrefix="custom-select"
+                    isClearable
+                    placeholder="Payment"
+                    value={PAYMENT_STATUS_OPTIONS.find(o => o.value === paymentStatusSearch)}
+                    onChange={(o) => handleFilter("payment_status", o ? o.value : "", setPaymentStatusSearch)}
+                />
             </td>
         ),
         amount: (
             <td key="amount">
                 <input className="form-control" placeholder="Amount" value={amountSearch} onChange={(e) => handleFilter("amount", e.target.value, setAmountSearch)} />
-            </td>
-        ),
-        month: (
-            <td key="month">
-                <select className="form-control form-select form-select-sm" value={monthSearch} onChange={(e) => handleFilter("month", e.target.value, setMonthSearch)}>
-                    <option value="">All</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </select>
             </td>
         ),
         created_at: (
@@ -166,3 +197,4 @@ export default function DealsFilter({ table, dateRangeValue, onOpenModal, onRese
         </tr>
     );
 }
+

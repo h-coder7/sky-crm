@@ -360,11 +360,11 @@ export default function AdminsTable({
                                                 )}
 
                                                 {table.getColumn("email").getIsVisible() && (
-                                                    <td id="email" key="email" className="fsz-13 text-muted">{admin.email}</td>
+                                                    <td id="email" key="email" className="">{admin.email}</td>
                                                 )}
 
                                                 {table.getColumn("phone").getIsVisible() && (
-                                                    <td id="phone" key="phone" className="fsz-13 text-muted">{admin.phone}</td>
+                                                    <td id="phone" key="phone" className="">{admin.phone}</td>
                                                 )}
 
                                                 {table.getColumn("role").getIsVisible() && (
@@ -376,7 +376,7 @@ export default function AdminsTable({
                                                 )}
 
                                                 {table.getColumn("created_at").getIsVisible() && (
-                                                    <td id="created_at" key="created_at" className="fsz-13 text-muted">
+                                                    <td id="created_at" key="created_at" className="">
                                                         {admin.created_at}
                                                     </td>
                                                 )}

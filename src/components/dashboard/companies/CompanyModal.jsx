@@ -2,6 +2,12 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
+import Select from "react-select";
+import FileUpload from "../../shared/FileUpload";
+
+const PHOTO_ACCEPT_TYPES = {
+    'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp']
+};
 
 export default function CompanyModal({ isOpen, onClose, onSave, company }) {
     const [formData, setFormData] = useState({
@@ -10,7 +16,10 @@ export default function CompanyModal({ isOpen, onClose, onSave, company }) {
         description: "",
         domain: "",
         sector: "",
-        country: ""
+        country: "",
+        region: "",
+        location: "",
+        attachments: [],
     });
 
     const [isMounted, setIsMounted] = useState(false);
@@ -27,7 +36,10 @@ export default function CompanyModal({ isOpen, onClose, onSave, company }) {
                 description: company.description || "",
                 domain: company.domain || "",
                 sector: company.sector || "",
-                country: company.country || ""
+                country: company.country || "",
+                region: company.region || "",
+                location: company.location || "",
+                attachments: company.image ? [{ preview: company.image, type: 'image/jpeg', name: 'Company Image' }] : [],
             });
         } else {
             setFormData({
@@ -36,7 +48,10 @@ export default function CompanyModal({ isOpen, onClose, onSave, company }) {
                 description: "",
                 domain: "",
                 sector: "",
-                country: ""
+                country: "",
+                region: "",
+                location: "",
+                attachments: [],
             });
         }
     }, [company, isOpen]);
@@ -63,23 +78,18 @@ export default function CompanyModal({ isOpen, onClose, onSave, company }) {
     // Country options (Mocked from countries module)
     const countryOptions = useMemo(() => [
         { value: "United Arab Emirates", label: "United Arab Emirates" },
-        { value: "saudia arabia", label: "saudia arabia" },
-        { value: "Afghanistan", label: "Afghanistan" },
-        { value: "Aland Islands", label: "Aland Islands" },
-        { value: "Albania", label: "Albania" },
-        { value: "Algeria", label: "Algeria" },
-        { value: "American Samoa", label: "American Samoa" },
-        { value: "Andorra", label: "Andorra" },
-        { value: "Angola", label: "Angola" },
-        { value: "Anguilla", label: "Anguilla" },
-        { value: "Antarctica", label: "Antarctica" },
-        { value: "Antigua and Barbuda", label: "Antigua and Barbuda" },
-        { value: "Argentina", label: "Argentina" },
-        { value: "Armenia", label: "Armenia" },
-        { value: "Aruba", label: "Aruba" },
-        { value: "Australia", label: "Australia" },
-        { value: "Austria", label: "Austria" },
-        { value: "Azerbaijan", label: "Azerbaijan" },
+        { value: "Saudi Arabia", label: "Saudi Arabia" },
+        { value: "Kuwait", label: "Kuwait" },
+        { value: "Qatar", label: "Qatar" },
+        { value: "Oman", label: "Oman" },
+        { value: "Egypt", label: "Egypt" },
+    ], []);
+
+    const regionOptions = useMemo(() => [
+        { value: "Dubai", label: "Dubai" },
+        { value: "Abu Dhabi", label: "Abu Dhabi" },
+        { value: "Riyadh", label: "Riyadh" },
+        { value: "Cairo", label: "Cairo" },
     ], []);
 
     const handleChange = (e) => {
@@ -87,9 +97,20 @@ export default function CompanyModal({ isOpen, onClose, onSave, company }) {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleFilesChange = (newFiles) => {
+        setFormData((prev) => ({ ...prev, attachments: newFiles }));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+        const submissionData = { ...formData };
+        if (formData.attachments && formData.attachments.length > 0) {
+            submissionData.image = formData.attachments[0].preview;
+        } else {
+            submissionData.image = "";
+        }
+        delete submissionData.attachments;
+        onSave(submissionData);
     };
 
     if (!isOpen || !isMounted) return null;
@@ -106,90 +127,125 @@ export default function CompanyModal({ isOpen, onClose, onSave, company }) {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">
-                                {company ? "Edit Company" : "Add Company"}
+                                {company ? "Edit Company" : "Add New Company"}
                             </h5>
-                            <button className="btn-close" onClick={onClose}></button>
+                            <button type="button" className="btn-close" onClick={onClose}></button>
                         </div>
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body">
                                 <div className="row">
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">Title</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            name="title"
-                                            required
-                                            value={formData.title}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">Domain</label>
-                                        <input
-                                            type="url"
-                                            className="form-control"
-                                            name="domain"
-                                            placeholder="https://example.com"
-                                            value={formData.domain}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-                                    <div className="col-md-12 mb-3">
-                                        <label className="form-label">Address</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            name="address"
-                                            value={formData.address}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">Sector</label>
-                                        <select
-                                            className="form-control form-select"
-                                            name="sector"
-                                            value={formData.sector}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="">Select Sector</option>
-                                            <option value="">All</option>
-                                            {sectorOptions.map(opt => (
-                                                <option key={opt.value} value={opt.value}>
-                                                    {opt.label}
-                                                </option>
-                                            ))}
-                                        </select>
+                                    {/* --- Group 1: Identity --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Identity</h6>
+                                        <div className="row">
+                                            <div className="col-lg-12 mb-4">
+                                                <FileUpload
+                                                    files={formData.attachments}
+                                                    onFilesChange={handleFilesChange}
+                                                    maxFiles={1}
+                                                    accept={PHOTO_ACCEPT_TYPES}
+                                                    title="Company Logo"
+                                                    hint="Drop logo here or click to upload"
+                                                />
+                                            </div>
+                                            <div className="col-lg-6 mb-3">
+                                                <label className="form-label">Title *</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    name="title"
+                                                    required
+                                                    value={formData.title}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div className="col-lg-6 mb-3">
+                                                <label className="form-label">Sector</label>
+                                                <Select
+                                                    options={sectorOptions}
+                                                    className="react-select-container"
+                                                    classNamePrefix="react-select"
+                                                    value={sectorOptions.find(o => o.value === formData.sector)}
+                                                    onChange={(o) => setFormData(p => ({ ...p, sector: o.value }))}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label">Country</label>
-                                        <select
-                                            className="form-control form-select"
-                                            name="country"
-                                            value={formData.country}
-                                            onChange={handleChange}
-                                        >
-                                            <option value="">Select Country</option>
-                                            {countryOptions.map(opt => (
-                                                <option key={opt.value} value={opt.value}>
-                                                    {opt.label}
-                                                </option>
-                                            ))}
-                                        </select>
+                                    {/* --- Group 2: Geography --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Geography</h6>
+                                        <div className="row">
+                                            <div className="col-lg-4 mb-3">
+                                                <label className="form-label">Country</label>
+                                                <Select
+                                                    options={countryOptions}
+                                                    className="react-select-container"
+                                                    classNamePrefix="react-select"
+                                                    value={countryOptions.find(o => o.value === formData.country)}
+                                                    onChange={(o) => setFormData(p => ({ ...p, country: o.value }))}
+                                                />
+                                            </div>
+                                            <div className="col-lg-4 mb-3">
+                                                <label className="form-label">Region</label>
+                                                <Select
+                                                    options={regionOptions}
+                                                    className="react-select-container"
+                                                    classNamePrefix="react-select"
+                                                    value={regionOptions.find(o => o.value === formData.region)}
+                                                    onChange={(o) => setFormData(p => ({ ...p, region: o.value }))}
+                                                />
+                                            </div>
+                                            <div className="col-lg-4 mb-3">
+                                                <label className="form-label">Address</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    name="address"
+                                                    value={formData.address}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div className="col-md-12 mb-3">
-                                        <label className="form-label">Description</label>
-                                        <textarea
-                                            className="form-control"
-                                            name="description"
-                                            rows="3"
-                                            value={formData.description}
-                                            onChange={handleChange}
-                                        ></textarea>
+                                    {/* --- Group 3: Details --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Details</h6>
+                                        <div className="row">
+                                            <div className="col-md-12 mb-3">
+                                                <label className="form-label">Description</label>
+                                                <textarea
+                                                    className="form-control"
+                                                    name="description"
+                                                    rows="3"
+                                                    value={formData.description}
+                                                    onChange={handleChange}
+                                                ></textarea>
+                                            </div>
+                                            <div className="col-md-6 mb-3">
+                                                <label className="form-label">Domain</label>
+                                                <input
+                                                    type="url"
+                                                    className="form-control"
+                                                    name="domain"
+                                                    placeholder="https://example.com"
+                                                    value={formData.domain}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                            <div className="col-md-6 mb-3">
+                                                <label className="form-label">Location (Map View)</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    name="location"
+                                                    placeholder="Google Maps URL or Coordinates"
+                                                    value={formData.location}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
