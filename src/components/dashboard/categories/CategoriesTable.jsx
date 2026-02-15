@@ -214,7 +214,7 @@ export default function CategoriesTable({
                                     {/* Start Price Column */}
                                     {table.getColumn("start_price").getIsVisible() && (
                                         <SortableTh id="start_price" key="start_price">
-                                            <span>Start Price</span>
+                                            <span>Start Amount</span>
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                                     <i className="fat fa-sort fsz-12"></i>
@@ -234,7 +234,7 @@ export default function CategoriesTable({
                                     {/* End Price Column */}
                                     {table.getColumn("end_price").getIsVisible() && (
                                         <SortableTh id="end_price" key="end_price">
-                                            <span>End Price</span>
+                                            <span>End Amount</span>
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                                     <i className="fat fa-sort fsz-12"></i>
@@ -347,15 +347,15 @@ export default function CategoriesTable({
                                                 )}
 
                                                 {table.getColumn("start_price").getIsVisible() && (
-                                                    <td id="start_price" key="start_price" className="fsz-13 text-muted">{category.start_price}</td>
+                                                    <td id="start_price" key="start_price" >{category.start_price}</td>
                                                 )}
 
                                                 {table.getColumn("end_price").getIsVisible() && (
-                                                    <td id="end_price" key="end_price" className="fsz-13 text-muted">{category.end_price}</td>
+                                                    <td id="end_price" key="end_price" >{category.end_price}</td>
                                                 )}
 
                                                 {table.getColumn("created_at").getIsVisible() && (
-                                                    <td id="created_at" key="created_at" className="fsz-13 text-muted">
+                                                    <td id="created_at" key="created_at" >
                                                         {isMounted ? new Date(category.created_at).toLocaleDateString() : "-"}
                                                     </td>
                                                 )}

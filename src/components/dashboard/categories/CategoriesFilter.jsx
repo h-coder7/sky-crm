@@ -44,7 +44,7 @@ export default function CategoriesFilter({ table, dateRangeValue, onOpenModal, o
             <td key="start_price">
                 <input
                     className="form-control"
-                    placeholder="Start Price"
+                    placeholder="Start Amount"
                     value={startPriceSearch}
                     onChange={(e) => handleStartPriceChange(e.target.value)}
                 />
@@ -54,7 +54,7 @@ export default function CategoriesFilter({ table, dateRangeValue, onOpenModal, o
             <td key="end_price">
                 <input
                     className="form-control"
-                    placeholder="End Price"
+                    placeholder="End Amount"
                     value={endPriceSearch}
                     onChange={(e) => handleEndPriceChange(e.target.value)}
                 />

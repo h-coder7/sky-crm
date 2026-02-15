@@ -154,6 +154,15 @@ export default function SideMenu() {
                         </li>
 
                         <li>
+                            <Link href="/dashboard/daily-log" className={`lnk ${isActive("/dashboard/daily-log") ? "active" : ""}`}>
+                                <span className="icon">
+                                    <i className="fal fa-calendar-alt"></i>
+                                </span>
+                                <span className="txt">Daily Log</span>
+                            </Link>
+                        </li>
+
+                        <li>
                             <Link href="/dashboard/regions" className={`lnk ${isActive("/dashboard/regions") ? "active" : ""}`}>
                                 <span className="icon">
                                     <i className="fal fa-map-location-dot"></i>

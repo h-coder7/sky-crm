@@ -332,7 +332,7 @@ export default function RegionsTable({
                                                 )}
 
                                                 {table.getColumn("created_at").getIsVisible() && (
-                                                    <td id="created_at" key="created_at" className="fsz-13 text-muted">
+                                                    <td id="created_at" key="created_at" >
                                                         {new Date(item.created_at).toLocaleDateString()}
                                                     </td>
                                                 )}

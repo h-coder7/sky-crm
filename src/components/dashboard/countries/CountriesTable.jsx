@@ -326,13 +326,13 @@ export default function CountriesTable({
                                                 )}
 
                                                 {table.getColumn("country_key").getIsVisible() && (
-                                                    <td id="country_key" key="country_key" className="fsz-13 text-muted">
+                                                    <td id="country_key" key="country_key" >
                                                         {item.country_key || "-"}
                                                     </td>
                                                 )}
 
                                                 {table.getColumn("created_at").getIsVisible() && (
-                                                    <td id="created_at" key="created_at" className="fsz-13 text-muted">
+                                                    <td id="created_at" key="created_at" >
                                                         {new Date(item.created_at).toLocaleDateString()}
                                                     </td>
                                                 )}

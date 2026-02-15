@@ -2,46 +2,85 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import Select from "react-select";
 
 export default function DailyLogModal({ show, onClose, onSave, log = null }) {
     const [isMounted, setIsMounted] = useState(false);
     const [formData, setFormData] = useState({
-        contact_list: "",
-        date: "",
         employee: "",
-        objective: "",
+        contact_list: "",
+        job_title: "",
+        company: "",
+        date: "",
         type: "",
+        objective: "",
         estimated_sale: "",
-        next_contact: "",
+        contact_status: "",
         next_action: "",
+        next_contact: "",
     });
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
 
+    const typeOptions = [
+        { value: "Phone call", label: "Phone call" },
+        { value: "Zoom meeting", label: "Zoom meeting" },
+        { value: "Face to face", label: "Face to face" },
+        { value: "Email", label: "Email" },
+        { value: "Linkedin message", label: "Linkedin message" },
+        { value: "Acquaintance", label: "Acquaintance" },
+    ];
+
+    const objectiveOptions = [
+        { value: "Conference/Seminar", label: "Conference/Seminar" },
+        { value: "Product launch", label: "Product launch" },
+        { value: "Corporate teambuilding", label: "Corporate teambuilding" },
+        { value: "Exhibition", label: "Exhibition" },
+        { value: "Workshops", label: "Workshops" },
+        { value: "Graduation", label: "Graduation" },
+        { value: "Round table meeting", label: "Round table meeting" },
+        { value: "Celebration", label: "Celebration" },
+        { value: "Public Event", label: "Public Event" },
+        { value: "Other", label: "Other" },
+    ];
+
+    const nextActionOptions = [
+        { value: "Meeting", label: "Meeting" },
+        { value: "Pitch", label: "Pitch" },
+        { value: "Call", label: "Call" },
+        { value: "Follow-up", label: "Follow-up" },
+    ];
+
     useEffect(() => {
         if (log) {
             setFormData({
-                contact_list: log.contact_list || "",
-                date: log.date || "",
                 employee: log.employee || "",
-                objective: log.objective || "",
+                contact_list: log.contact_list || "",
+                job_title: log.job_title || "",
+                company: log.company || "",
+                date: log.date || "",
                 type: log.type || "",
+                objective: log.objective || "",
                 estimated_sale: log.estimated_sale || "",
-                next_contact: log.next_contact || "",
+                contact_status: log.contact_status || "",
                 next_action: log.next_action || "",
+                next_contact: log.next_contact || "",
             });
         } else {
             setFormData({
-                contact_list: "",
-                date: "",
                 employee: "",
-                objective: "",
+                contact_list: "",
+                job_title: "",
+                company: "",
+                date: new Date().toISOString().split("T")[0],
                 type: "",
+                objective: "",
                 estimated_sale: "",
-                next_contact: "",
+                contact_status: "",
                 next_action: "",
+                next_contact: "",
             });
         }
     }, [log, show]);
@@ -49,6 +88,10 @@ export default function DailyLogModal({ show, onClose, onSave, log = null }) {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSelectChange = (name, selectedOption) => {
+        setFormData((prev) => ({ ...prev, [name]: selectedOption ? selectedOption.value : "" }));
     };
 
     const handleSubmit = (e) => {
@@ -61,78 +104,94 @@ export default function DailyLogModal({ show, onClose, onSave, log = null }) {
     return createPortal(
         <>
             <div className="modal-backdrop fade show" onClick={onClose}></div>
-            <div className="modal fade show d-block" tabIndex="-1" onClick={(e) => e.target === e.currentTarget && onClose()}>
+            <div
+                className="modal fade show d-block"
+                tabIndex="-1"
+                onClick={(e) => e.target === e.currentTarget && onClose()}
+            >
                 <div className="modal-dialog modal-dialog-centered modal-lg">
-                    <div className="modal-content">
+                    <div className="modal-content border-0 shadow-lg">
                         <div className="modal-header">
-                            <h5 className="modal-title">{log ? "Edit Daily Log" : "Add Daily Log"}</h5>
-                            <button type="button" className="btn-close" onClick={onClose}></button>
+                            <h5 className="modal-title">
+                                {log ? "Edit Daily Log" : "Add Daily Log"}
+                            </h5>
+                            <button type="button" className="btn-close fsz-12" onClick={onClose}></button>
                         </div>
                         <form onSubmit={handleSubmit}>
-                            <div className="modal-body">
+                            <div className="modal-body p-4">
                                 <div className="row g-3">
-                                    <div className="col-md-6">
-                                        <label className="form-label">Contact List</label>
-                                        <input type="text" className="form-control" name="contact_list" value={formData.contact_list} onChange={handleChange} required />
-                                    </div>
-                                    <div className="col-md-6">
-                                        <label className="form-label">Date</label>
-                                        <input type="date" className="form-control" name="date" value={formData.date} onChange={handleChange} required />
-                                    </div>
-                                    <div className="col-md-6">
+                                    <div className="col-md-4">
                                         <label className="form-label">Employee</label>
                                         <input type="text" className="form-control" name="employee" value={formData.employee} onChange={handleChange} required />
                                     </div>
-                                    <div className="col-md-6">
-                                        <label className="form-label">Objective</label>
-                                        <select className="form-select" name="objective" value={formData.objective} onChange={handleChange} required>
-                                            <option value="">Select Objective</option>
-                                            <option value="Conference/Seminar">Conference/Seminar</option>
-                                            <option value="Product launch">Product launch</option>
-                                            <option value="Corporate teambuilding">Corporate teambuilding</option>
-                                            <option value="Exhibition">Exhibition</option>
-                                            <option value="Workshops">Workshops</option>
-                                            <option value="Graduation">Graduation</option>
-                                            <option value="Round table meeting">Round table meeting</option>
-                                            <option value="Celebration">Celebration</option>
-                                            <option value="Public Event">Public Event</option>
-                                            <option value="Other">Other</option>
-                                        </select>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Contact List</label>
+                                        <input type="text" className="form-control" name="contact_list" value={formData.contact_list} onChange={handleChange} required />
                                     </div>
-                                    <div className="col-md-6">
+                                    <div className="col-md-4">
+                                        <label className="form-label">Job Title</label>
+                                        <input type="text" className="form-control" name="job_title" value={formData.job_title} onChange={handleChange} required />
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Company</label>
+                                        <input type="text" className="form-control" name="company" value={formData.company} onChange={handleChange} required />
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Date</label>
+                                        <input type="date" className="form-control" name="date" value={formData.date} onChange={handleChange} required />
+                                    </div>
+                                    <div className="col-md-4">
                                         <label className="form-label">Type</label>
-                                        <select className="form-select" name="type" value={formData.type} onChange={handleChange} required>
-                                            <option value="">Select Type</option>
-                                            <option value="Phone call">Phone call</option>
-                                            <option value="Zoom meeting">Zoom meeting</option>
-                                            <option value="Face to face">Face to face</option>
-                                            <option value="Email">Email</option>
-                                            <option value="Linkedin message">Linkedin message</option>
-                                            <option value="Acquaintance">Acquaintance</option>
-                                        </select>
+                                        <Select
+                                            instanceId="daily-log-type-select"
+                                            options={typeOptions}
+                                            value={typeOptions.find(opt => opt.value === formData.type)}
+                                            onChange={(val) => handleSelectChange("type", val)}
+                                            placeholder="Select Type"
+                                            classNamePrefix="react-select"
+                                            required
+                                        />
                                     </div>
-                                    <div className="col-md-6">
+                                    <div className="col-md-4">
                                         <label className="form-label">Estimated Sale</label>
-                                        <input type="text" className="form-control" name="estimated_sale" value={formData.estimated_sale} onChange={handleChange} required />
+                                        <input type="number" className="form-control" name="estimated_sale" value={formData.estimated_sale} onChange={handleChange} required />
                                     </div>
-                                    <div className="col-md-6">
+                                    <div className="col-md-4">
+                                        <label className="form-label">Objective</label>
+                                        <Select
+                                            instanceId="daily-log-objective-select"
+                                            options={objectiveOptions}
+                                            value={objectiveOptions.find(opt => opt.value === formData.objective)}
+                                            onChange={(val) => handleSelectChange("objective", val)}
+                                            placeholder="Select Objective"
+                                            classNamePrefix="react-select"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Contact Status</label>
+                                        <input type="text" className="form-control" name="contact_status" value={formData.contact_status} onChange={handleChange} required />
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label className="form-label">Next Action</label>
+                                        <Select
+                                            instanceId="daily-log-next-action-select"
+                                            options={nextActionOptions}
+                                            value={nextActionOptions.find(opt => opt.value === formData.next_action)}
+                                            onChange={(val) => handleSelectChange("next_action", val)}
+                                            placeholder="Select Next Action"
+                                            classNamePrefix="react-select"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="col-md-4">
                                         <label className="form-label">Next Contact</label>
                                         <input type="date" className="form-control" name="next_contact" value={formData.next_contact} onChange={handleChange} required />
                                     </div>
-                                    <div className="col-md-6">
-                                        <label className="form-label">Next Action</label>
-                                        <select className="form-select" name="next_action" value={formData.next_action} onChange={handleChange} required>
-                                            <option value="">Select Action</option>
-                                            <option value="Meeting">Meeting</option>
-                                            <option value="Pitch">Pitch</option>
-                                            <option value="Call">Call</option>
-                                            <option value="Follow-up">Follow-up</option>
-                                        </select>
-                                    </div>
                                 </div>
                             </div>
-                            <div className="modal-footer">
-                                <button type="button" className="butn-st2 butn-md line-butn" onClick={onClose}>Close</button>
+                            <div className="modal-footer p-3 border-top-0">
+                                <button type="button" className="butn-st2 butn-md line-butn me-2" onClick={onClose}>Close</button>
                                 <button type="submit" className="butn-st2 butn-md">{log ? "Update" : "Save"}</button>
                             </div>
                         </form>

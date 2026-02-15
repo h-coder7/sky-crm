@@ -366,7 +366,7 @@ export default function ProductsTable({
                                                     }
 
                                                     return (
-                                                        <td key={colId} id={colId} className="fsz-13 text-muted">
+                                                        <td key={colId} id={colId} >
                                                             {item[column.columnDef.accessorKey] || "-"}
                                                         </td>
                                                     );
