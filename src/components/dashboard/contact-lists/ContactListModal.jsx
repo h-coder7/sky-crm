@@ -291,12 +291,12 @@ export default function ContactListModal({ show, onClose, onSave, contact = null
                                             <div className="col-12 mb-3">
                                                 <label className="form-label d-flex justify-content-between">
                                                     Phone Numbers
-                                                    <button type="button" className="btn btn-sm btn-outline-primary fsz-10 py-0" onClick={() => addArrayItem("phones")}>+ Add Phone</button>
+                                                    <button type="button" className="btn btn-sm bg-blue text-white fsz-10 py-0 rounded-pill hover-bg-main" onClick={() => addArrayItem("phones")}>+ Add Phone</button>
                                                 </label>
                                                 {formData.phones.map((phone, idx) => (
                                                     <div key={idx} className="d-flex mb-2">
                                                         <input type="text" className="form-control form-control-sm" value={phone} onChange={(e) => handleArrayChange(idx, e.target.value, "phones")} />
-                                                        <button type="button" className="btn btn-sm text-danger ms-2" onClick={() => removeArrayItem(idx, "phones")} disabled={formData.phones.length === 1}>
+                                                        <button type="button" className="btn btn-sm text-danger ms-2 border-0" onClick={() => removeArrayItem(idx, "phones")} disabled={formData.phones.length === 1}>
                                                             <i className="fal fa-trash"></i>
                                                         </button>
                                                     </div>
@@ -307,12 +307,12 @@ export default function ContactListModal({ show, onClose, onSave, contact = null
                                             <div className="col-12 mb-3">
                                                 <label className="form-label d-flex justify-content-between">
                                                     Landline Numbers
-                                                    <button type="button" className="btn btn-sm btn-outline-primary fsz-10 py-0" onClick={() => addArrayItem("landlines")}>+ Add Landline</button>
+                                                    <button type="button" className="btn btn-sm bg-blue text-white fsz-10 py-0 rounded-pill hover-bg-main" onClick={() => addArrayItem("landlines")}>+ Add Landline</button>
                                                 </label>
                                                 {formData.landlines.map((land, idx) => (
                                                     <div key={idx} className="d-flex mb-2">
                                                         <input type="text" className="form-control form-control-sm" value={land} onChange={(e) => handleArrayChange(idx, e.target.value, "landlines")} />
-                                                        <button type="button" className="btn btn-sm text-danger ms-2" onClick={() => removeArrayItem(idx, "landlines")} disabled={formData.landlines.length === 1}>
+                                                        <button type="button" className="btn btn-sm text-danger ms-2 border-0" onClick={() => removeArrayItem(idx, "landlines")} disabled={formData.landlines.length === 1}>
                                                             <i className="fal fa-trash"></i>
                                                         </button>
                                                     </div>
@@ -363,12 +363,12 @@ export default function ContactListModal({ show, onClose, onSave, contact = null
                                             <div className="col-12">
                                                 <label className="form-label d-flex justify-content-between">
                                                     Social Media Links
-                                                    <button type="button" className="btn btn-sm btn-outline-primary fsz-10 py-0" onClick={() => addArrayItem("social_links")}>+ Add Link</button>
+                                                    <button type="button" className="btn btn-sm bg-blue text-white fsz-10 py-0 rounded-pill hover-bg-main" onClick={() => addArrayItem("social_links")}>+ Add Link</button>
                                                 </label>
                                                 {formData.social_links.map((link, idx) => (
                                                     <div key={idx} className="d-flex mb-2">
                                                         <input type="text" className="form-control form-control-sm" value={link} onChange={(e) => handleArrayChange(idx, e.target.value, "social_links")} />
-                                                        <button type="button" className="btn btn-sm text-danger ms-2" onClick={() => removeArrayItem(idx, "social_links")} disabled={formData.social_links.length === 1}>
+                                                        <button type="button" className="btn btn-sm text-danger ms-2 border-0" onClick={() => removeArrayItem(idx, "social_links")} disabled={formData.social_links.length === 1}>
                                                             <i className="fal fa-trash"></i>
                                                         </button>
                                                     </div>

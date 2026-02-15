@@ -36,6 +36,12 @@
     border-color: var(--main-color) !important;
 }
 
+.hover-bg-main:hover {
+    background-color: var(--main-color) !important;
+    border-color: var(--main-color) !important;
+    color: #fff !important;
+}
+
 .cr-red {
     color: var(--red) !important;
 }
