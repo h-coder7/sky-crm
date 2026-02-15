@@ -7,6 +7,7 @@ import TargetTable from "./TargetTable";
 import TargetModal from "./TargetModal";
 import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 export default function TargetClient({ initialTargets = [] }) {
     const [targets, setTargets] = useState(initialTargets);
@@ -63,6 +64,7 @@ export default function TargetClient({ initialTargets = [] }) {
                     setTrashTargets((prev) => [targetToDelete, ...prev]);
                     setTargets((prev) => prev.filter((t) => t.id !== id));
                     setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+                    toast.success("Target moved to trash!");
                 }
             }
         });
@@ -80,6 +82,7 @@ export default function TargetClient({ initialTargets = [] }) {
                 setTrashTargets(prev => [...itemsToDelete, ...prev]);
                 setTargets(prev => prev.filter(t => !selectedIds.includes(t.id)));
                 setSelectedIds([]);
+                toast.success(`${itemsToDelete.length} targets moved to trash!`);
             }
         });
     };
@@ -87,6 +90,7 @@ export default function TargetClient({ initialTargets = [] }) {
     const handleSave = (targetData) => {
         if (editingTarget) {
             setTargets(prev => prev.map(t => t.id === editingTarget.id ? { ...t, ...targetData } : t));
+            toast.success("Target updated successfully!");
         } else {
             const newTarget = {
                 ...targetData,
@@ -94,6 +98,7 @@ export default function TargetClient({ initialTargets = [] }) {
                 created_at: new Date().toISOString().split('T')[0]
             };
             setTargets(prev => [newTarget, ...prev]);
+            toast.success("Target added successfully!");
         }
         setIsModalOpen(false);
     };
@@ -103,11 +108,13 @@ export default function TargetClient({ initialTargets = [] }) {
         if (targetToRestore) {
             setTargets((prev) => [targetToRestore, ...prev]);
             setTrashTargets((prev) => prev.filter((t) => t.id !== id));
+            toast.success("Target restored successfully!");
         }
     };
 
     const handlePermanentDelete = (id) => {
         setTrashTargets((prev) => prev.filter((t) => t.id !== id));
+        toast.success("Target permanently deleted!");
     };
 
     /* ======================================================================

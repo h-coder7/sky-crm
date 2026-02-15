@@ -8,6 +8,7 @@ import DealsMatrix from "@/components/dashboard/deals/DealsMatrix";
 import DealsModal from "@/components/dashboard/deals/DealsModal";
 import TrashModal from "@/components/dashboard/deals/TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 /**
  * 🎯 Client Component for Deals Page
@@ -46,6 +47,7 @@ export default function DealsClient({ initialDeals = [] }) {
           deal.id === selectedDeal.id ? { ...deal, ...data } : deal
         )
       );
+      toast.success("Deal updated successfully!");
     } else {
       // Create new
       const newDeal = {
@@ -54,6 +56,7 @@ export default function DealsClient({ initialDeals = [] }) {
         created_at: new Date().toISOString().split("T")[0],
       };
       setDeals((prev) => [newDeal, ...prev]);
+      toast.success("Deal added successfully!");
     }
     setShowModal(false);
     setSelectedDeal(null);
@@ -77,6 +80,7 @@ export default function DealsClient({ initialDeals = [] }) {
         if (dealToDelete) {
           setTrashDeals((prev) => [dealToDelete, ...prev]);
           setDeals((prev) => prev.filter((d) => d.id !== id));
+          toast.success("Deal moved to trash!");
         }
       }
     });
@@ -87,11 +91,13 @@ export default function DealsClient({ initialDeals = [] }) {
     if (dealToRestore) {
       setDeals((prev) => [dealToRestore, ...prev]);
       setTrashDeals((prev) => prev.filter((d) => d.id !== id));
+      toast.success("Deal restored successfully!");
     }
   };
 
   const handlePermanentDelete = (id) => {
     setTrashDeals((prev) => prev.filter((d) => d.id !== id));
+    toast.success("Deal permanently deleted!");
   };
 
   const handleBulkDelete = () => {
@@ -106,6 +112,7 @@ export default function DealsClient({ initialDeals = [] }) {
         setTrashDeals(prev => [...itemsToDelete, ...prev]);
         setDeals(prev => prev.filter(d => !selectedIds.includes(d.id)));
         setSelectedIds([]);
+        toast.success(`${itemsToDelete.length} deals moved to trash!`);
       }
     });
   };

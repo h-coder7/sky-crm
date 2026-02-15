@@ -8,6 +8,7 @@ import api from "@/app/api/api"; // 🔌 Import axios instance
 import CountryModal from "@/components/dashboard/countries/CountryModal";
 import TrashModal from "@/components/dashboard/countries/TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 /**
  * 🎯 Client Component for Countries Page
@@ -86,6 +87,7 @@ export default function CountriesClient({ initialCountries = [] }) {
                         : country
                 )
             );
+            toast.success("Country updated successfully!");
         } else {
             // Create new
             const newCountry = {
@@ -95,6 +97,7 @@ export default function CountriesClient({ initialCountries = [] }) {
                 created_at: new Date().toISOString().split("T")[0],
             };
             setCountries((prev) => [newCountry, ...prev]);
+            toast.success("Country added successfully!");
         }
         setShowModal(false);
         setSelectedCountry(null);
@@ -132,6 +135,7 @@ export default function CountriesClient({ initialCountries = [] }) {
                 if (countryToDelete) {
                     setTrashCountries((prev) => [countryToDelete, ...prev]);
                     setCountries((prev) => prev.filter((c) => c.id !== id));
+                    toast.success("Country moved to trash!");
                 }
             }
         });
@@ -157,21 +161,13 @@ export default function CountriesClient({ initialCountries = [] }) {
         if (countryToRestore) {
             setCountries((prev) => [countryToRestore, ...prev]);
             setTrashCountries((prev) => prev.filter((c) => c.id !== id));
+            toast.success("Country restored successfully!");
         }
     };
 
     const handlePermanentDelete = async (id) => {
-        /*
-        try {
-          await api.delete(`/countries/${id}/permanent`);
-          setTrashCountries((prev) => prev.filter((c) => c.id !== id));
-        } catch (error) {
-           console.error("Failed to permanently delete country:", error);
-        }
-        */
-
-        // 👇 TEMP: Local State Logic
         setTrashCountries((prev) => prev.filter((c) => c.id !== id));
+        toast.success("Country permanently deleted!");
     };
 
     const handleBulkDelete = () => {
@@ -200,6 +196,7 @@ export default function CountriesClient({ initialCountries = [] }) {
                 setTrashCountries(prev => [...itemsToDelete, ...prev]);
                 setCountries(prev => prev.filter(c => !selectedIds.includes(c.id)));
                 setSelectedIds([]);
+                toast.success(`${itemsToDelete.length} countries moved to trash!`);
             }
         });
     };

@@ -6,6 +6,7 @@ import DailyLogTable from "@/components/dashboard/daily-log/DailyLogTable";
 import DailyLogModal from "@/components/dashboard/daily-log/DailyLogModal";
 import TrashModal from "@/components/dashboard/daily-log/TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 export default function DailyLogClient({ initialDailyLogs = [] }) {
     const [dailyLogs, setDailyLogs] = useState(initialDailyLogs);
@@ -15,12 +16,12 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
 
     const [trashLogs, setTrashLogs] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
-
     const handleSave = (data) => {
         if (selectedLog) {
             setDailyLogs((prev) =>
                 prev.map((log) => (log.id === selectedLog.id ? { ...log, ...data } : log))
             );
+            toast.success("Daily log updated successfully!");
         } else {
             const newLog = {
                 id: Date.now(),
@@ -29,6 +30,7 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
                 created_at: new Date().toISOString().split("T")[0],
             };
             setDailyLogs((prev) => [newLog, ...prev]);
+            toast.success("Daily log added successfully!");
         }
         setShowModal(false);
         setSelectedLog(null);
@@ -52,6 +54,7 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
                 if (logToDelete) {
                     setTrashLogs((prev) => [logToDelete, ...prev]);
                     setDailyLogs((prev) => prev.filter((l) => l.id !== id));
+                    toast.success("Log entry moved to trash!");
                 }
             },
         });
@@ -62,11 +65,13 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
         if (logToRestore) {
             setDailyLogs((prev) => [logToRestore, ...prev]);
             setTrashLogs((prev) => prev.filter((l) => l.id !== id));
+            toast.success("Log entry restored successfully!");
         }
     };
 
     const handlePermanentDelete = (id) => {
         setTrashLogs((prev) => prev.filter((l) => l.id !== id));
+        toast.success("Log entry permanently deleted!");
     };
 
     const handleBulkDelete = () => {
@@ -80,6 +85,7 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
                 setTrashLogs((prev) => [...logsToDelete, ...prev]);
                 setDailyLogs((prev) => prev.filter((l) => !selectedIds.includes(l.id)));
                 setSelectedIds([]);
+                toast.success(`${logsToDelete.length} logs moved to trash!`);
             },
         });
     };

@@ -7,6 +7,7 @@ import CategoriesTable from "@/components/dashboard/categories/CategoriesTable";
 import CategoryModal from "@/components/dashboard/categories/CategoryModal";
 import TrashModal from "@/components/dashboard/categories/TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 export default function CategoriesClient({ initialCategories = [] }) {
     const [categories, setCategories] = useState(initialCategories);
@@ -63,6 +64,7 @@ export default function CategoriesClient({ initialCategories = [] }) {
                     setTrashCategories((prev) => [categoryToDelete, ...prev]);
                     setCategories((prev) => prev.filter((c) => c.id !== id));
                     setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+                    toast.success("Category moved to trash!");
                 }
             }
         });
@@ -80,6 +82,7 @@ export default function CategoriesClient({ initialCategories = [] }) {
                 setTrashCategories(prev => [...itemsToDelete, ...prev]);
                 setCategories(prev => prev.filter(c => !selectedIds.includes(c.id)));
                 setSelectedIds([]);
+                toast.success(`${itemsToDelete.length} categories moved to trash!`);
             }
         });
     };
@@ -87,6 +90,7 @@ export default function CategoriesClient({ initialCategories = [] }) {
     const handleSave = (categoryData) => {
         if (editingCategory) {
             setCategories(prev => prev.map(c => c.id === editingCategory.id ? { ...c, ...categoryData } : c));
+            toast.success("Category updated successfully!");
         } else {
             const newCategory = {
                 ...categoryData,
@@ -94,6 +98,7 @@ export default function CategoriesClient({ initialCategories = [] }) {
                 created_at: new Date().toISOString().split('T')[0]
             };
             setCategories(prev => [newCategory, ...prev]);
+            toast.success("Category added successfully!");
         }
         setIsModalOpen(false);
     };
@@ -103,11 +108,13 @@ export default function CategoriesClient({ initialCategories = [] }) {
         if (categoryToRestore) {
             setCategories((prev) => [categoryToRestore, ...prev]);
             setTrashCategories((prev) => prev.filter((c) => c.id !== id));
+            toast.success("Category restored successfully!");
         }
     };
 
     const handlePermanentDelete = (id) => {
         setTrashCategories((prev) => prev.filter((c) => c.id !== id));
+        toast.success("Category permanently deleted!");
     };
 
     /* ======================================================================

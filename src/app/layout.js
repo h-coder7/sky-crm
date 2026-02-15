@@ -9,6 +9,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
 import "./globals.scss";
+import { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={poppins.variable} suppressHydrationWarning={true}>
         <BootstrapClient />
+        <Toaster position="top-center" reverseOrder={false} />
         {children}
       </body>
     </html>

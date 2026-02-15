@@ -7,6 +7,7 @@ import ProductsTable from "./ProductsTable";
 import ProductModal from "./ProductModal";
 import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 export default function ProductsClient({ initialProducts = [] }) {
     const [products, setProducts] = useState(initialProducts);
@@ -63,6 +64,7 @@ export default function ProductsClient({ initialProducts = [] }) {
                     setTrashProducts((prev) => [productToDelete, ...prev]);
                     setProducts((prev) => prev.filter((p) => p.id !== id));
                     setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+                    toast.success("Product moved to trash!");
                 }
             }
         });
@@ -80,6 +82,7 @@ export default function ProductsClient({ initialProducts = [] }) {
                 setTrashProducts(prev => [...itemsToDelete, ...prev]);
                 setProducts(prev => prev.filter(p => !selectedIds.includes(p.id)));
                 setSelectedIds([]);
+                toast.success(`${itemsToDelete.length} products moved to trash!`);
             }
         });
     };
@@ -87,6 +90,7 @@ export default function ProductsClient({ initialProducts = [] }) {
     const handleSave = (productData) => {
         if (editingProduct) {
             setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...p, ...productData } : p));
+            toast.success("Product updated successfully!");
         } else {
             const newProduct = {
                 ...productData,
@@ -94,6 +98,7 @@ export default function ProductsClient({ initialProducts = [] }) {
                 created_at: new Date().toISOString().split('T')[0]
             };
             setProducts(prev => [newProduct, ...prev]);
+            toast.success("Product added successfully!");
         }
         setIsModalOpen(false);
     };
@@ -103,11 +108,13 @@ export default function ProductsClient({ initialProducts = [] }) {
         if (productToRestore) {
             setProducts((prev) => [productToRestore, ...prev]);
             setTrashProducts((prev) => prev.filter((p) => p.id !== id));
+            toast.success("Product restored successfully!");
         }
     };
 
     const handlePermanentDelete = (id) => {
         setTrashProducts((prev) => prev.filter((p) => p.id !== id));
+        toast.success("Product permanently deleted!");
     };
 
     /* ======================================================================

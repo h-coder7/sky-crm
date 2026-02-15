@@ -7,6 +7,7 @@ import CompaniesTable from "./CompaniesTable";
 import CompanyModal from "./CompanyModal";
 import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 export default function CompaniesClient({ initialCompanies = [] }) {
     const [companies, setCompanies] = useState(initialCompanies);
@@ -41,6 +42,7 @@ export default function CompaniesClient({ initialCompanies = [] }) {
         // 🔌 API READY: Integrate your POST/PUT request here.
         if (selectedCompany) {
             setCompanies(prev => prev.map(c => c.id === selectedCompany.id ? { ...c, ...companyData } : c));
+            toast.success("Company updated successfully!");
         } else {
             const newCompany = {
                 ...companyData,
@@ -48,6 +50,7 @@ export default function CompaniesClient({ initialCompanies = [] }) {
                 created_at: new Date().toISOString().split('T')[0]
             };
             setCompanies(prev => [newCompany, ...prev]);
+            toast.success("Company added successfully!");
         }
         setIsModalOpen(false);
         setSelectedCompany(null);
@@ -71,6 +74,7 @@ export default function CompaniesClient({ initialCompanies = [] }) {
                 if (companyToDelete) {
                     setTrashCompanies((prev) => [companyToDelete, ...prev]);
                     setCompanies((prev) => prev.filter((c) => c.id !== id));
+                    toast.success("Company moved to trash!");
                 }
             }
         });
@@ -81,11 +85,13 @@ export default function CompaniesClient({ initialCompanies = [] }) {
         if (companyToRestore) {
             setCompanies((prev) => [companyToRestore, ...prev]);
             setTrashCompanies((prev) => prev.filter((c) => c.id !== id));
+            toast.success("Company restored successfully!");
         }
     };
 
     const handlePermanentDelete = (id) => {
         setTrashCompanies((prev) => prev.filter((c) => c.id !== id));
+        toast.success("Company permanently deleted!");
     };
 
 
@@ -101,6 +107,7 @@ export default function CompaniesClient({ initialCompanies = [] }) {
                 setTrashCompanies(prev => [...itemsToDelete, ...prev]);
                 setCompanies(prev => prev.filter(c => !selectedIds.includes(c.id)));
                 setSelectedIds([]);
+                toast.success(`${itemsToDelete.length} companies moved to trash!`);
             }
         });
     };

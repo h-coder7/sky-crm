@@ -8,6 +8,7 @@ import api from "@/app/api/api"; // 🔌 Import axios instance
 import ContactListModal from "@/components/dashboard/contact-lists/ContactListModal";
 import TrashModal from "@/components/dashboard/contact-lists/TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 /**
  * 🎯 Client Component for Contact Lists Page
@@ -74,6 +75,7 @@ export default function ContactListsClient({ initialContacts = [] }) {
                         : contact
                 )
             );
+            toast.success("Contact updated successfully!");
         } else {
             const newContact = {
                 id: Date.now(),
@@ -81,6 +83,7 @@ export default function ContactListsClient({ initialContacts = [] }) {
                 created_at: new Date().toISOString().split("T")[0],
             };
             setContacts((prev) => [newContact, ...prev]);
+            toast.success("Contact added successfully!");
         }
         setShowModal(false);
         setSelectedContact(null);
@@ -113,6 +116,7 @@ export default function ContactListsClient({ initialContacts = [] }) {
                 if (contactToDelete) {
                     setTrashContacts((prev) => [contactToDelete, ...prev]);
                     setContacts((prev) => prev.filter((c) => c.id !== id));
+                    toast.success("Contact moved to trash!");
                 }
             }
         });
@@ -136,20 +140,13 @@ export default function ContactListsClient({ initialContacts = [] }) {
         if (contactToRestore) {
             setContacts((prev) => [contactToRestore, ...prev]);
             setTrashContacts((prev) => prev.filter((c) => c.id !== id));
+            toast.success("Contact restored successfully!");
         }
     };
 
     const handlePermanentDelete = async (id) => {
-        /*
-        try {
-          await api.delete(`/contact-lists/${id}/permanent`);
-          setTrashContacts((prev) => prev.filter((c) => c.id !== id));
-        } catch (error) {
-           console.error("Failed to permanently delete contact:", error);
-        }
-        */
-
         setTrashContacts((prev) => prev.filter((c) => c.id !== id));
+        toast.success("Contact permanently deleted!");
     };
 
     const handleBulkDelete = () => {
@@ -176,6 +173,7 @@ export default function ContactListsClient({ initialContacts = [] }) {
                 setTrashContacts(prev => [...itemsToDelete, ...prev]);
                 setContacts(prev => prev.filter(c => !selectedIds.includes(c.id)));
                 setSelectedIds([]);
+                toast.success(`${itemsToDelete.length} contacts moved to trash!`);
             }
         });
     };

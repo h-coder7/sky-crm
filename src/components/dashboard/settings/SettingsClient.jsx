@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import PageHeader from "@/components/layout/PageHeader";
 import FileUpload from "@/components/shared/FileUpload";
 
@@ -45,6 +46,13 @@ export default function SettingsClient() {
         { id: "videos", label: "Intro Videos Configuration", icon: "fal fa-video" },
     ];
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // 🔌 API READY: Integrate your POST request here.
+        console.log("Saving settings:", formData);
+        toast.success("Settings saved successfully!");
+    };
+
     return (
         <>
             <PageHeader title="Settings" icon="fal fa-gear" />
@@ -69,7 +77,7 @@ export default function SettingsClient() {
                     </ul>
 
                     <div className="table-content p-4 mt-0">
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             {/* --- WEBSITE INFO --- */}
                             {activeTab === "website" && (
                                 <div className="tab-pane fade show active">

@@ -8,6 +8,7 @@ import api from "@/app/api/api"; // 🔌 Import axios instance
 import AdminModal from "@/components/dashboard/admins/AdminModal";
 import TrashModal from "@/components/dashboard/admins/TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 /**
  * 🎯 Client Component for Admins Page
@@ -86,6 +87,7 @@ export default function AdminsClient({ initialAdmins = [] }) {
                         : admin
                 )
             );
+            toast.success("Admin updated successfully!");
         } else {
             // Create new
             const newAdmin = {
@@ -94,6 +96,7 @@ export default function AdminsClient({ initialAdmins = [] }) {
                 created_at: new Date().toISOString().split("T")[0],
             };
             setAdmins((prev) => [newAdmin, ...prev]);
+            toast.success("Admin added successfully!");
         }
         setShowModal(false);
         setSelectedAdmin(null);
@@ -135,6 +138,7 @@ export default function AdminsClient({ initialAdmins = [] }) {
                 if (adminToDelete) {
                     setTrashAdmins((prev) => [adminToDelete, ...prev]);
                     setAdmins((prev) => prev.filter((a) => a.id !== id));
+                    toast.success("Admin moved to trash!");
                 }
             }
         });
@@ -160,6 +164,7 @@ export default function AdminsClient({ initialAdmins = [] }) {
         if (adminToRestore) {
             setAdmins((prev) => [adminToRestore, ...prev]);
             setTrashAdmins((prev) => prev.filter((a) => a.id !== id));
+            toast.success("Admin restored successfully!");
         }
     };
 
@@ -175,6 +180,7 @@ export default function AdminsClient({ initialAdmins = [] }) {
 
         // 👇 TEMP: Local State Logic
         setTrashAdmins((prev) => prev.filter((a) => a.id !== id));
+        toast.success("Admin permanently deleted!");
     };
 
     const handleBulkDelete = () => {
@@ -203,6 +209,7 @@ export default function AdminsClient({ initialAdmins = [] }) {
                 setTrashAdmins(prev => [...itemsToDelete, ...prev]);
                 setAdmins(prev => prev.filter(a => !selectedIds.includes(a.id)));
                 setSelectedIds([]);
+                toast.success(`${itemsToDelete.length} admins moved to trash!`);
             }
         });
     };

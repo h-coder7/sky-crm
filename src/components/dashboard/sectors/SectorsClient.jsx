@@ -8,6 +8,7 @@ import api from "@/app/api/api"; // 🔌 Import axios instance
 import SectorModal from "@/components/dashboard/sectors/SectorModal";
 import TrashModal from "@/components/dashboard/sectors/TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 /**
  * 🎯 Client Component for Sectors Page
@@ -86,6 +87,7 @@ export default function SectorsClient({ initialSectors = [] }) {
                         : sector
                 )
             );
+            toast.success("Sector updated successfully!");
         } else {
             // Create new
             const newSector = {
@@ -95,6 +97,7 @@ export default function SectorsClient({ initialSectors = [] }) {
                 created_at: new Date().toISOString().split("T")[0],
             };
             setSectors((prev) => [newSector, ...prev]);
+            toast.success("Sector added successfully!");
         }
         setShowModal(false);
         setSelectedSector(null);
@@ -136,6 +139,7 @@ export default function SectorsClient({ initialSectors = [] }) {
                 if (sectorToDelete) {
                     setTrashSectors((prev) => [sectorToDelete, ...prev]);
                     setSectors((prev) => prev.filter((s) => s.id !== id));
+                    toast.success("Sector moved to trash!");
                 }
             }
         });
@@ -161,21 +165,13 @@ export default function SectorsClient({ initialSectors = [] }) {
         if (sectorToRestore) {
             setSectors((prev) => [sectorToRestore, ...prev]);
             setTrashSectors((prev) => prev.filter((s) => s.id !== id));
+            toast.success("Sector restored successfully!");
         }
     };
 
     const handlePermanentDelete = async (id) => {
-        /*
-        try {
-          await api.delete(`/sectors/${id}/permanent`);
-          setTrashSectors((prev) => prev.filter((s) => s.id !== id));
-        } catch (error) {
-           console.error("Failed to permanently delete sector:", error);
-        }
-        */
-
-        // 👇 TEMP: Local State Logic
         setTrashSectors((prev) => prev.filter((s) => s.id !== id));
+        toast.success("Sector permanently deleted!");
     };
 
     const handleBulkDelete = () => {
@@ -204,6 +200,7 @@ export default function SectorsClient({ initialSectors = [] }) {
                 setTrashSectors(prev => [...itemsToDelete, ...prev]);
                 setSectors(prev => prev.filter(s => !selectedIds.includes(s.id)));
                 setSelectedIds([]);
+                toast.success(`${itemsToDelete.length} sectors moved to trash!`);
             }
         });
     };

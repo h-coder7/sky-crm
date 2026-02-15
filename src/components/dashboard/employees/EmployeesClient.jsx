@@ -8,6 +8,7 @@ import api from "@/app/api/api"; // 🔌 Import axios instance
 import EmployeeModal from "@/components/dashboard/employees/EmployeeModal";
 import TrashModal from "@/components/dashboard/employees/TrashModal";
 import { confirmAction } from "@/utils/confirm";
+import { toast } from "react-hot-toast";
 
 /**
  * 🎯 Client Component for Employees Page
@@ -86,6 +87,7 @@ export default function EmployeesClient({ initialEmployees = [] }) {
                         : emp
                 )
             );
+            toast.success("Employee updated successfully!");
         } else {
             // Create new
             const newEmployee = {
@@ -94,6 +96,7 @@ export default function EmployeesClient({ initialEmployees = [] }) {
                 created_at: new Date().toISOString().split("T")[0],
             };
             setEmployees((prev) => [newEmployee, ...prev]);
+            toast.success("Employee added successfully!");
         }
         setShowModal(false);
         setSelectedEmployee(null);
@@ -135,6 +138,7 @@ export default function EmployeesClient({ initialEmployees = [] }) {
                 if (employeeToDelete) {
                     setTrashEmployees((prev) => [employeeToDelete, ...prev]);
                     setEmployees((prev) => prev.filter((e) => e.id !== id));
+                    toast.success("Employee moved to trash!");
                 }
             }
         });
@@ -160,21 +164,13 @@ export default function EmployeesClient({ initialEmployees = [] }) {
         if (employeeToRestore) {
             setEmployees((prev) => [employeeToRestore, ...prev]);
             setTrashEmployees((prev) => prev.filter((e) => e.id !== id));
+            toast.success("Employee restored successfully!");
         }
     };
 
     const handlePermanentDelete = async (id) => {
-        /*
-        try {
-          await api.delete(`/employees/${id}/permanent`);
-          setTrashEmployees((prev) => prev.filter((e) => e.id !== id));
-        } catch (error) {
-           console.error("Failed to permanently delete employee:", error);
-        }
-        */
-
-        // 👇 TEMP: Local State Logic
         setTrashEmployees((prev) => prev.filter((e) => e.id !== id));
+        toast.success("Employee permanently deleted!");
     };
 
     const handleBulkDelete = () => {
@@ -203,6 +199,7 @@ export default function EmployeesClient({ initialEmployees = [] }) {
                 setTrashEmployees(prev => [...itemsToDelete, ...prev]);
                 setEmployees(prev => prev.filter(e => !selectedIds.includes(e.id)));
                 setSelectedIds([]);
+                toast.success(`${itemsToDelete.length} employees moved to trash!`);
             }
         });
     };
