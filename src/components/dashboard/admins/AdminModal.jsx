@@ -11,16 +11,55 @@ const ROLE_OPTIONS = [
     { value: "Sub Admin", label: "Sub Admin" }
 ];
 
-const PERMISSIONS = [
-    "Dashboard Access",
-    "User Management",
-    "Admin Management",
-    "Settings",
-    "Reports & Analytics",
-    "Content Management"
-];
+const MODULE_PERMISSIONS = {
+    "Admins": [
+        "Get Users", "Create User", "Edit User", "Delete & Restore User", "Show User", "Export Users"
+    ],
+    "Employees": [
+        "Get Employees", "Create Employee", "Edit Employee", "Delete & Restore Employee", "Employees Target", "Show Employees", "Export Employees"
+    ],
+    "Sectors": [
+        "Get Sectors", "Create Sector", "Edit Sector", "Delete & Restore Sector", "Export Sectors", "Show Sector"
+    ],
+    "Countries": [
+        "Get Countries", "Create Country", "Edit Country", "Delete & Restore Country", "Show Country", "Export Countries"
+    ],
+    "Contact Lists": [
+        "Get Contact lists", "Create Contact list", "Edit Contact list", "Delete & Restore contact list", "Show contact list", "Export Contact Lists"
+    ],
+    "Deals": [
+        "Get Deals", "Create Deal", "Edit Deal", "Delete & Restore Deal", "Show Deal", "Export Deals"
+    ],
+    "Companies": [
+        "Get Companies", "Create Company", "Edit Company", "Delete & Restore Company", "Show Company", "Export Companies"
+    ],
+    "Products": [
+        "Get Products", "Create Product", "Edit Product", "Delete & Restore Product", "Show Product", "Export Products"
+    ],
+    "Target": [
+        "Get Targets", "Create Target", "Edit Target", "Delete & Restore Target", "Export Targets", "Show Target", "Update Target", "Export Chart Targets"
+    ],
+    "Home": [
+        "Show Statistics", "Export Statistics"
+    ],
+    "Categories": [
+        "Get Categories", "Create Category", "Edit Category", "Delete & Restore Category", "Show Category", "Export Categories"
+    ],
+    "Daily Log": [
+        "Get Logs", "Create Log", "Edit Log", "Delete & Restore Log", "Show Log", "Export Daily Logs"
+    ],
+    "Regions": [
+        "Get Regions", "Create Region", "Edit Region", "Delete & Restore Region", "Export Regions"
+    ],
+    "Settings": [
+        "Get Settings", "Edit Setting"
+    ],
+    "Logs": [
+        "Get Logs", "Export Logs"
+    ]
+};
 
-const PERMISSION_OPTIONS = PERMISSIONS.map(p => ({ value: p, label: p }));
+const ALL_PERMISSION_KEYS = Object.values(MODULE_PERMISSIONS).flat();
 
 const PHOTO_ACCEPT_TYPES = {
     'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp']
@@ -78,17 +117,29 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
         }
     };
 
-    const handlePermissionChange = (selectedOptions) => {
-        const permissions = selectedOptions ? selectedOptions.map(option => option.value) : [];
-        setFormData((prev) => ({ ...prev, permissions }));
+    const handlePermissionToggle = (permission) => {
+        setFormData((prev) => {
+            const permissions = prev.permissions.includes(permission)
+                ? prev.permissions.filter(p => p !== permission)
+                : [...prev.permissions, permission];
+            return { ...prev, permissions };
+        });
     };
 
-    const handleSelectAllPermissions = (e) => {
-        if (e.target.checked) {
-            setFormData((prev) => ({ ...prev, permissions: [...PERMISSIONS] }));
-        } else {
-            setFormData((prev) => ({ ...prev, permissions: [] }));
-        }
+    const handleSelectModule = (moduleName, isChecked) => {
+        const modulePerms = MODULE_PERMISSIONS[moduleName];
+        setFormData((prev) => {
+            const otherPerms = prev.permissions.filter(p => !modulePerms.includes(p));
+            const permissions = isChecked ? [...otherPerms, ...modulePerms] : otherPerms;
+            return { ...prev, permissions };
+        });
+    };
+
+    const handleSelectAllModules = (isChecked) => {
+        setFormData((prev) => ({
+            ...prev,
+            permissions: isChecked ? [...ALL_PERMISSION_KEYS] : []
+        }));
     };
 
     const handleFilesChange = (newFiles) => {
@@ -164,6 +215,20 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body">
                                 <div className="row">
+
+                                    <div className="col-lg-12">
+                                        <div className="form-group mb-3">
+                                            <FileUpload
+                                                files={formData.attachments}
+                                                onFilesChange={handleFilesChange}
+                                                maxFiles={MAX_UPLOAD_FILES}
+                                                accept={PHOTO_ACCEPT_TYPES}
+                                                title="Photo"
+                                                hint="Image (Max 1)"
+                                            />
+                                        </div>
+                                    </div>
+
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
                                             <label htmlFor="name" className="form-label">Name</label>
@@ -178,6 +243,7 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                             />
                                         </div>
                                     </div>
+
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
                                             <label htmlFor="role" className="form-label">Role</label>
@@ -192,6 +258,7 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                             />
                                         </div>
                                     </div>
+
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
                                             <label htmlFor="email" className="form-label">Email</label>
@@ -206,6 +273,7 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                             />
                                         </div>
                                     </div>
+
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
                                             <label htmlFor="phone" className="form-label">Phone</label>
@@ -238,6 +306,7 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                             {passwordError && <div className="invalid-feedback">{passwordError}</div>}
                                         </div>
                                     </div>
+
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
                                             <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
@@ -253,50 +322,76 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                                         </div>
                                     </div>
 
-                                    {/* Permissions Select */}
+                                    {/* Detailed Permissions Section */}
                                     <div className="col-lg-12">
-                                        <div className="form-group mb-3">
-                                            <div className="d-flex align-items-center justify-content-between mb-2">
-                                                <label className="form-label mb-0">Permissions</label>
+                                        <div className="permissions-container mt-3 border rounded-3 p-3 bg-light">
+                                            <div className="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                                                <h6 className="mb-0 fsz-16">Modules Permissions</h6>
                                                 <div className="form-check m-0">
                                                     <input
-                                                        className="form-check-input"
+                                                        className="form-check-input mt-1"
                                                         type="checkbox"
-                                                        id="selectAllPermissions"
-                                                        checked={isAllPermissionsSelected}
-                                                        onChange={handleSelectAllPermissions}
+                                                        id="selectAllModules"
+                                                        checked={formData.permissions.length === ALL_PERMISSION_KEYS.length}
+                                                        onChange={(e) => handleSelectAllModules(e.target.checked)}
                                                     />
-                                                    <label className="form-check-label fsz-12" htmlFor="selectAllPermissions">
-                                                        Select All
+                                                    <label className="form-check-label fsz-13 cursor-pointer" htmlFor="selectAllModules">
+                                                        Select All Modules
                                                     </label>
                                                 </div>
                                             </div>
+                                            <div className=" overflow-auto custom-scroll" style={{ maxHeight: "400px" }}>
+                                                <div className="row g-3 w-100">
+                                                    {Object.entries(MODULE_PERMISSIONS).map(([moduleName, perms]) => {
+                                                        const isModuleFullySelected = perms.every(p => formData.permissions.includes(p));
+                                                        const isModulePartiallySelected = perms.some(p => formData.permissions.includes(p)) && !isModuleFullySelected;
 
-                                            <Select
-                                                isMulti
-                                                name="permissions"
-                                                options={PERMISSION_OPTIONS}
-                                                className="react-select-container"
-                                                classNamePrefix="react-select"
-                                                placeholder="Select Permissions..."
-                                                value={PERMISSION_OPTIONS.filter(option => selectedPermissions.includes(option.value))}
-                                                onChange={handlePermissionChange}
-                                            />
+                                                        return (
+                                                            <div key={moduleName} className="col-md-6 col-xl-4">
+                                                                <div className="module-card bg-white p-3 rounded-3 h-100">
+                                                                    <div className="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                                                                        <span className="fsz-13">{moduleName}</span>
+                                                                        <div className="form-check m-0">
+                                                                            <input
+                                                                                className="form-check-input mt-1"
+                                                                                type="checkbox"
+                                                                                id={`select-${moduleName}`}
+                                                                                checked={isModuleFullySelected}
+                                                                                ref={el => {
+                                                                                    if (el) el.indeterminate = isModulePartiallySelected;
+                                                                                }}
+                                                                                onChange={(e) => handleSelectModule(moduleName, e.target.checked)}
+                                                                            />
+                                                                            <label className="form-check-label fsz-12 text-muted cursor-pointer" htmlFor={`select-${moduleName}`}>
+                                                                                Select All
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="perms-list">
+                                                                        {perms.map(p => (
+                                                                            <div key={p} className="form-check mb-2">
+                                                                                <input
+                                                                                    className="form-check-input"
+                                                                                    type="checkbox"
+                                                                                    id={`perm-${p}-${moduleName}`}
+                                                                                    checked={formData.permissions.includes(p)}
+                                                                                    onChange={() => handlePermissionToggle(p)}
+                                                                                />
+                                                                                <label className="form-check-label fsz-12 cursor-pointer" htmlFor={`perm-${p}-${moduleName}`}>
+                                                                                    {p}
+                                                                                </label>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="col-lg-12">
-                                        <div className="form-group mb-3">
-                                            <FileUpload
-                                                files={formData.attachments}
-                                                onFilesChange={handleFilesChange}
-                                                maxFiles={MAX_UPLOAD_FILES}
-                                                accept={PHOTO_ACCEPT_TYPES}
-                                                title="Photo"
-                                                hint="Image (Max 1)"
-                                            />
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                             <div className="modal-footer">

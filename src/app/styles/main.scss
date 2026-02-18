@@ -720,12 +720,25 @@ label {
     font-size: 12px;
 }
 
-.form-check-input:checked {
+.form-check-input {
+    box-shadow: none !important;
+    &:checked {
+        background-color: #3d2e84;
+        border-color: #3d2e84;
+        position: relative;
+        top: -1px;
+    }
+}
+
+.form-check-input[type="checkbox"]:indeterminate {
     background-color: #3d2e84;
     border-color: #3d2e84;
-    position: relative;
-    top: -1px;
 }
+
+.grow-1 {
+    flex-grow: 1;
+}
+
 
 .dropdown-toggle.after-none {
     &::after {
