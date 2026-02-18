@@ -23,7 +23,8 @@ export default function AdminsTable({
     selectedIds = [],
     onSelectionChange,
     onEdit,
-    onDelete
+    onDelete,
+    onView
 }) {
 
     /* ======================================================================
@@ -61,6 +62,7 @@ export default function AdminsTable({
        3. Columns Logic
        ====================================================================== */
     const columns = useMemo(() => [
+        { id: "selection", header: "", enableSorting: false, draggable: false },
         { id: "name", accessorKey: "name", header: "Name", enableSorting: true, draggable: false },
         { id: "email", accessorKey: "email", header: "Email", enableSorting: true, draggable: true },
         { id: "phone", accessorKey: "phone", header: "Phone", enableSorting: true, draggable: true },
@@ -165,21 +167,21 @@ export default function AdminsTable({
                         <table className="table align-middle">
                             <thead>
                                 <SortableRow items={visibleColumnOrder}>
+
                                     {/* Name Column */}
                                     {table.getColumn("name").getIsVisible() && (
-                                        <SortableTh id="name" key="name" disabled className="sticky-col">
-                                            <div className="form-check">
+                                        <SortableTh id="name" key="name" disabled className="sticky-col position-relative ps-5">
+                                            <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="form-check-input mt-0 cursor-pointer"
                                                     id="select-all-admins"
                                                     type="checkbox"
                                                     checked={table.getIsAllPageRowsSelected()}
                                                     onChange={table.getToggleAllPageRowsSelectedHandler()}
                                                 />
-                                                <label className="form-check-label ms-2" htmlFor="select-all-admins">
-                                                    Name
-                                                </label>
+                                                <label className="form-check-label" htmlFor="select-all-admins"></label>
                                             </div>
+                                            <span>Name</span>
 
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
@@ -287,7 +289,7 @@ export default function AdminsTable({
                                                 <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-3" onClick={(e) => e.stopPropagation()}>
                                                     <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Toggle Columns</h6>
                                                     {table.getAllLeafColumns().map(column => {
-                                                        if (column.id === 'columnActions' || column.id === 'name') return null;
+                                                        if (column.id === 'columnActions' || column.id === 'name' || column.id === 'selection') return null;
                                                         return (
                                                             <li key={column.id} className="mb-2 last-0">
                                                                 <div className="form-check fsz-12" onClick={(e) => e.stopPropagation()}>
@@ -336,25 +338,31 @@ export default function AdminsTable({
                                         return (
                                             <SortableRow key={row.id} items={visibleColumnOrder}>
                                                 {table.getColumn("name").getIsVisible() && (
-                                                    <td id="name" key="name">
-                                                        <div className="form-check">
+                                                    <td className="position-relative ps-5" id="name" key="name">
+                                                        <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                             <input
-                                                                className="form-check-input"
+                                                                className="form-check-input mt-0 cursor-pointer"
                                                                 type="checkbox"
                                                                 id={`admin-${admin.id}`}
                                                                 checked={row.getIsSelected()}
                                                                 onChange={row.getToggleSelectedHandler()}
                                                             />
-                                                            <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor={`admin-${admin.id}`}>
-                                                                <div className="icon-40 p-1 rounded-circle border p-1 me-3 overflow-hidden bg-light">
-                                                                    <img
-                                                                        src={admin.image || "/crm-skybridge/images/fav.png"}
-                                                                        alt={admin.name}
-                                                                        className="img-contain h-100 w-100"
-                                                                    />
-                                                                </div>
-                                                                {admin.name}
-                                                            </label>
+                                                            <label className="form-check-label" htmlFor={`admin-${admin.id}`}></label>
+                                                        </div>
+                                                        <div
+                                                            className="d-flex align-items-center hover-underline"
+                                                            onClick={() => onView?.(admin)}
+                                                            title="View Details"
+                                                            style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                                                        >
+                                                            <div className="icon-40 p-1 rounded-circle border p-1 me-3 overflow-hidden bg-light">
+                                                                <img
+                                                                    src={admin.image || "/crm-skybridge/images/fav.png"}
+                                                                    alt={admin.name}
+                                                                    className="img-contain h-100 w-100"
+                                                                />
+                                                            </div>
+                                                            <span>{admin.name}</span>
                                                         </div>
                                                     </td>
                                                 )}

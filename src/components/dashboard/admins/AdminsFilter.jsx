@@ -44,6 +44,7 @@ export default function AdminsFilter({ table, dateRangeValue, onOpenModal, onRes
     ];
 
     const filterCells = {
+        // selection: <td key="selection"></td>,
         name: (
             <td key="name">
                 <input
