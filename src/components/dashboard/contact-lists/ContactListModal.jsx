@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Select from "react-select";
 import FileUpload from "../../shared/FileUpload";
+import { useEmployees } from "@/context/EmployeesContext";
+import { useCountries } from "@/context/CountriesContext";
 
 const GENDER_OPTIONS = [
     { value: "Male", label: "Male" },
@@ -41,6 +43,8 @@ const PHOTO_ACCEPT_TYPES = {
 };
 
 export default function ContactListModal({ show, onClose, onSave, contact = null }) {
+    const { employees: contextEmployees } = useEmployees();
+    const { countries: contextCountries } = useCountries();
     const [isMounted, setIsMounted] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -164,6 +168,16 @@ export default function ContactListModal({ show, onClose, onSave, contact = null
 
     if (!show || !isMounted) return null;
 
+    const employeeOptions = contextEmployees.map(emp => ({
+        value: emp.name,
+        label: emp.name
+    }));
+
+    const countryOptions = contextCountries.map(c => ({
+        value: c.title,
+        label: c.title
+    }));
+
     return createPortal(
         <>
             <div
@@ -235,7 +249,16 @@ export default function ContactListModal({ show, onClose, onSave, contact = null
                                         <div className="row">
                                             <div className="col-lg-6 mb-3">
                                                 <label htmlFor="employee" className="form-label">Employee</label>
-                                                <input type="text" className="form-control" id="employee" name="employee" value={formData.employee} onChange={handleChange} placeholder="Assigned Employee" />
+                                                <Select
+                                                    instanceId="contact-employee-select"
+                                                    options={employeeOptions}
+                                                    className="react-select-container"
+                                                    classNamePrefix="react-select"
+                                                    placeholder="Select Employee..."
+                                                    value={employeeOptions.find(o => o.value === formData.employee)}
+                                                    onChange={(o) => setFormData(p => ({ ...p, employee: o ? o.value : "" }))}
+                                                    isClearable
+                                                />
                                             </div>
                                             <div className="col-lg-6 mb-3">
                                                 <label htmlFor="status" className="form-label">Status</label>
@@ -276,7 +299,16 @@ export default function ContactListModal({ show, onClose, onSave, contact = null
                                         <div className="row">
                                             <div className="col-lg-6 mb-3">
                                                 <label htmlFor="country" className="form-label">Country</label>
-                                                <input type="text" className="form-control" id="country" name="country" value={formData.country} onChange={handleChange} />
+                                                <Select
+                                                    instanceId="contact-country-select"
+                                                    options={countryOptions}
+                                                    className="react-select-container"
+                                                    classNamePrefix="react-select"
+                                                    placeholder="Select Country..."
+                                                    value={countryOptions.find(o => o.value === formData.country)}
+                                                    onChange={(o) => setFormData(p => ({ ...p, country: o ? o.value : "" }))}
+                                                    isClearable
+                                                />
                                             </div>
                                             <div className="col-lg-6 mb-3">
                                                 <label htmlFor="email" className="form-label">Email</label>

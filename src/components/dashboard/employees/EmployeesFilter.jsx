@@ -56,7 +56,7 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal, on
 
     const filterCells = {
         name: (
-            <td key="name" className="sticky-col">
+            <td key="name" className="">
                 <input
                     className="form-control"
                     placeholder="Name"
@@ -88,6 +88,7 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal, on
         role: (
             <td key="role">
                 <Select
+                    instanceId="employee-role-filter"
                     options={ROLE_OPTIONS}
                     classNamePrefix="react-select"
                     value={ROLE_OPTIONS.find(opt => opt.value === roleSearch)}

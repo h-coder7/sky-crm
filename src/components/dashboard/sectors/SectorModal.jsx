@@ -42,13 +42,13 @@ export default function SectorModal({ show, onClose, onSave, sector = null }) {
 
   return createPortal(
     <>
-      <div 
-        className="modal-backdrop fade show" 
+      <div
+        className="modal-backdrop fade show"
         onClick={onClose}
       ></div>
-      <div 
-        className="modal fade show d-block" 
-        tabIndex="-1" 
+      <div
+        className="modal fade show d-block"
+        tabIndex="-1"
         onClick={(e) => e.target === e.currentTarget && onClose()}
       >
         <div className="modal-dialog modal-dialog-centered">
@@ -87,7 +87,7 @@ export default function SectorModal({ show, onClose, onSave, sector = null }) {
                     className="form-control"
                     id="description"
                     name="description"
-                    rows="3"
+                    rows="5"
                     value={formData.description}
                     onChange={handleChange}
                     required

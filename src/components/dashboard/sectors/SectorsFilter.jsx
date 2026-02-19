@@ -25,7 +25,7 @@ export default function SectorsFilter({ table, dateRangeValue, onOpenModal, onRe
 
     const filterCells = {
         title: (
-            <td key="title" className="sticky-col">
+            <td key="title" className="">
                 <input
                     className="form-control"
                     placeholder="Title"

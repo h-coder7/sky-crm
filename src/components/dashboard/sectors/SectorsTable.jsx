@@ -26,7 +26,8 @@ export default function SectorsTable({
     selectedIds = [],
     onSelectionChange,
     onEdit,
-    onDelete
+    onDelete,
+    onView
 }) {
 
     /* ======================================================================
@@ -63,6 +64,7 @@ export default function SectorsTable({
        3. Columns
        ====================================================================== */
     const columns = useMemo(() => [
+        { id: "selection", header: "", enableSorting: false, draggable: false },
         { id: "title", accessorKey: "title", header: "Title", enableSorting: true, draggable: false },
         { id: "description", accessorKey: "description", header: "Description", enableSorting: true, draggable: true },
         {
@@ -183,19 +185,18 @@ export default function SectorsTable({
                                 <SortableRow items={visibleColumnOrder}>
                                     {/* Title Column */}
                                     {table.getColumn("title").getIsVisible() && (
-                                        <SortableTh id="title" key="title" disabled className="sticky-col">
-                                            <div className="form-check">
+                                        <SortableTh id="title" key="title" disabled className="position-relative ps-5">
+                                            <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="form-check-input mt-0 cursor-pointer"
                                                     id="select-all-sectors"
                                                     type="checkbox"
                                                     checked={table.getIsAllPageRowsSelected()}
                                                     onChange={table.getToggleAllPageRowsSelectedHandler()}
                                                 />
-                                                <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor="select-all-sectors">
-                                                    Title
-                                                </label>
+                                                <label className="form-check-label" htmlFor="select-all-sectors"></label>
                                             </div>
+                                            <span>Title</span>
 
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
@@ -263,7 +264,7 @@ export default function SectorsTable({
                                                 <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-3" onClick={(e) => e.stopPropagation()}>
                                                     <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Toggle Columns</h6>
                                                     {table.getAllLeafColumns().map(column => {
-                                                        if (column.id === 'columnActions' || column.id === 'title') return null;
+                                                        if (column.id === 'columnActions' || column.id === 'title' || column.id === 'selection') return null;
                                                         return (
                                                             <li key={column.id} className="mb-2 last-0">
                                                                 <div className="form-check fsz-12" onClick={(e) => e.stopPropagation()}>
@@ -309,28 +310,40 @@ export default function SectorsTable({
                                         return (
                                             <SortableRow key={row.id} items={visibleColumnOrder}>
                                                 {table.getColumn("title").getIsVisible() && (
-                                                    <td id="title" key="title" className="sticky-col">
-                                                        <div className="form-check">
+                                                    <td className="position-relative ps-5" id="title" key="title">
+                                                        <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                             <input
-                                                                className="form-check-input"
+                                                                className="form-check-input mt-0 cursor-pointer"
                                                                 type="checkbox"
                                                                 id={`sector-${item.id}`}
                                                                 checked={row.getIsSelected()}
                                                                 onChange={row.getToggleSelectedHandler()}
                                                             />
-                                                            <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor={`sector-${item.id}`}>
-                                                                {item.title}
-                                                            </label>
+                                                            <label className="form-check-label" htmlFor={`sector-${item.id}`}></label>
+                                                        </div>
+                                                        <div
+                                                            className="hover-underline"
+                                                            onClick={() => onView?.(item)}
+                                                            title="View Details"
+                                                            style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                                                        >
+                                                            <span>{item.title}</span>
                                                         </div>
                                                     </td>
                                                 )}
 
                                                 {table.getColumn("description").getIsVisible() && (
-                                                    <td id="description" key="description" >{item.description}</td>
+                                                    // <td id="description" key="description">{item.description}</td>
+                                                    <td id="description" key="description">
+                                                        <div className="text-pop fsz-12">
+                                                            {item.description?.length > 20 ? item.description.slice(0, 20) + "..." : item.description}
+                                                            <span className="tooltip-text">{item.description}</span>
+                                                        </div>
+                                                    </td>
                                                 )}
 
                                                 {table.getColumn("created_at").getIsVisible() && (
-                                                    <td id="created_at" key="created_at" >
+                                                    <td id="created_at" key="created_at">
                                                         {new Date(item.created_at).toLocaleDateString()}
                                                     </td>
                                                 )}

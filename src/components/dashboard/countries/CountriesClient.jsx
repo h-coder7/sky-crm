@@ -9,6 +9,7 @@ import CountryModal from "@/components/dashboard/countries/CountryModal";
 import TrashModal from "@/components/dashboard/countries/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import { useCountries } from "@/context/CountriesContext";
 
 /**
  * 🎯 Client Component for Countries Page
@@ -22,8 +23,11 @@ import { toast } from "react-hot-toast";
  * Receives initial data from Server Component via props
  */
 export default function CountriesClient({ initialCountries = [] }) {
-    // State Management
-    const [countries, setCountries] = useState(initialCountries);
+    // State Management from Context
+    const { countries: globalCountries, setCountries: setGlobalCountries } = useCountries();
+
+    // Local state for the table, initialized from global context
+    const [countries, setCountries] = useState(globalCountries);
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -46,6 +50,11 @@ export default function CountriesClient({ initialCountries = [] }) {
             router.replace(newUrl, { scroll: false });
         }
     }, [searchParams, pathname, router]);
+
+    // Sync local state to global context whenever it changes
+    useEffect(() => {
+        setGlobalCountries(countries);
+    }, [countries, setGlobalCountries]);
 
     /* ======================================================================
        CRUD Handlers (Ready for API Integration)

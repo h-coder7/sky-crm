@@ -3375,8 +3375,15 @@ section {
     border: 0 !important;
     min-width: 500px;
     max-width: 100%;
-    border-radius: 20px 0 0 20px;
-    margin: 5px 0;
+    // border-radius: 20px 0 0 20px;
+    // margin: 5px 0;
+    .detail-item {
+        position: relative;
+        flex-grow: 1;
+        padding: 12px 15px;
+        border: 1px solid #9993;
+        border-radius: 10px;
+    }
 }
 
 .offcanvas-backdrop.show {

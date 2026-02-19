@@ -26,13 +26,23 @@ export const metadata = {
   },
 };
 
+import { SectorsProvider } from "@/context/SectorsContext";
+import { EmployeesProvider } from "@/context/EmployeesContext";
+import { CountriesProvider } from "@/context/CountriesContext";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={poppins.variable} suppressHydrationWarning={true}>
         <BootstrapClient />
         <Toaster position="top-center" reverseOrder={false} />
-        {children}
+        <CountriesProvider>
+          <EmployeesProvider>
+            <SectorsProvider>
+              {children}
+            </SectorsProvider>
+          </EmployeesProvider>
+        </CountriesProvider>
       </body>
     </html>
   );

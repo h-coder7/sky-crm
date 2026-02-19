@@ -7,8 +7,10 @@ import EmployeesTable from "@/components/dashboard/employees/EmployeesTable";
 import api from "@/app/api/api"; // 🔌 Import axios instance
 import EmployeeModal from "@/components/dashboard/employees/EmployeeModal";
 import TrashModal from "@/components/dashboard/employees/TrashModal";
+import EmployeeDetailsOffcanvas from "@/components/dashboard/employees/EmployeeDetailsOffcanvas";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import { useEmployees } from "@/context/EmployeesContext";
 
 /**
  * 🎯 Client Component for Employees Page
@@ -22,14 +24,20 @@ import { toast } from "react-hot-toast";
  * Receives initial data from Server Component via props
  */
 export default function EmployeesClient({ initialEmployees = [] }) {
-    // State Management
-    const [employees, setEmployees] = useState(initialEmployees);
+    // State Management from Context
+    const { employees: globalEmployees, setEmployees: setGlobalEmployees } = useEmployees();
+
+    // Local state for the table, initialized from global context
+    const [employees, setEmployees] = useState(globalEmployees);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
 
     const [trashEmployees, setTrashEmployees] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
+
+    const [viewEmployee, setViewEmployee] = useState(null);
+    const [showOffcanvas, setShowOffcanvas] = useState(false);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -46,6 +54,11 @@ export default function EmployeesClient({ initialEmployees = [] }) {
             router.replace(newUrl, { scroll: false });
         }
     }, [searchParams, pathname, router]);
+
+    // Sync local state to global context whenever it changes
+    useEffect(() => {
+        setGlobalEmployees(employees);
+    }, [employees, setGlobalEmployees]);
 
     /* ======================================================================
        CRUD Handlers (Ready for API Integration)
@@ -261,6 +274,10 @@ export default function EmployeesClient({ initialEmployees = [] }) {
                     onSelectionChange={setSelectedIds}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onView={(emp) => {
+                        setViewEmployee(emp);
+                        setShowOffcanvas(true);
+                    }}
                 />
             </div>
 
@@ -279,6 +296,16 @@ export default function EmployeesClient({ initialEmployees = [] }) {
                 onClose={() => setShowTrashModal(false)}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
+            />
+
+            {/* Details Offcanvas */}
+            <EmployeeDetailsOffcanvas
+                show={showOffcanvas}
+                employee={viewEmployee}
+                onClose={() => {
+                    setShowOffcanvas(false);
+                    setViewEmployee(null);
+                }}
             />
         </>
     );

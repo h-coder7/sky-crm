@@ -9,24 +9,29 @@ import SectorModal from "@/components/dashboard/sectors/SectorModal";
 import TrashModal from "@/components/dashboard/sectors/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import SectorDetailsOffcanvas from "@/components/dashboard/sectors/SectorDetailsOffcanvas";
+
+import { useSectors } from "@/context/SectorsContext";
 
 /**
  * 🎯 Client Component for Sectors Page
  * 
  * Handles all interactive logic:
- * - State management
+ * - State management (via SectorsContext)
  * - Event handlers
  * - Modals
  * - CRUD operations (ready for API integration)
- * 
- * Receives initial data from Server Component via props
  */
-export default function SectorsClient({ initialSectors = [] }) {
-    // State Management
-    const [sectors, setSectors] = useState(initialSectors);
+export default function SectorsClient() {
+    // State Management from Context
+    const { sectors, setSectors } = useSectors();
     const [selectedSector, setSelectedSector] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
+
+    // Offcanvas State for View Details
+    const [viewSector, setViewSector] = useState(null);
+    const [showOffcanvas, setShowOffcanvas] = useState(false);
 
     const [trashSectors, setTrashSectors] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
@@ -103,15 +108,20 @@ export default function SectorsClient({ initialSectors = [] }) {
         setSelectedSector(null);
     };
 
-    /**
-     * Open edit modal with selected sector
-     */
     const handleEdit = (id) => {
         const sector = sectors.find((s) => s.id === id);
         if (sector) {
             setSelectedSector(sector);
             setShowModal(true);
         }
+    };
+
+    /**
+     * Open details offcanvas
+     */
+    const handleView = (sector) => {
+        setViewSector(sector);
+        setShowOffcanvas(true);
     };
 
     const handleDelete = (id) => {
@@ -261,6 +271,7 @@ export default function SectorsClient({ initialSectors = [] }) {
                 onSelectionChange={setSelectedIds}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onView={handleView}
             />
 
             {/* Add/Edit Modal */}
@@ -278,6 +289,16 @@ export default function SectorsClient({ initialSectors = [] }) {
                 onClose={() => setShowTrashModal(false)}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
+            />
+
+            {/* Details Offcanvas */}
+            <SectorDetailsOffcanvas
+                show={showOffcanvas}
+                sector={viewSector}
+                onClose={() => {
+                    setShowOffcanvas(false);
+                    setViewSector(null);
+                }}
             />
         </>
     );

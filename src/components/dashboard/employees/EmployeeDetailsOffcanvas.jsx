@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSectors } from "@/context/SectorsContext";
 
 const MODULE_PERMISSIONS = {
-    "Admins": [
-        "Get Users", "Create User", "Edit User", "Delete & Restore User", "Show User", "Export Users"
-    ],
     "Employees": [
         "Get Employees", "Create Employee", "Edit Employee", "Delete & Restore Employee", "Employees Target", "Show Employees", "Export Employees"
     ],
@@ -16,7 +14,7 @@ const MODULE_PERMISSIONS = {
         "Get Countries", "Create Country", "Edit Country", "Delete & Restore Country", "Show Country", "Export Countries"
     ],
     "Contact Lists": [
-        "Get Contact lists", "Create Contact list", "Edit Contact list", "Delete & Restore contact list", "Show contact list", "Export Contact Lists"
+        "Get Contact lists", "Create Contact list", "Edit Contact list", "Delete & Restore Contact list", "Show Contact list", "Export Contact Lists"
     ],
     "Deals": [
         "Get Deals", "Create Deal", "Edit Deal", "Delete & Restore Deal", "Show Deal", "Export Deals"
@@ -31,7 +29,7 @@ const MODULE_PERMISSIONS = {
         "Get Targets", "Create Target", "Edit Target", "Delete & Restore Target", "Export Targets", "Show Target", "Update Target", "Export Chart Targets"
     ],
     "Home": [
-        "Show Statistics", "Export Statistics"
+        "Show Statistics", "Show Own Statistics", "Export Statistics"
     ],
     "Categories": [
         "Get Categories", "Create Category", "Edit Category", "Delete & Restore Category", "Show Category", "Export Categories"
@@ -41,17 +39,12 @@ const MODULE_PERMISSIONS = {
     ],
     "Regions": [
         "Get Regions", "Create Region", "Edit Region", "Delete & Restore Region", "Export Regions"
-    ],
-    "Settings": [
-        "Get Settings", "Edit Setting"
-    ],
-    "Logs": [
-        "Get Logs", "Export Logs"
     ]
 };
 
-export default function AdminDetailsOffcanvas({ show, admin, onClose }) {
+export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
     const [isMounted, setIsMounted] = useState(false);
+    const { sectors: allSectors } = useSectors();
 
     useEffect(() => {
         setIsMounted(true);
@@ -60,7 +53,7 @@ export default function AdminDetailsOffcanvas({ show, admin, onClose }) {
     if (!isMounted) return null;
 
     // Group selected permissions by module
-    const userPermissions = admin?.permissions || [];
+    const userPermissions = employee?.permissions || [];
     const groupedPermissions = Object.entries(MODULE_PERMISSIONS).reduce((acc, [moduleName, perms]) => {
         const selectedInModule = perms.filter(p => userPermissions.includes(p));
         if (selectedInModule.length > 0) {
@@ -69,18 +62,22 @@ export default function AdminDetailsOffcanvas({ show, admin, onClose }) {
         return acc;
     }, {});
 
+    // Resolve sector titles
+    const employeeSectorIds = employee?.sectors || [];
+    const employeeSectors = allSectors.filter(s => employeeSectorIds.includes(s.id));
+
     return (
         <>
             <div
                 className={`offcanvas offcanvas-end border-0 shadow ${show ? "show" : ""}`}
                 tabIndex="-1"
-                id="adminDetailsOffcanvas"
-                aria-labelledby="adminDetailsOffcanvasLabel"
+                id="employeeDetailsOffcanvas"
+                aria-labelledby="employeeDetailsOffcanvasLabel"
                 style={{ visibility: show ? "visible" : "hidden" }}
             >
                 <div className="offcanvas-header border-bottom py-3">
-                    <h5 className="offcanvas-title  fsz-16" id="adminDetailsOffcanvasLabel">
-                        <i className="fal fa-user-tie me-2 "></i> Admin Details
+                    <h5 className="offcanvas-title fsz-16" id="employeeDetailsOffcanvasLabel">
+                        <i className="fal fa-user-tie me-2 "></i> Employee Details
                     </h5>
                     <button
                         type="button"
@@ -90,70 +87,85 @@ export default function AdminDetailsOffcanvas({ show, admin, onClose }) {
                     ></button>
                 </div>
                 <div className="offcanvas-body p-4 custom-scroll">
-                    {admin ? (
-                        <div className="admin-details">
+                    {employee ? (
+                        <div className="employee-details">
                             <div className="details-list mb-4 d-flex flex-wrap gap-2">
-                                <div className="detail-item d-flex align-items-center">
-                                    <div className="icon-50 p-1 rounded-circle border bg-white me-3 overflow-hidden">
-                                        <img
-                                            src={admin.image || "/crm-skybridge/images/fav.png"}
-                                            alt={admin.name}
-                                            className="img-contain h-100 w-100 rounded-circle"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-muted fsz-11 text-uppercase d-block mb-0">Profile</label>
-                                        <div className="fsz-13 ">{admin.name}</div>
+                                <div className="detail-item">
+                                    <label className="text-muted fsz-11 text-uppercase d-block mb-1">Name</label>
+                                    <div className="fsz-13">
+                                        <i className="fal fa-user me-2 "></i>
+                                        {employee.name}
                                     </div>
                                 </div>
 
                                 <div className="detail-item">
-                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Position / Role</label>
+                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Role</label>
                                     <div className="fsz-13">
                                         <i className="fal fa-user-shield me-2 "></i>
-                                        <span className={` ${admin.role === 'Super Admin' ? 'text-danger' : admin.role === 'Admin' ? '' : 'text-info'}`}>
-                                            {admin.role}
+                                        <span className=" ">
+                                            {employee.role || "N/A"}
                                         </span>
                                     </div>
                                 </div>
 
                                 <div className="detail-item">
-                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Email Address</label>
+                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Email</label>
                                     <div className="fsz-13">
                                         <i className="fal fa-envelope me-2 "></i>
-                                        {admin.email || "N/A"}
+                                        {employee.email || "N/A"}
                                     </div>
                                 </div>
 
                                 <div className="detail-item">
-                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Phone Number</label>
+                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Phone</label>
                                     <div className="fsz-13">
                                         <i className="fal fa-phone me-2 "></i>
-                                        {admin.phone || "N/A"}
+                                        {employee.phone || "N/A"}
                                     </div>
                                 </div>
 
                                 <div className="detail-item">
-                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Created On</label>
+                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Joined On</label>
                                     <div className="fsz-13">
                                         <i className="fal fa-calendar-alt me-2 "></i>
-                                        {admin.created_at || "N/A"}
+                                        {employee.created_at || "N/A"}
                                     </div>
+                                </div>
+                            </div>
+
+                            {/* Sectors Section */}
+                            <div className="sectors-details mb-4">
+                                <h6 className="fsz-13 mb-2 pb-2 border-bottom">
+                                    <i className="fal fa-th-large me-2 "></i>
+                                    Assigned Sectors
+                                </h6>
+                                <div className="d-flex flex-wrap gap-2">
+                                    {employeeSectors.length > 0 ? (
+                                        employeeSectors.map(s => (
+                                            <span key={s.id} className="bg-light text-dark border fsz-11 py-2 px-3 rounded-pill">
+                                                {s.title}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-3 bg-light rounded-3 border w-100">
+                                            <span className="text-muted fsz-12">No sectors assigned</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
                             {/* Permissions Section */}
                             <div className="permissions-details">
-                                <h6 className="fsz-13 mb-2 pb-2">
+                                <h6 className="fsz-13 mb-2 pb-2 border-bottom">
                                     <i className="fal fa-lock-alt me-2 "></i>
-                                    Assigned Permissions
+                                    Module Permissions
                                 </h6>
 
                                 {Object.keys(groupedPermissions).length > 0 ? (
                                     <div className="modules-list">
                                         {Object.entries(groupedPermissions).map(([moduleName, perms]) => (
-                                            <div key={moduleName} className="module-group mb-2 p-3 border rounded-3">
-                                                <div className="border-bottom fsz-13 pb-2 mb-3 text-dark">{moduleName}</div>
+                                            <div key={moduleName} className="module-group mb-2 p-3 border rounded-3 bg-white">
+                                                <div className="border-bottom fsz-13 pb-2 mb-3 text-dark fw-600">{moduleName}</div>
                                                 <div className="d-flex flex-wrap gap-2">
                                                     {perms.map(p => (
                                                         <span key={p} className="bg-white text-dark border fsz-11 py-2 px-3 rounded-pill">
@@ -165,7 +177,7 @@ export default function AdminDetailsOffcanvas({ show, admin, onClose }) {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="text-center py-3 bg-light rounded-3 border">
+                                    <div className="text-center py-3 bg-light rounded-3 border w-100">
                                         <span className="text-muted fsz-12">No permissions assigned</span>
                                     </div>
                                 )}
@@ -174,7 +186,7 @@ export default function AdminDetailsOffcanvas({ show, admin, onClose }) {
                     ) : (
                         <div className="text-center py-5 text-muted">
                             <i className="fal fa-spinner fa-spin fa-2x mb-3"></i>
-                            <p>Loading admin details...</p>
+                            <p>Loading employee details...</p>
                         </div>
                     )}
                 </div>

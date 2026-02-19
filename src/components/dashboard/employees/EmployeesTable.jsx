@@ -17,7 +17,7 @@ import DateRangeModal from "../../../components/shared/DateRangeModal";
 
 import EmployeesFilter from "./EmployeesFilter";
 
-export default function EmployeesTable({ data = [], selectedIds = [], onSelectionChange, onEdit, onDelete }) {
+export default function EmployeesTable({ data = [], selectedIds = [], onSelectionChange, onEdit, onDelete, onView }) {
     const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
     const [rowSelection, setRowSelection] = useState({});
@@ -30,6 +30,7 @@ export default function EmployeesTable({ data = [], selectedIds = [], onSelectio
 
     const columns = useMemo(
         () => [
+            { id: "selection", header: "", enableSorting: false, draggable: false },
             { id: "name", accessorKey: "name", header: "Name", enableSorting: true, draggable: false },
             { id: "email", accessorKey: "email", header: "Email", enableSorting: true, draggable: true },
             { id: "phone", accessorKey: "phone", header: "Phone", enableSorting: true, draggable: true },
@@ -159,19 +160,18 @@ export default function EmployeesTable({ data = [], selectedIds = [], onSelectio
                                 <SortableRow items={visibleColumnOrder}>
                                     {/* Name Column */}
                                     {table.getColumn("name").getIsVisible() && (
-                                        <SortableTh id="name" key="name" disabled className="sticky-col">
-                                            <div className="form-check">
+                                        <SortableTh id="name" key="name" disabled className="sticky-col position-relative ps-5">
+                                            <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="form-check-input mt-0 cursor-pointer"
                                                     id="select-all-employees"
                                                     type="checkbox"
                                                     checked={table.getIsAllPageRowsSelected()}
                                                     onChange={table.getToggleAllPageRowsSelectedHandler()}
                                                 />
-                                                <label className="form-check-label ms-2" htmlFor="select-all-employees">
-                                                    Name
-                                                </label>
+                                                <label className="form-check-label" htmlFor="select-all-employees"></label>
                                             </div>
+                                            <span>Name</span>
 
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
@@ -191,7 +191,7 @@ export default function EmployeesTable({ data = [], selectedIds = [], onSelectio
 
                                     {/* Filter out specific columns that already have custom Th or are handled separately */}
                                     {visibleColumnOrder
-                                        .filter(id => !['name', 'columnActions'].includes(id))
+                                        .filter(id => !['name', 'columnActions', 'selection'].includes(id))
                                         .map(id => {
                                             const column = table.getColumn(id);
                                             return (
@@ -225,7 +225,7 @@ export default function EmployeesTable({ data = [], selectedIds = [], onSelectio
                                                 <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-3" onClick={(e) => e.stopPropagation()}>
                                                     <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Toggle Columns</h6>
                                                     {table.getAllLeafColumns().map(column => {
-                                                        if (column.id === 'columnActions' || column.id === 'name') return null;
+                                                        if (column.id === 'columnActions' || column.id === 'name' || column.id === 'selection') return null;
                                                         return (
                                                             <li key={column.id} className="mb-2 last-0">
                                                                 <div className="form-check fsz-12" onClick={(e) => e.stopPropagation()}>
@@ -262,97 +262,91 @@ export default function EmployeesTable({ data = [], selectedIds = [], onSelectio
 
                             <tbody>
                                 {table.getRowModel().rows.length === 0 ? (
-                                    <tr><td colSpan={visibleColumnOrder.length} className="text-center py-4 text-muted fsz-12">No employees found</td></tr>
+                                    <tr>
+                                        <td colSpan={visibleColumnOrder.length} className="text-center py-4 text-muted fsz-12">
+                                            No employees found
+                                        </td>
+                                    </tr>
                                 ) : (
                                     table.getRowModel().rows.map((row) => {
                                         const item = row.original;
                                         return (
                                             <SortableRow key={row.id} items={visibleColumnOrder}>
-                                                {visibleColumnOrder.map(colId => {
-                                                    const column = table.getColumn(colId);
-                                                    if (!column || !column.getIsVisible()) return null;
+                                                {table.getColumn("name").getIsVisible() && (
+                                                    <td className="position-relative ps-5" id="name" key="name">
+                                                        <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
+                                                            <input
+                                                                className="form-check-input mt-0 cursor-pointer"
+                                                                type="checkbox"
+                                                                id={`employee-${item.id}`}
+                                                                checked={row.getIsSelected()}
+                                                                onChange={row.getToggleSelectedHandler()}
+                                                            />
+                                                            <label className="form-check-label" htmlFor={`employee-${item.id}`}></label>
+                                                        </div>
+                                                        <div
+                                                            className="d-flex align-items-center hover-underline"
+                                                            onClick={() => onView?.(item)}
+                                                            title="View Details"
+                                                            style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                                                        >
+                                                            <span>{item.name}</span>
+                                                        </div>
+                                                    </td>
+                                                )}
 
-                                                    if (colId === 'name') {
-                                                        return (
-                                                            <td key={colId} id={colId} className="sticky-col">
-                                                                <div className="form-check">
-                                                                    <input
-                                                                        className="form-check-input"
-                                                                        type="checkbox"
-                                                                        checked={row.getIsSelected()}
-                                                                        onChange={row.getToggleSelectedHandler()}
-                                                                        id={`employee-${item.id}`}
-                                                                    />
-                                                                    <label className="form-check-label ms-2 mb-0" htmlFor={`employee-${item.id}`}>
-                                                                        {item.name}
-                                                                    </label>
-                                                                </div>
-                                                            </td>
-                                                        );
-                                                    }
+                                                {table.getColumn("email").getIsVisible() && (
+                                                    <td id="email" key="email" className="">{item.email}</td>
+                                                )}
 
-                                                    if (colId === 'role') {
-                                                        const getRoleBadgeClass = (role) => {
-                                                            switch (role) {
-                                                                case "Head Department": return "alert-warning";
-                                                                case "Senior Business Development Manager": return "alert-success";
-                                                                case "Business Development Manager": return "alert-secondary";
-                                                                case "Senior Business Development Executive": return "role-purple";
-                                                                case "Business Development Executive": return "role-teal";
-                                                                default: return "alert-primary";
-                                                            }
-                                                        };
-                                                        return (
-                                                            <td key={colId} id={colId}>
-                                                                <span className={`alert rounded-pill py-1 px-3 fsz-10 border-0 mb-0 ${getRoleBadgeClass(item.role)}`}>
-                                                                    {item.role}
-                                                                </span>
-                                                            </td>
-                                                        );
-                                                    }
+                                                {table.getColumn("phone").getIsVisible() && (
+                                                    <td id="phone" key="phone" className="">{item.phone}</td>
+                                                )}
 
-                                                    if (colId === 'sector') {
-                                                        return (
-                                                            <td key={colId} id={colId}>
-                                                                <div className="text-pop fsz-12">
-                                                                    {item.sector?.length > 20 ? item.sector.slice(0, 20) + "..." : item.sector}
-                                                                    <span className="tooltip-text">{item.sector}</span>
-                                                                </div>
-                                                            </td>
-                                                        );
-                                                    }
+                                                {table.getColumn("role").getIsVisible() && (
+                                                    <td id="role" key="role">
+                                                        <span className={`alert rounded-pill py-1 px-3 fsz-10 border-0 mb-0 ${item.role === 'Head Department' ? 'alert-warning' : item.role === 'Senior Business Development Manager' ? 'alert-success' : item.role === 'Business Development Manager' ? 'alert-secondary' : item.role === 'Senior Business Development Executive' ? 'role-purple' : item.role === 'Business Development Executive' ? 'role-teal' : 'alert-primary'}`}>
+                                                            {item.role}
+                                                        </span>
+                                                    </td>
+                                                )}
 
-                                                    if (colId === 'columnActions') {
-                                                        return (
-                                                            <td key={colId} id={colId}>
-                                                                <div className="dropdown">
-                                                                    <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                                        <i className="fas fa-ellipsis fsz-14 text-muted"></i>
+                                                {table.getColumn("sector").getIsVisible() && (
+                                                    <td id="sector" key="sector">
+                                                        <div className="text-pop fsz-12">
+                                                            {item.sector?.length > 20 ? item.sector.slice(0, 20) + "..." : item.sector}
+                                                            <span className="tooltip-text">{item.sector}</span>
+                                                        </div>
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("created_at").getIsVisible() && (
+                                                    <td id="created_at" key="created_at" className="">
+                                                        {item.created_at}
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("columnActions").getIsVisible() && (
+                                                    <td id="columnActions" key="columnActions">
+                                                        <div className="dropdown">
+                                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                                <i className="fas fa-ellipsis fsz-14 text-muted"></i>
+                                                            </button>
+                                                            <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                                <li>
+                                                                    <button className="dropdown-item fsz-12 py-2" onClick={() => onEdit?.(item.id)}>
+                                                                        <i className="fal fa-pen me-2 text-muted"></i> Edit
                                                                     </button>
-                                                                    <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                                                                        <li>
-                                                                            <button className="dropdown-item fsz-12 py-2" onClick={() => onEdit?.(item.id)}>
-                                                                                <i className="fal fa-pen me-2 text-muted"></i> Edit
-                                                                            </button>
-                                                                        </li>
-                                                                        <li>
-                                                                            <button className="dropdown-item text-danger fsz-12 py-2" onClick={() => onDelete?.(item.id)}>
-                                                                                <i className="fal fa-trash me-2 text-muted"></i> Delete
-                                                                            </button>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </td>
-                                                        );
-                                                    }
-
-                                                    // Default cell
-                                                    return (
-                                                        <td key={colId} id={colId} className="fsz-13 text-muted text-nowrap">
-                                                            {item[column.columnDef.accessorKey] || "-"}
-                                                        </td>
-                                                    );
-                                                })}
+                                                                </li>
+                                                                <li>
+                                                                    <button className="dropdown-item text-danger fsz-12 py-2" onClick={() => onDelete?.(item.id)}>
+                                                                        <i className="fal fa-trash me-2 text-muted"></i> Delete
+                                                                    </button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                )}
                                             </SortableRow>
                                         );
                                     })
