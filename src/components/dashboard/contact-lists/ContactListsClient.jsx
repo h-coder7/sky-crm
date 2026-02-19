@@ -10,6 +10,7 @@ import TrashModal from "@/components/dashboard/contact-lists/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 import ContactDetailsOffcanvas from "@/components/dashboard/contact-lists/ContactDetailsOffcanvas";
+import { useContactLists } from "@/context/ContactListsContext";
 
 /**
  * 🎯 Client Component for Contact Lists Page
@@ -18,7 +19,7 @@ import ContactDetailsOffcanvas from "@/components/dashboard/contact-lists/Contac
  */
 export default function ContactListsClient({ initialContacts = [] }) {
     // State Management
-    const [contacts, setContacts] = useState(initialContacts);
+    const { contacts, setContacts } = useContactLists();
     const [selectedContact, setSelectedContact] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
