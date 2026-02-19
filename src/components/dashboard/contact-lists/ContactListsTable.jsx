@@ -64,7 +64,6 @@ export default function ContactListsTable({
        3. Columns
        ====================================================================== */
     const columns = useMemo(() => [
-        { id: "selection", header: "", enableSorting: false, draggable: false },
         { id: "name", accessorKey: "name", header: "Name", enableSorting: true, draggable: false },
         { id: "gender", accessorKey: "gender", header: "Gender", enableSorting: true, draggable: true },
         { id: "company", accessorKey: "company", header: "Company", enableSorting: true, draggable: true },
@@ -280,7 +279,7 @@ export default function ContactListsTable({
 
                                     {/* Other Columns (Generic Header) */}
                                     {columnOrder.map(colId => {
-                                        if (colId === 'name' || colId === 'columnActions' || colId === 'selection') return null;
+                                        if (colId === 'name' || colId === 'columnActions') return null;
                                         const column = table.getColumn(colId);
                                         if (!column || !column.getIsVisible()) return null;
 
@@ -314,7 +313,7 @@ export default function ContactListsTable({
                                                 <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-3 scrollable-dropdown" style={{ maxHeight: '400px', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
                                                     <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Toggle Columns</h6>
                                                     {table.getAllLeafColumns().map(column => {
-                                                        if (column.id === 'columnActions' || column.id === 'name' || column.id === 'selection') return null;
+                                                        if (column.id === 'columnActions' || column.id === 'name') return null;
                                                         return (
                                                             <li key={column.id} className="mb-2 last-0">
                                                                 <div className="form-check fsz-12" onClick={(e) => e.stopPropagation()}>
