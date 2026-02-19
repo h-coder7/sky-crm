@@ -29,6 +29,8 @@ export const metadata = {
 import { SectorsProvider } from "@/context/SectorsContext";
 import { EmployeesProvider } from "@/context/EmployeesContext";
 import { CountriesProvider } from "@/context/CountriesContext";
+import { CompaniesProvider } from "@/context/CompaniesContext";
+import { ContactListsProvider } from "@/context/ContactListsContext";
 
 export default function RootLayout({ children }) {
   return (
@@ -39,7 +41,11 @@ export default function RootLayout({ children }) {
         <CountriesProvider>
           <EmployeesProvider>
             <SectorsProvider>
-              {children}
+              <CompaniesProvider>
+                <ContactListsProvider>
+                   {children}
+                </ContactListsProvider>
+              </CompaniesProvider>
             </SectorsProvider>
           </EmployeesProvider>
         </CountriesProvider>

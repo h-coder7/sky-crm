@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Select from "react-select";
 import FileUpload from "../../shared/FileUpload";
+import { useCompanies } from "@/context/CompaniesContext";
 
 const STATUS_OPTIONS = [
   { value: "1", label: "Brief Submitted" },
@@ -36,6 +37,9 @@ const PAYMENT_STATUS_OPTIONS = [
 ];
 
 export default function DealsModal({ show, onClose, onSave, deal = null }) {
+  const { companies } = useCompanies();
+  const COMPANY_OPTIONS = companies.map((c) => ({ value: c.title, label: c.title }));
+
   const [isMounted, setIsMounted] = useState(false);
   const [formData, setFormData] = useState({
     sector: "",
@@ -177,13 +181,18 @@ export default function DealsModal({ show, onClose, onSave, deal = null }) {
                       </div>
                       <div className="col-lg-6 mb-3">
                         <label className="form-label">Company</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="company"
-                          value={formData.company}
-                          onChange={handleChange}
-                          required
+                        <Select
+                          options={COMPANY_OPTIONS}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select Company..."
+                          isClearable
+                          value={COMPANY_OPTIONS.find(
+                            (o) => o.value === formData.company
+                          ) || null}
+                          onChange={(o) =>
+                            setFormData((p) => ({ ...p, company: o ? o.value : "" }))
+                          }
                         />
                       </div>
                       <div className="col-lg-6 mb-3">

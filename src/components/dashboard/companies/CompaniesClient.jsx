@@ -8,9 +8,10 @@ import CompanyModal from "./CompanyModal";
 import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import { useCompanies } from "@/context/CompaniesContext";
 
 export default function CompaniesClient({ initialCompanies = [] }) {
-    const [companies, setCompanies] = useState(initialCompanies);
+    const { companies, setCompanies } = useCompanies();
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
