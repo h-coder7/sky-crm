@@ -218,7 +218,7 @@ export default function CompanyModal({ isOpen, onClose, onSave, company }) {
                                                 <textarea
                                                     className="form-control"
                                                     name="description"
-                                                    rows="3"
+                                                    rows="5"
                                                     value={formData.description}
                                                     onChange={handleChange}
                                                 ></textarea>

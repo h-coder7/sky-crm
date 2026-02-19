@@ -9,6 +9,7 @@ import ContactListModal from "@/components/dashboard/contact-lists/ContactListMo
 import TrashModal from "@/components/dashboard/contact-lists/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import ContactDetailsOffcanvas from "@/components/dashboard/contact-lists/ContactDetailsOffcanvas";
 
 /**
  * 🎯 Client Component for Contact Lists Page
@@ -24,6 +25,9 @@ export default function ContactListsClient({ initialContacts = [] }) {
 
     const [trashContacts, setTrashContacts] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
+
+    const [viewContact, setViewContact] = useState(null);
+    const [showOffcanvas, setShowOffcanvas] = useState(false);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -95,6 +99,11 @@ export default function ContactListsClient({ initialContacts = [] }) {
             setSelectedContact(contact);
             setShowModal(true);
         }
+    };
+
+    const handleView = (contact) => {
+        setViewContact(contact);
+        setShowOffcanvas(true);
     };
 
     const handleDelete = (id) => {
@@ -234,6 +243,7 @@ export default function ContactListsClient({ initialContacts = [] }) {
                 onSelectionChange={setSelectedIds}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onView={handleView}
             />
 
             {/* Add/Edit Modal */}
@@ -251,6 +261,16 @@ export default function ContactListsClient({ initialContacts = [] }) {
                 onClose={() => setShowTrashModal(false)}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
+            />
+
+            {/* Details Offcanvas */}
+            <ContactDetailsOffcanvas
+                show={showOffcanvas}
+                contact={viewContact}
+                onClose={() => {
+                    setShowOffcanvas(false);
+                    setViewContact(null);
+                }}
             />
         </>
     );

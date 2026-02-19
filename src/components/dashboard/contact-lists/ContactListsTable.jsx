@@ -26,7 +26,8 @@ export default function ContactListsTable({
     selectedIds = [],
     onSelectionChange,
     onEdit,
-    onDelete
+    onDelete,
+    onView
 }) {
 
     /* ======================================================================
@@ -63,6 +64,7 @@ export default function ContactListsTable({
        3. Columns
        ====================================================================== */
     const columns = useMemo(() => [
+        { id: "selection", header: "", enableSorting: false, draggable: false },
         { id: "name", accessorKey: "name", header: "Name", enableSorting: true, draggable: false },
         { id: "gender", accessorKey: "gender", header: "Gender", enableSorting: true, draggable: true },
         { id: "company", accessorKey: "company", header: "Company", enableSorting: true, draggable: true },
@@ -248,19 +250,18 @@ export default function ContactListsTable({
                                 <SortableRow items={visibleColumnOrder}>
                                     {/* Name Column */}
                                     {table.getColumn("name").getIsVisible() && (
-                                        <SortableTh id="name" key="name" disabled className="sticky-col">
-                                            <div className="form-check">
+                                        <SortableTh id="name" key="name" disabled className="sticky-col position-relative ps-5">
+                                            <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="form-check-input mt-0 cursor-pointer"
                                                     id="select-all-contacts"
                                                     type="checkbox"
                                                     checked={table.getIsAllPageRowsSelected()}
                                                     onChange={table.getToggleAllPageRowsSelectedHandler()}
                                                 />
-                                                <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor="select-all-contacts">
-                                                    Name
-                                                </label>
+                                                <label className="form-check-label" htmlFor="select-all-contacts"></label>
                                             </div>
+                                            <span>Name</span>
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                                     <i className="fat fa-sort fsz-12"></i>
@@ -279,7 +280,7 @@ export default function ContactListsTable({
 
                                     {/* Other Columns (Generic Header) */}
                                     {columnOrder.map(colId => {
-                                        if (colId === 'name' || colId === 'columnActions') return null;
+                                        if (colId === 'name' || colId === 'columnActions' || colId === 'selection') return null;
                                         const column = table.getColumn(colId);
                                         if (!column || !column.getIsVisible()) return null;
 
@@ -313,7 +314,7 @@ export default function ContactListsTable({
                                                 <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-3 scrollable-dropdown" style={{ maxHeight: '400px', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
                                                     <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Toggle Columns</h6>
                                                     {table.getAllLeafColumns().map(column => {
-                                                        if (column.id === 'columnActions' || column.id === 'name') return null;
+                                                        if (column.id === 'columnActions' || column.id === 'name' || column.id === 'selection') return null;
                                                         return (
                                                             <li key={column.id} className="mb-2 last-0">
                                                                 <div className="form-check fsz-12" onClick={(e) => e.stopPropagation()}>
@@ -360,99 +361,157 @@ export default function ContactListsTable({
                                         const item = row.original;
                                         return (
                                             <SortableRow key={row.id} items={visibleColumnOrder} disabled>
-                                                {visibleColumnOrder.map(colId => {
-                                                    const column = table.getColumn(colId);
-                                                    if (!column || !column.getIsVisible()) return null;
+                                                {/* Name Column with Checkbox */}
+                                                {table.getColumn("name").getIsVisible() && (
+                                                    <td className="sticky-col position-relative ps-5" id="name" key="name">
+                                                        <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
+                                                            <input
+                                                                className="form-check-input mt-0 cursor-pointer"
+                                                                type="checkbox"
+                                                                id={`contact-${item.id}`}
+                                                                checked={row.getIsSelected()}
+                                                                onChange={row.getToggleSelectedHandler()}
+                                                            />
+                                                            <label className="form-check-label" htmlFor={`contact-${item.id}`}></label>
+                                                        </div>
+                                                        <div className="d-flex align-items-center hover-underline" onClick={() => onView?.(item)}>
+                                                            <div className="icon-40 p-1 rounded-circle border p-1 me-3 overflow-hidden bg-light">
+                                                                <img
+                                                                    src={item.image || "/crm-skybridge/images/fav.png"}
+                                                                    alt={item.name}
+                                                                    className="img-contain h-100 w-100"
+                                                                />
+                                                            </div>
+                                                            <span> {item.name} </span>
+                                                        </div>
+                                                    </td>
+                                                )}
 
-                                                    if (colId === 'name') {
-                                                        return (
-                                                            <td key={colId} id={colId} className="sticky-col">
-                                                                <div className="form-check">
-                                                                    <input
-                                                                        className="form-check-input"
-                                                                        type="checkbox"
-                                                                        id={`contact-${item.id}`}
-                                                                        checked={row.getIsSelected()}
-                                                                        onChange={row.getToggleSelectedHandler()}
-                                                                    />
-                                                                    <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor={`contact-${item.id}`}>
-                                                                        <div className="icon-40 p-1 rounded-circle border p-1 me-3 overflow-hidden bg-light">
-                                                                            <img
-                                                                                src={item.image || "/crm-skybridge/images/fav.png"}
-                                                                                alt={item.name}
-                                                                                className="img-contain h-100 w-100"
-                                                                            />
-                                                                        </div>
-                                                                        {item.name}
-                                                                    </label>
-                                                                </div>
-                                                            </td>
-                                                        );
-                                                    }
+                                                {/* Other Columns */}
+                                                {table.getColumn("gender").getIsVisible() && (
+                                                    <td key="gender" id="gender">{item.gender || "-"}</td>
+                                                )}
 
-                                                    if (colId === 'top_customer' || colId === 'decision_maker_status') {
-                                                        const isYes = item[colId] === true || item[colId] === "Yes";
-                                                        return <td key={colId} id={colId} >
-                                                            <span className={`alert rounded-pill py-1 px-3 fsz-12 ms-2 border-0 mb-0 ${isYes ? 'alert-success' : 'alert-danger'}`}>
-                                                                {isYes ? "Yes" : "No"}
-                                                            </span>
-                                                        </td>;
-                                                    }
+                                                {table.getColumn("company").getIsVisible() && (
+                                                    <td key="company" id="company">{item.company || "-"}</td>
+                                                )}
 
-                                                    if (colId === 'phones' || colId === 'landlines' || colId === 'social_links') {
-                                                        const val = Array.isArray(item[colId]) ? item[colId].filter(Boolean).join(", ") : (item[colId] || "-");
-                                                        return (
-                                                            <td key={colId} id={colId} className="">
-                                                                <div className="text-truncate" title={val}>
-                                                                    {val || "-"}
-                                                                </div>
-                                                            </td>
-                                                        );
-                                                    }
+                                                {table.getColumn("job_title").getIsVisible() && (
+                                                    <td key="job_title" id="job_title">{item.job_title || "-"}</td>
+                                                )}
 
-                                                    if (colId === 'notes') {
-                                                        return (
-                                                            <td key={colId} id={colId} className="">
-                                                                <div className="text-pop">
-                                                                    {item.notes?.length > 20 ? item.notes.slice(0, 20) + "..." : item.notes}
-                                                                    <span className="tooltip-text">{item.notes}</span>
-                                                                </div>
-                                                            </td>
-                                                        );
-                                                    }
+                                                {table.getColumn("email").getIsVisible() && (
+                                                    <td key="email" id="email">{item.email || "-"}</td>
+                                                )}
 
-                                                    if (colId === 'created_at') {
-                                                        return <td key={colId} id={colId} className="">{new Date(item.created_at).toLocaleDateString()}</td>;
-                                                    }
+                                                {table.getColumn("phones").getIsVisible() && (
+                                                    <td key="phones" id="phones">
+                                                        {Array.isArray(item.phones) ? item.phones.filter(Boolean).join(", ") : (item.phones || "-")}
+                                                    </td>
+                                                )}
 
-                                                    if (colId === 'columnActions') {
-                                                        return (
-                                                            <td key={colId} id={colId}>
-                                                                <div className="dropdown">
-                                                                    <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
-                                                                        <i className="fas fa-ellipsis fsz-14 text-muted"></i>
+                                                {table.getColumn("landlines").getIsVisible() && (
+                                                    <td key="landlines" id="landlines">
+                                                        {Array.isArray(item.landlines) ? item.landlines.filter(Boolean).join(", ") : (item.landlines || "-")}
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("country").getIsVisible() && (
+                                                    <td key="country" id="country">{item.country || "-"}</td>
+                                                )}
+
+                                                {table.getColumn("address").getIsVisible() && (
+                                                    <td key="address" id="address">{item.address || "-"}</td>
+                                                )}
+
+                                                {table.getColumn("top_customer").getIsVisible() && (
+                                                    <td key="top_customer" id="top_customer">
+                                                        <span className={`alert rounded-pill py-1 px-3 fsz-12 border-0 mb-0 ${item.top_customer ? 'alert-success' : 'alert-danger'}`}>
+                                                            {item.top_customer ? "Yes" : "No"}
+                                                        </span>
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("decision_maker_status").getIsVisible() && (
+                                                    <td key="decision_maker_status" id="decision_maker_status">
+                                                        <span className={`alert rounded-pill py-1 px-3 fsz-12 border-0 mb-0 ${item.decision_maker_status ? 'alert-success' : 'alert-danger'}`}>
+                                                            {item.decision_maker_status ? "Yes" : "No"}
+                                                        </span>
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("status").getIsVisible() && (
+                                                    <td key="status" id="status">{item.status || "-"}</td>
+                                                )}
+
+                                                {table.getColumn("employee").getIsVisible() && (
+                                                    <td key="employee" id="employee">{item.employee || "-"}</td>
+                                                )}
+
+                                                {table.getColumn("budget").getIsVisible() && (
+                                                    <td key="budget" id="budget">{item.budget || "-"}</td>
+                                                )}
+
+                                                {table.getColumn("avg_stands_year").getIsVisible() && (
+                                                    <td key="avg_stands_year" id="avg_stands_year">{item.avg_stands_year || "-"}</td>
+                                                )}
+
+                                                {table.getColumn("avg_events_year").getIsVisible() && (
+                                                    <td key="avg_events_year" id="avg_events_year">{item.avg_events_year || "-"}</td>
+                                                )}
+
+                                                {table.getColumn("company_website_url").getIsVisible() && (
+                                                    <td key="company_website_url" id="company_website_url">
+                                                        {item.company_website_url ? (
+                                                            <a href={item.company_website_url} target="_blank" rel="noopener noreferrer" className="text-decoration-none">
+                                                                {item.company_website_url}
+                                                            </a>
+                                                        ) : "-"}
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("social_links").getIsVisible() && (
+                                                    <td key="social_links" id="social_links">
+                                                        {Array.isArray(item.social_links) ? item.social_links.filter(Boolean).join(", ") : (item.social_links || "-")}
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("notes").getIsVisible() && (
+                                                    <td key="notes" id="notes">
+                                                        <div className="text-pop">
+                                                            {item.notes?.length > 20 ? item.notes.slice(0, 20) + "..." : item.notes}
+                                                            <span className="tooltip-text">{item.notes}</span>
+                                                        </div>
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("created_at").getIsVisible() && (
+                                                    <td key="created_at" id="created_at">
+                                                        {new Date(item.created_at).toLocaleDateString()}
+                                                    </td>
+                                                )}
+
+                                                {table.getColumn("columnActions").getIsVisible() && (
+                                                    <td key="columnActions" id="columnActions">
+                                                        <div className="dropdown">
+                                                            <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
+                                                                <i className="fas fa-ellipsis fsz-14 text-muted"></i>
+                                                            </button>
+                                                            <ul className="dropdown-menu shadow-sm border-0 rounded-3">
+                                                                <li>
+                                                                    <button className="dropdown-item fsz-12 py-2" onClick={() => onEdit?.(item.id)}>
+                                                                        <i className="fal fa-pen me-2 text-muted"></i> Edit
                                                                     </button>
-                                                                    <ul className="dropdown-menu shadow-sm border-0 rounded-3">
-                                                                        <li>
-                                                                            <button className="dropdown-item fsz-12 py-2" onClick={() => onEdit?.(item.id)}>
-                                                                                <i className="fal fa-pen me-2 text-muted"></i> Edit
-                                                                            </button>
-                                                                        </li>
-                                                                        <li>
-                                                                            <button className="dropdown-item text-danger fsz-12 py-2" onClick={() => onDelete?.(item.id)}>
-                                                                                <i className="fal fa-trash me-2 text-muted"></i> Delete
-                                                                            </button>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </td>
-                                                        );
-                                                    }
-
-                                                    // Default cell rendering
-                                                    const accessorKey = column.columnDef.accessorKey;
-                                                    return <td key={colId} id={colId} className="">{item[accessorKey] || "-"}</td>;
-                                                })}
+                                                                </li>
+                                                                <li>
+                                                                    <button className="dropdown-item text-danger fsz-12 py-2" onClick={() => onDelete?.(item.id)}>
+                                                                        <i className="fal fa-trash me-2 text-muted"></i> Delete
+                                                                    </button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                )}
                                             </SortableRow>
                                         );
                                     })

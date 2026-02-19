@@ -353,7 +353,6 @@ export default function AdminsTable({
                                                             className="d-flex align-items-center hover-underline"
                                                             onClick={() => onView?.(admin)}
                                                             title="View Details"
-                                                            style={{ cursor: "pointer", transition: "all 0.3s ease" }}
                                                         >
                                                             <div className="icon-40 p-1 rounded-circle border p-1 me-3 overflow-hidden bg-light">
                                                                 <img

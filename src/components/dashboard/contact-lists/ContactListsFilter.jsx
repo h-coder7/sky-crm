@@ -109,7 +109,7 @@ export default function ContactListsFilter({
 
     const filterCells = {
         name: (
-            <td key="name" className="sticky-col">
+            <td key="name" className="">
                 <input
                     className="form-control"
                     placeholder="Name"

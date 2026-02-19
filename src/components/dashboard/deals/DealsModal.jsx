@@ -328,7 +328,7 @@ export default function DealsModal({ show, onClose, onSave, deal = null }) {
                           name="description"
                           value={formData.description}
                           onChange={handleChange}
-                          rows="3"
+                          rows="5"
                         ></textarea>
                       </div>
                     </div>

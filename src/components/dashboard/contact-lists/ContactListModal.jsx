@@ -359,7 +359,7 @@ export default function ContactListModal({ show, onClose, onSave, contact = null
                                         <div className="row">
                                             <div className="col-12">
                                                 <label htmlFor="notes" className="form-label">Notes</label>
-                                                <textarea className="form-control" id="notes" name="notes" rows="3" value={formData.notes} onChange={handleChange} />
+                                                <textarea className="form-control" id="notes" name="notes" rows="5" value={formData.notes} onChange={handleChange} />
                                             </div>
                                         </div>
                                     </div>
