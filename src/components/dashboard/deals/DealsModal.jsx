@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Select from "react-select";
 import FileUpload from "../../shared/FileUpload";
-import { useCompanies } from "@/context/CompaniesContext";
+import { useCompanies } from "@/hooks/useCompanies";
+import { useContactLists } from "@/hooks/useContactLists";
 
 const STATUS_OPTIONS = [
   { value: "1", label: "Brief Submitted" },
@@ -37,8 +38,11 @@ const PAYMENT_STATUS_OPTIONS = [
 ];
 
 export default function DealsModal({ show, onClose, onSave, deal = null }) {
-  const { companies } = useCompanies();
+  const { data: companies = [] } = useCompanies();
   const COMPANY_OPTIONS = companies.map((c) => ({ value: c.title, label: c.title }));
+
+  const { data: contacts = [] } = useContactLists();
+  const CONTACT_LIST_OPTIONS = contacts.map((c) => ({ value: c.name, label: c.name }));
 
   const [isMounted, setIsMounted] = useState(false);
   const [formData, setFormData] = useState({
@@ -197,13 +201,18 @@ export default function DealsModal({ show, onClose, onSave, deal = null }) {
                       </div>
                       <div className="col-lg-6 mb-3">
                         <label className="form-label">Contact list</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="contact_list"
-                          value={formData.contact_list}
-                          onChange={handleChange}
-                          required
+                        <Select
+                          options={CONTACT_LIST_OPTIONS}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select Contact List..."
+                          isClearable
+                          value={CONTACT_LIST_OPTIONS.find(
+                            (o) => o.value === formData.contact_list
+                          ) || null}
+                          onChange={(o) =>
+                            setFormData((p) => ({ ...p, contact_list: o ? o.value : "" }))
+                          }
                         />
                       </div>
                       <div className="col-lg-6 mb-3">

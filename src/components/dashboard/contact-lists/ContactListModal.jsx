@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Select from "react-select";
 import FileUpload from "../../shared/FileUpload";
-import { useEmployees } from "@/context/EmployeesContext";
-import { useCountries } from "@/context/CountriesContext";
+import { useEmployees } from "@/hooks/useEmployees";
+import { useCountries } from "@/hooks/useCountries";
 
 const GENDER_OPTIONS = [
     { value: "Male", label: "Male" },
@@ -43,8 +43,8 @@ const PHOTO_ACCEPT_TYPES = {
 };
 
 export default function ContactListModal({ show, onClose, onSave, contact = null }) {
-    const { employees: contextEmployees } = useEmployees();
-    const { countries: contextCountries } = useCountries();
+    const { data: contextEmployees = [] } = useEmployees();
+    const { data: contextCountries = [] } = useCountries();
     const [isMounted, setIsMounted] = useState(false);
     const [formData, setFormData] = useState({
         name: "",

@@ -3,7 +3,12 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Select from "react-select";
-import { useSectors } from "@/context/SectorsContext";
+import FileUpload from "../../shared/FileUpload";
+import { useSectors } from "@/hooks/useSectors";
+
+const PHOTO_ACCEPT_TYPES = {
+    'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp']
+};
 
 const ROLE_OPTIONS = [
     { value: "Head Department", label: "Head Department" },
@@ -64,6 +69,7 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
         confirmPassword: "",
         sectors: [],
         permissions: [],
+        attachments: [],
     });
 
     const [passwordError, setPasswordError] = useState("");
@@ -79,6 +85,7 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                 confirmPassword: "",
                 sectors: Array.isArray(employee.sectors) ? employee.sectors : [],
                 permissions: Array.isArray(employee.permissions) ? employee.permissions : [],
+                attachments: employee.image ? [{ preview: employee.image, type: 'image/jpeg', name: 'Employee Image' }] : [],
             });
         } else {
             setFormData({
@@ -90,6 +97,7 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                 confirmPassword: "",
                 sectors: [],
                 permissions: [],
+                attachments: [],
             });
         }
         setPasswordError("");
@@ -108,12 +116,16 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
         setFormData((prev) => ({ ...prev, role: selectedOption?.value || "" }));
     };
 
-    const { sectors } = useSectors();
+    const { data: sectors = [] } = useSectors();
     const SECTOR_OPTIONS = sectors.map(s => ({ value: s.id, label: s.title }));
 
     const handleSectorChange = (selectedOptions) => {
         const selectedSectors = selectedOptions ? selectedOptions.map(option => option.value) : [];
         setFormData((prev) => ({ ...prev, sectors: selectedSectors }));
+    };
+
+    const handleFilesChange = (newFiles) => {
+        setFormData((prev) => ({ ...prev, attachments: newFiles }));
     };
 
     const handleSelectAllSectors = (e) => {
@@ -162,7 +174,14 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
             return;
         }
 
-        const { confirmPassword, ...submissionData } = formData;
+        const { confirmPassword, attachments, ...submissionData } = formData;
+
+        if (attachments && attachments.length > 0) {
+            submissionData.image = attachments[0].preview;
+        } else {
+            submissionData.image = "";
+        }
+
         onSave(submissionData);
     };
 
@@ -203,6 +222,16 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body">
                                 <div className="row">
+                                    <div className="col-lg-12 mb-4">
+                                        <FileUpload
+                                            files={formData.attachments}
+                                            onFilesChange={handleFilesChange}
+                                            maxFiles={1}
+                                            accept={PHOTO_ACCEPT_TYPES}
+                                            title="Profile Image"
+                                            hint="Drop image here or click to upload"
+                                        />
+                                    </div>
                                     <div className="col-lg-6">
                                         <div className="form-group mb-3">
                                             <label htmlFor="name" className="form-label">Name</label>

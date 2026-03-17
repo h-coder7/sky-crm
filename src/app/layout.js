@@ -26,11 +26,11 @@ export const metadata = {
   },
 };
 
-import { SectorsProvider } from "@/context/SectorsContext";
-import { EmployeesProvider } from "@/context/EmployeesContext";
-import { CountriesProvider } from "@/context/CountriesContext";
-import { CompaniesProvider } from "@/context/CompaniesContext";
-import { ContactListsProvider } from "@/context/ContactListsContext";
+
+
+
+
+import ReactQueryProvider from "@/providers/ReactQueryProvider";
 
 export default function RootLayout({ children }) {
   return (
@@ -38,17 +38,9 @@ export default function RootLayout({ children }) {
       <body className={poppins.variable} suppressHydrationWarning={true}>
         <BootstrapClient />
         <Toaster position="top-center" reverseOrder={false} />
-        <CountriesProvider>
-          <EmployeesProvider>
-            <SectorsProvider>
-              <CompaniesProvider>
-                <ContactListsProvider>
-                   {children}
-                </ContactListsProvider>
-              </CompaniesProvider>
-            </SectorsProvider>
-          </EmployeesProvider>
-        </CountriesProvider>
+        <ReactQueryProvider>
+                {children}
+        </ReactQueryProvider>
       </body>
     </html>
   );

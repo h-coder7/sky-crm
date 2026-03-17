@@ -11,7 +11,13 @@ import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 import SectorDetailsOffcanvas from "@/components/dashboard/sectors/SectorDetailsOffcanvas";
 
-import { useSectors } from "@/context/SectorsContext";
+import {
+    useSectors,
+    useAddSector,
+    useUpdateSector,
+    useDeleteSector,
+    useBulkDeleteSectors
+} from "@/hooks/useSectors";
 
 /**
  * 🎯 Client Component for Sectors Page
@@ -23,8 +29,12 @@ import { useSectors } from "@/context/SectorsContext";
  * - CRUD operations (ready for API integration)
  */
 export default function SectorsClient() {
-    // State Management from Context
-    const { sectors, setSectors } = useSectors();
+    const { data: sectors = [], isLoading } = useSectors();
+    const addSector = useAddSector();
+    const updateSector = useUpdateSector();
+    const deleteSector = useDeleteSector();
+    const bulkDeleteSectors = useBulkDeleteSectors();
+
     const [selectedSector, setSelectedSector] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -57,55 +67,21 @@ export default function SectorsClient() {
        ====================================================================== */
 
     const handleSave = async (data) => {
-        /*
-        try {
-          if (selectedSector) {
-            // Update existing
-            const res = await api.put(`/sectors/${selectedSector.id}`, data);
-            const updatedSector = res.data;
-    
-            setSectors((prev) =>
-              prev.map((sector) => (sector.id === updatedSector.id ? updatedSector : sector))
-            );
-          } else {
-            // Create new
-            const res = await api.post('/sectors', data);
-            const newSector = res.data;
-    
-            setSectors((prev) => [newSector, ...prev]);
-          }
-          setShowModal(false);
-          setSelectedSector(null);
-        } catch (error) {
-          console.error("Failed to save sector:", error);
-          // Handle error (e.g., show toast)
-        }
-        */
-
-        // 👇 TEMP: Local State Logic (Remove when API is ready)
         if (selectedSector) {
-            // Update existing
-            setSectors((prev) =>
-                prev.map((sector) =>
-                    sector.id === selectedSector.id
-                        ? { ...sector, ...data }
-                        : sector
-                )
-            );
-            toast.success("Sector updated successfully!");
+            updateSector.mutate({ ...selectedSector, ...data }, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedSector(null);
+                }
+            });
         } else {
-            // Create new
-            const newSector = {
-                id: Date.now(),
-                title: data.title,
-                description: data.description,
-                created_at: new Date().toISOString().split("T")[0],
-            };
-            setSectors((prev) => [newSector, ...prev]);
-            toast.success("Sector added successfully!");
+            addSector.mutate(data, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedSector(null);
+                }
+            });
         }
-        setShowModal(false);
-        setSelectedSector(null);
     };
 
     const handleEdit = (id) => {
@@ -130,52 +106,27 @@ export default function SectorsClient() {
             message: "This sector will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: async () => {
-                /*
-                try {
-                   await api.delete(`/sectors/${id}`); // Assuming delete moves to trash
-                   
-                   // If backend returns the deleted item or we need to refetch:
-                   // const sectorToDelete = sectors.find((s) => s.id === id);
-                   // setTrashSectors((prev) => [sectorToDelete, ...prev]); // optimistic update if needed
-                   
-                   setSectors((prev) => prev.filter((s) => s.id !== id));
-                } catch (error) {
-                   console.error("Failed to delete sector:", error);
-                }
-                */
-
-                // 👇 TEMP: Local State Logic
                 const sectorToDelete = sectors.find((s) => s.id === id);
                 if (sectorToDelete) {
-                    setTrashSectors((prev) => [sectorToDelete, ...prev]);
-                    setSectors((prev) => prev.filter((s) => s.id !== id));
-                    toast.success("Sector moved to trash!");
+                    deleteSector.mutate(id, {
+                        onSuccess: () => {
+                            setTrashSectors((prev) => [sectorToDelete, ...prev]);
+                        }
+                    });
                 }
             }
         });
     };
 
     const handleRestore = async (id) => {
-        /*
-        try {
-          await api.patch(`/sectors/${id}/restore`); 
-          
-          const sectorToRestore = trashSectors.find((s) => s.id === id);
-          if (sectorToRestore) {
-            setSectors((prev) => [sectorToRestore, ...prev]);
-            setTrashSectors((prev) => prev.filter((s) => s.id !== id));
-          }
-        } catch (error) {
-          console.error("Failed to restore sector:", error);
-        }
-        */
-
-        // 👇 TEMP: Local State Logic
         const sectorToRestore = trashSectors.find((s) => s.id === id);
         if (sectorToRestore) {
-            setSectors((prev) => [sectorToRestore, ...prev]);
-            setTrashSectors((prev) => prev.filter((s) => s.id !== id));
-            toast.success("Sector restored successfully!");
+            addSector.mutate(sectorToRestore, {
+                onSuccess: () => {
+                    setTrashSectors((prev) => prev.filter((s) => s.id !== id));
+                    toast.success("Sector restored successfully!");
+                }
+            });
         }
     };
 
@@ -192,25 +143,13 @@ export default function SectorsClient() {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: async () => {
-                /*
-                try {
-                  await api.post('/sectors/bulk-delete', { ids: selectedIds });
-                  
-                  const itemsToDelete = sectors.filter(s => selectedIds.includes(s.id));
-                  setTrashSectors(prev => [...itemsToDelete, ...prev]);
-                  setSectors(prev => prev.filter(s => !selectedIds.includes(s.id)));
-                  setSelectedIds([]);
-                } catch (error) {
-                  console.error("Failed to bulk delete:", error);
-                }
-                */
-
-                // 👇 TEMP: Local State Logic
                 const itemsToDelete = sectors.filter(s => selectedIds.includes(s.id));
-                setTrashSectors(prev => [...itemsToDelete, ...prev]);
-                setSectors(prev => prev.filter(s => !selectedIds.includes(s.id)));
-                setSelectedIds([]);
-                toast.success(`${itemsToDelete.length} sectors moved to trash!`);
+                bulkDeleteSectors.mutate(selectedIds, {
+                    onSuccess: () => {
+                        setTrashSectors(prev => [...itemsToDelete, ...prev]);
+                        setSelectedIds([]);
+                    }
+                });
             }
         });
     };

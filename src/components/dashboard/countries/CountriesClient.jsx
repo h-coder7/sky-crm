@@ -9,7 +9,13 @@ import CountryModal from "@/components/dashboard/countries/CountryModal";
 import TrashModal from "@/components/dashboard/countries/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
-import { useCountries } from "@/context/CountriesContext";
+import {
+    useCountries,
+    useAddCountry,
+    useUpdateCountry,
+    useDeleteCountry,
+    useBulkDeleteCountries
+} from "@/hooks/useCountries";
 
 /**
  * 🎯 Client Component for Countries Page
@@ -23,11 +29,12 @@ import { useCountries } from "@/context/CountriesContext";
  * Receives initial data from Server Component via props
  */
 export default function CountriesClient({ initialCountries = [] }) {
-    // State Management from Context
-    const { countries: globalCountries, setCountries: setGlobalCountries } = useCountries();
+    const { data: countries = [], isLoading } = useCountries();
+    const addCountry = useAddCountry();
+    const updateCountry = useUpdateCountry();
+    const deleteCountry = useDeleteCountry();
+    const bulkDeleteCountries = useBulkDeleteCountries();
 
-    // Local state for the table, initialized from global context
-    const [countries, setCountries] = useState(globalCountries);
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -51,65 +58,28 @@ export default function CountriesClient({ initialCountries = [] }) {
         }
     }, [searchParams, pathname, router]);
 
-    // Sync local state to global context whenever it changes
-    useEffect(() => {
-        setGlobalCountries(countries);
-    }, [countries, setGlobalCountries]);
+
 
     /* ======================================================================
        CRUD Handlers (Ready for API Integration)
        ====================================================================== */
 
     const handleSave = async (data) => {
-        /*
-        try {
-          if (selectedCountry) {
-            // Update existing
-            const res = await api.put(`/countries/${selectedCountry.id}`, data);
-            const updatedCountry = res.data;
-    
-            setCountries((prev) =>
-              prev.map((country) => (country.id === updatedCountry.id ? updatedCountry : country))
-            );
-          } else {
-            // Create new
-            const res = await api.post('/countries', data);
-            const newCountry = res.data;
-    
-            setCountries((prev) => [newCountry, ...prev]);
-          }
-          setShowModal(false);
-          setSelectedCountry(null);
-        } catch (error) {
-          console.error("Failed to save country:", error);
-          // Handle error (e.g., show toast)
-        }
-        */
-
-        // 👇 TEMP: Local State Logic (Remove when API is ready)
         if (selectedCountry) {
-            // Update existing
-            setCountries((prev) =>
-                prev.map((country) =>
-                    country.id === selectedCountry.id
-                        ? { ...country, ...data }
-                        : country
-                )
-            );
-            toast.success("Country updated successfully!");
+            updateCountry.mutate({ ...selectedCountry, ...data }, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedCountry(null);
+                }
+            });
         } else {
-            // Create new
-            const newCountry = {
-                id: Date.now(),
-                title: data.title,
-                country_key: data.country_key,
-                created_at: new Date().toISOString().split("T")[0],
-            };
-            setCountries((prev) => [newCountry, ...prev]);
-            toast.success("Country added successfully!");
+            addCountry.mutate(data, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedCountry(null);
+                }
+            });
         }
-        setShowModal(false);
-        setSelectedCountry(null);
     };
 
     /**
@@ -129,48 +99,27 @@ export default function CountriesClient({ initialCountries = [] }) {
             message: "This country will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: async () => {
-                /*
-                try {
-                   await api.delete(`/countries/${id}`); // Assuming delete moves to trash
-                   
-                   setCountries((prev) => prev.filter((c) => c.id !== id));
-                } catch (error) {
-                   console.error("Failed to delete country:", error);
-                }
-                */
-
-                // 👇 TEMP: Local State Logic
                 const countryToDelete = countries.find((c) => c.id === id);
                 if (countryToDelete) {
-                    setTrashCountries((prev) => [countryToDelete, ...prev]);
-                    setCountries((prev) => prev.filter((c) => c.id !== id));
-                    toast.success("Country moved to trash!");
+                    deleteCountry.mutate(id, {
+                        onSuccess: () => {
+                            setTrashCountries((prev) => [countryToDelete, ...prev]);
+                        }
+                    });
                 }
             }
         });
     };
 
     const handleRestore = async (id) => {
-        /*
-        try {
-          await api.patch(`/countries/${id}/restore`); 
-          
-          const countryToRestore = trashCountries.find((c) => c.id === id);
-          if (countryToRestore) {
-            setCountries((prev) => [countryToRestore, ...prev]);
-            setTrashCountries((prev) => prev.filter((c) => c.id !== id));
-          }
-        } catch (error) {
-          console.error("Failed to restore country:", error);
-        }
-        */
-
-        // 👇 TEMP: Local State Logic
         const countryToRestore = trashCountries.find((c) => c.id === id);
         if (countryToRestore) {
-            setCountries((prev) => [countryToRestore, ...prev]);
-            setTrashCountries((prev) => prev.filter((c) => c.id !== id));
-            toast.success("Country restored successfully!");
+            addCountry.mutate(countryToRestore, {
+                onSuccess: () => {
+                    setTrashCountries((prev) => prev.filter((c) => c.id !== id));
+                    toast.success("Country restored successfully!");
+                }
+            });
         }
     };
 
@@ -187,25 +136,13 @@ export default function CountriesClient({ initialCountries = [] }) {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: async () => {
-                /*
-                try {
-                  await api.post('/countries/bulk-delete', { ids: selectedIds });
-                  
-                  const itemsToDelete = countries.filter(c => selectedIds.includes(c.id));
-                  setTrashCountries(prev => [...itemsToDelete, ...prev]);
-                  setCountries(prev => prev.filter(c => !selectedIds.includes(c.id)));
-                  setSelectedIds([]);
-                } catch (error) {
-                  console.error("Failed to bulk delete:", error);
-                }
-                */
-
-                // 👇 TEMP: Local State Logic
                 const itemsToDelete = countries.filter(c => selectedIds.includes(c.id));
-                setTrashCountries(prev => [...itemsToDelete, ...prev]);
-                setCountries(prev => prev.filter(c => !selectedIds.includes(c.id)));
-                setSelectedIds([]);
-                toast.success(`${itemsToDelete.length} countries moved to trash!`);
+                bulkDeleteCountries.mutate(selectedIds, {
+                    onSuccess: () => {
+                        setTrashCountries(prev => [...itemsToDelete, ...prev]);
+                        setSelectedIds([]);
+                    }
+                });
             }
         });
     };

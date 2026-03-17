@@ -8,10 +8,21 @@ import CompanyModal from "./CompanyModal";
 import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
-import { useCompanies } from "@/context/CompaniesContext";
+import {
+    useCompanies,
+    useAddCompany,
+    useUpdateCompany,
+    useDeleteCompany,
+    useBulkDeleteCompanies
+} from "@/hooks/useCompanies";
 
 export default function CompaniesClient({ initialCompanies = [] }) {
-    const { companies, setCompanies } = useCompanies();
+    const { data: companies = [], isLoading } = useCompanies();
+    const addCompany = useAddCompany();
+    const updateCompany = useUpdateCompany();
+    const deleteCompany = useDeleteCompany();
+    const bulkDeleteCompanies = useBulkDeleteCompanies();
+
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -40,21 +51,21 @@ export default function CompaniesClient({ initialCompanies = [] }) {
        1. Handlers
        ====================================================================== */
     const handleSave = (companyData) => {
-        // 🔌 API READY: Integrate your POST/PUT request here.
         if (selectedCompany) {
-            setCompanies(prev => prev.map(c => c.id === selectedCompany.id ? { ...c, ...companyData } : c));
-            toast.success("Company updated successfully!");
+            updateCompany.mutate({ ...selectedCompany, ...companyData }, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    setSelectedCompany(null);
+                }
+            });
         } else {
-            const newCompany = {
-                ...companyData,
-                id: Math.max(0, ...companies.map(c => c.id)) + 1,
-                created_at: new Date().toISOString().split('T')[0]
-            };
-            setCompanies(prev => [newCompany, ...prev]);
-            toast.success("Company added successfully!");
+            addCompany.mutate(companyData, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    setSelectedCompany(null);
+                }
+            });
         }
-        setIsModalOpen(false);
-        setSelectedCompany(null);
     };
 
     const handleEdit = (id) => {
@@ -73,9 +84,11 @@ export default function CompaniesClient({ initialCompanies = [] }) {
             onConfirm: () => {
                 const companyToDelete = companies.find((c) => c.id === id);
                 if (companyToDelete) {
-                    setTrashCompanies((prev) => [companyToDelete, ...prev]);
-                    setCompanies((prev) => prev.filter((c) => c.id !== id));
-                    toast.success("Company moved to trash!");
+                    deleteCompany.mutate(id, {
+                        onSuccess: () => {
+                            setTrashCompanies((prev) => [companyToDelete, ...prev]);
+                        }
+                    });
                 }
             }
         });
@@ -84,9 +97,12 @@ export default function CompaniesClient({ initialCompanies = [] }) {
     const handleRestore = (id) => {
         const companyToRestore = trashCompanies.find((c) => c.id === id);
         if (companyToRestore) {
-            setCompanies((prev) => [companyToRestore, ...prev]);
-            setTrashCompanies((prev) => prev.filter((c) => c.id !== id));
-            toast.success("Company restored successfully!");
+            addCompany.mutate(companyToRestore, {
+                onSuccess: () => {
+                    setTrashCompanies((prev) => prev.filter((c) => c.id !== id));
+                    toast.success("Company restored successfully!");
+                }
+            });
         }
     };
 
@@ -105,10 +121,12 @@ export default function CompaniesClient({ initialCompanies = [] }) {
             confirmLabel: "Yes, Delete",
             onConfirm: () => {
                 const itemsToDelete = companies.filter(c => selectedIds.includes(c.id));
-                setTrashCompanies(prev => [...itemsToDelete, ...prev]);
-                setCompanies(prev => prev.filter(c => !selectedIds.includes(c.id)));
-                setSelectedIds([]);
-                toast.success(`${itemsToDelete.length} companies moved to trash!`);
+                bulkDeleteCompanies.mutate(selectedIds, {
+                    onSuccess: () => {
+                        setTrashCompanies(prev => [...itemsToDelete, ...prev]);
+                        setSelectedIds([]);
+                    }
+                });
             }
         });
     };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSectors } from "@/context/SectorsContext";
+import { useSectors } from "@/hooks/useSectors";
 
 const MODULE_PERMISSIONS = {
     "Employees": [
@@ -44,7 +44,7 @@ const MODULE_PERMISSIONS = {
 
 export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
     const [isMounted, setIsMounted] = useState(false);
-    const { sectors: allSectors } = useSectors();
+    const { data: allSectors = [] } = useSectors();
 
     useEffect(() => {
         setIsMounted(true);
@@ -90,36 +90,42 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
                     {employee ? (
                         <div className="employee-details">
                             <div className="details-list mb-4 d-flex flex-wrap gap-2">
-                                <div className="detail-item">
-                                    <label className="text-muted fsz-11 text-uppercase d-block mb-1">Name</label>
-                                    <div className="fsz-13">
-                                        <i className="fal fa-user me-2 "></i>
-                                        {employee.name}
+                                <div className="detail-item d-flex align-items-center w-100 mb-2">
+                                    <div className="icon-50 p-1 rounded-circle border bg-white me-3 overflow-hidden shadow-sm">
+                                        <img
+                                            src={employee.image || "/crm-skybridge/images/fav.png"}
+                                            alt={employee.name}
+                                            className="img-contain h-100 w-100 rounded-circle"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-muted fsz-11 text-uppercase d-block mb-0">Profile</label>
+                                        <div className="fsz-14 fw-600 ">{employee.name}</div>
                                     </div>
                                 </div>
 
                                 <div className="detail-item">
-                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Role</label>
+                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Position / Role</label>
                                     <div className="fsz-13">
-                                        <i className="fal fa-user-shield me-2 "></i>
-                                        <span className=" ">
+                                        <i className="fal fa-user-shield me-2 text-primary"></i>
+                                        <span className="fw-500">
                                             {employee.role || "N/A"}
                                         </span>
                                     </div>
                                 </div>
 
                                 <div className="detail-item">
-                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Email</label>
+                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Email Address</label>
                                     <div className="fsz-13">
-                                        <i className="fal fa-envelope me-2 "></i>
+                                        <i className="fal fa-envelope me-2 text-primary"></i>
                                         {employee.email || "N/A"}
                                     </div>
                                 </div>
 
                                 <div className="detail-item">
-                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Phone</label>
+                                    <label className="text-muted fsz-12 text-uppercase d-block mb-2">Phone Number</label>
                                     <div className="fsz-13">
-                                        <i className="fal fa-phone me-2 "></i>
+                                        <i className="fal fa-phone me-2 text-primary"></i>
                                         {employee.phone || "N/A"}
                                     </div>
                                 </div>
@@ -127,7 +133,7 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
                                 <div className="detail-item">
                                     <label className="text-muted fsz-12 text-uppercase d-block mb-2">Joined On</label>
                                     <div className="fsz-13">
-                                        <i className="fal fa-calendar-alt me-2 "></i>
+                                        <i className="fal fa-calendar-alt me-2 text-primary"></i>
                                         {employee.created_at || "N/A"}
                                     </div>
                                 </div>
@@ -135,8 +141,8 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
 
                             {/* Sectors Section */}
                             <div className="sectors-details mb-4">
-                                <h6 className="fsz-13 mb-2 pb-2 border-bottom">
-                                    <i className="fal fa-th-large me-2 "></i>
+                                <h6 className="fsz-13 mb-3 pb-2 border-bottom fw-600">
+                                    <i className="fal fa-th-large me-2 text-primary"></i>
                                     Assigned Sectors
                                 </h6>
                                 <div className="d-flex flex-wrap gap-2">
@@ -156,8 +162,8 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
 
                             {/* Permissions Section */}
                             <div className="permissions-details">
-                                <h6 className="fsz-13 mb-2 pb-2 border-bottom">
-                                    <i className="fal fa-lock-alt me-2 "></i>
+                                <h6 className="fsz-13 mb-3 pb-2 border-bottom fw-600">
+                                    <i className="fal fa-lock-alt me-2 text-primary"></i>
                                     Module Permissions
                                 </h6>
 

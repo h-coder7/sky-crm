@@ -10,7 +10,13 @@ import TrashModal from "@/components/dashboard/employees/TrashModal";
 import EmployeeDetailsOffcanvas from "@/components/dashboard/employees/EmployeeDetailsOffcanvas";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
-import { useEmployees } from "@/context/EmployeesContext";
+import {
+    useEmployees,
+    useAddEmployee,
+    useUpdateEmployee,
+    useDeleteEmployee,
+    useBulkDeleteEmployees
+} from "@/hooks/useEmployees";
 
 /**
  * 🎯 Client Component for Employees Page
@@ -24,11 +30,12 @@ import { useEmployees } from "@/context/EmployeesContext";
  * Receives initial data from Server Component via props
  */
 export default function EmployeesClient({ initialEmployees = [] }) {
-    // State Management from Context
-    const { employees: globalEmployees, setEmployees: setGlobalEmployees } = useEmployees();
+    const { data: employees = [], isLoading } = useEmployees();
+    const addEmployee = useAddEmployee();
+    const updateEmployee = useUpdateEmployee();
+    const deleteEmployee = useDeleteEmployee();
+    const bulkDeleteEmployees = useBulkDeleteEmployees();
 
-    // Local state for the table, initialized from global context
-    const [employees, setEmployees] = useState(globalEmployees);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -55,64 +62,28 @@ export default function EmployeesClient({ initialEmployees = [] }) {
         }
     }, [searchParams, pathname, router]);
 
-    // Sync local state to global context whenever it changes
-    useEffect(() => {
-        setGlobalEmployees(employees);
-    }, [employees, setGlobalEmployees]);
+
 
     /* ======================================================================
        CRUD Handlers (Ready for API Integration)
        ====================================================================== */
 
     const handleSave = async (data) => {
-        /*
-        try {
-          if (selectedEmployee) {
-            // Update existing
-            const res = await api.put(`/employees/${selectedEmployee.id}`, data);
-            const updatedEmployee = res.data;
-    
-            setEmployees((prev) =>
-              prev.map((emp) => (emp.id === updatedEmployee.id ? updatedEmployee : emp))
-            );
-          } else {
-            // Create new
-            const res = await api.post('/employees', data);
-            const newEmployee = res.data;
-    
-            setEmployees((prev) => [newEmployee, ...prev]);
-          }
-          setShowModal(false);
-          setSelectedEmployee(null);
-        } catch (error) {
-          console.error("Failed to save employee:", error);
-          // Handle error (e.g., show toast)
-        }
-        */
-
-        // 👇 TEMP: Local State Logic (Remove when API is ready)
         if (selectedEmployee) {
-            // Update existing
-            setEmployees((prev) =>
-                prev.map((emp) =>
-                    emp.id === selectedEmployee.id
-                        ? { ...emp, ...data }
-                        : emp
-                )
-            );
-            toast.success("Employee updated successfully!");
+            updateEmployee.mutate({ ...selectedEmployee, ...data }, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedEmployee(null);
+                }
+            });
         } else {
-            // Create new
-            const newEmployee = {
-                id: Date.now(),
-                ...data,
-                created_at: new Date().toISOString().split("T")[0],
-            };
-            setEmployees((prev) => [newEmployee, ...prev]);
-            toast.success("Employee added successfully!");
+            addEmployee.mutate(data, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedEmployee(null);
+                }
+            });
         }
-        setShowModal(false);
-        setSelectedEmployee(null);
     };
 
     /**
@@ -132,52 +103,27 @@ export default function EmployeesClient({ initialEmployees = [] }) {
             message: "This employee will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: async () => {
-                /*
-                try {
-                   await api.delete(`/employees/${id}`); // Assuming delete moves to trash
-                   
-                   // If backend returns the deleted item or we need to refetch:
-                   // const employeeToDelete = employees.find((e) => e.id === id);
-                   // setTrashEmployees((prev) => [employeeToDelete, ...prev]); // optimistic update if needed
-                   
-                   setEmployees((prev) => prev.filter((e) => e.id !== id));
-                } catch (error) {
-                   console.error("Failed to delete employee:", error);
-                }
-                */
-
-                // 👇 TEMP: Local State Logic
                 const employeeToDelete = employees.find((e) => e.id === id);
                 if (employeeToDelete) {
-                    setTrashEmployees((prev) => [employeeToDelete, ...prev]);
-                    setEmployees((prev) => prev.filter((e) => e.id !== id));
-                    toast.success("Employee moved to trash!");
+                    deleteEmployee.mutate(id, {
+                        onSuccess: () => {
+                            setTrashEmployees((prev) => [employeeToDelete, ...prev]);
+                        }
+                    });
                 }
             }
         });
     };
 
     const handleRestore = async (id) => {
-        /*
-        try {
-          await api.patch(`/employees/${id}/restore`); 
-          
-          const employeeToRestore = trashEmployees.find((e) => e.id === id);
-          if (employeeToRestore) {
-            setEmployees((prev) => [employeeToRestore, ...prev]);
-            setTrashEmployees((prev) => prev.filter((e) => e.id !== id));
-          }
-        } catch (error) {
-          console.error("Failed to restore employee:", error);
-        }
-        */
-
-        // 👇 TEMP: Local State Logic
         const employeeToRestore = trashEmployees.find((e) => e.id === id);
         if (employeeToRestore) {
-            setEmployees((prev) => [employeeToRestore, ...prev]);
-            setTrashEmployees((prev) => prev.filter((e) => e.id !== id));
-            toast.success("Employee restored successfully!");
+            addEmployee.mutate(employeeToRestore, {
+                onSuccess: () => {
+                    setTrashEmployees((prev) => prev.filter((e) => e.id !== id));
+                    toast.success("Employee restored successfully!");
+                }
+            });
         }
     };
 
@@ -194,25 +140,13 @@ export default function EmployeesClient({ initialEmployees = [] }) {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: async () => {
-                /*
-                try {
-                  await api.post('/employees/bulk-delete', { ids: selectedIds });
-                  
-                  const itemsToDelete = employees.filter(e => selectedIds.includes(e.id));
-                  setTrashEmployees(prev => [...itemsToDelete, ...prev]);
-                  setEmployees(prev => prev.filter(e => !selectedIds.includes(e.id)));
-                  setSelectedIds([]);
-                } catch (error) {
-                  console.error("Failed to bulk delete:", error);
-                }
-                */
-
-                // 👇 TEMP: Local State Logic
                 const itemsToDelete = employees.filter(e => selectedIds.includes(e.id));
-                setTrashEmployees(prev => [...itemsToDelete, ...prev]);
-                setEmployees(prev => prev.filter(e => !selectedIds.includes(e.id)));
-                setSelectedIds([]);
-                toast.success(`${itemsToDelete.length} employees moved to trash!`);
+                bulkDeleteEmployees.mutate(selectedIds, {
+                    onSuccess: () => {
+                        setTrashEmployees(prev => [...itemsToDelete, ...prev]);
+                        setSelectedIds([]);
+                    }
+                });
             }
         });
     };
