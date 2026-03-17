@@ -76,7 +76,7 @@ export default function DealsMatrix({ deals, onUpdateDeal }) {
     // Calculate Total Value
     const totalValue = deals.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
     const totalConfirmedValue = deals
-        .filter(d => d.status === "11") // "11" is Confirmed
+        .filter(d => ["11", "13"].includes(String(d.status))) // "11" is Confirmed, "13" is Payment Received
         .reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
 
     return (

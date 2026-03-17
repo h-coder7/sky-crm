@@ -9,8 +9,21 @@ import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 
-export default function TargetClient({ initialTargets = [] }) {
-    const [targets, setTargets] = useState(initialTargets);
+import {
+    useTarget,
+    useAddTarget,
+    useUpdateTarget,
+    useDeleteTarget,
+    useBulkDeleteTargets
+} from "@/hooks/useTarget";
+
+export default function TargetClient() {
+    const { data: targets = [], isLoading } = useTarget();
+    const addTarget = useAddTarget();
+    const updateTarget = useUpdateTarget();
+    const deleteTarget = useDeleteTarget();
+    const bulkDeleteTargets = useBulkDeleteTargets();
+
     const [selectedIds, setSelectedIds] = useState([]);
 
     // Modals state
@@ -61,10 +74,12 @@ export default function TargetClient({ initialTargets = [] }) {
             onConfirm: () => {
                 const targetToDelete = targets.find((t) => t.id === id);
                 if (targetToDelete) {
-                    setTrashTargets((prev) => [targetToDelete, ...prev]);
-                    setTargets((prev) => prev.filter((t) => t.id !== id));
-                    setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-                    toast.success("Target moved to trash!");
+                    deleteTarget.mutate(id, {
+                        onSuccess: () => {
+                            setTrashTargets((prev) => [targetToDelete, ...prev]);
+                            setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+                        }
+                    });
                 }
             }
         });
@@ -79,36 +94,43 @@ export default function TargetClient({ initialTargets = [] }) {
             confirmLabel: "Yes, Delete",
             onConfirm: () => {
                 const itemsToDelete = targets.filter(t => selectedIds.includes(t.id));
-                setTrashTargets(prev => [...itemsToDelete, ...prev]);
-                setTargets(prev => prev.filter(t => !selectedIds.includes(t.id)));
-                setSelectedIds([]);
-                toast.success(`${itemsToDelete.length} targets moved to trash!`);
+                bulkDeleteTargets.mutate(selectedIds, {
+                    onSuccess: () => {
+                        setTrashTargets(prev => [...itemsToDelete, ...prev]);
+                        setSelectedIds([]);
+                    }
+                });
             }
         });
     };
 
     const handleSave = (targetData) => {
         if (editingTarget) {
-            setTargets(prev => prev.map(t => t.id === editingTarget.id ? { ...t, ...targetData } : t));
-            toast.success("Target updated successfully!");
+            updateTarget.mutate({ ...editingTarget, ...targetData }, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    setEditingTarget(null);
+                }
+            });
         } else {
-            const newTarget = {
-                ...targetData,
-                id: Math.max(0, ...targets.map(t => t.id)) + 1,
-                created_at: new Date().toISOString().split('T')[0]
-            };
-            setTargets(prev => [newTarget, ...prev]);
-            toast.success("Target added successfully!");
+            addTarget.mutate(targetData, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    setEditingTarget(null);
+                }
+            });
         }
-        setIsModalOpen(false);
     };
 
     const handleRestore = (id) => {
         const targetToRestore = trashTargets.find((t) => t.id === id);
         if (targetToRestore) {
-            setTargets((prev) => [targetToRestore, ...prev]);
-            setTrashTargets((prev) => prev.filter((t) => t.id !== id));
-            toast.success("Target restored successfully!");
+            addTarget.mutate(targetToRestore, {
+                onSuccess: () => {
+                    setTrashTargets((prev) => prev.filter((t) => t.id !== id));
+                    toast.success("Target restored successfully!");
+                }
+            });
         }
     };
 

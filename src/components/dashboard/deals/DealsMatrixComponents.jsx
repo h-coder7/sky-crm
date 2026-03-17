@@ -9,12 +9,42 @@ import { useState } from "react";
 // Map status IDs to Column Indexes or Keys
 // Export STATUS_COLUMNS so it can be used in DealsMatrix
 export const STATUS_COLUMNS = [
-    { id: "1", name: "Briefing Phase", color: "bg-primary-subtle text-primary" },
-    { id: "7", name: "Proposal Phase", color: "bg-info-subtle text-info" },
-    { id: "10", name: "Quotation", color: "bg-warning-subtle text-warning" }, // 10: Quotation Submitted
-    { id: "11", name: "Confirmed", color: "bg-success-subtle text-success" }, // 11: Confirmed
-    { id: "12", name: "Rejected", color: "bg-danger-subtle text-danger" }, // 12: Rejected
-    { id: "13", name: "Task Done", color: "bg-secondary-subtle text-secondary" } // 13: Payment Received (treating as Task Done)
+    {
+        id: "1",
+        name: "Briefing Phase",
+        color: "bg-primary-subtle text-primary",
+        statusIds: ["1", "2", "3", "4", "5", "6"]
+    },
+    {
+        id: "7",
+        name: "Proposal Phase",
+        color: "bg-info-subtle text-info",
+        statusIds: ["7", "8", "9"]
+    },
+    {
+        id: "10",
+        name: "Quotation",
+        color: "bg-warning-subtle text-warning",
+        statusIds: ["10"]
+    },
+    {
+        id: "11",
+        name: "Confirmed",
+        color: "bg-success-subtle text-success",
+        statusIds: ["11"]
+    },
+    {
+        id: "12",
+        name: "Rejected",
+        color: "bg-danger-subtle text-danger",
+        statusIds: ["12"]
+    },
+    {
+        id: "13",
+        name: "Task Done",
+        color: "bg-secondary-subtle text-secondary",
+        statusIds: ["13"]
+    }
 ];
 
 // ... (rest of imports and helper functions, keeping MONTH_NAMES and getDealMonthName as is but ensuring they don't break)
@@ -27,10 +57,10 @@ export function DealCard({ deal, color, style, innerRef, ...props }) {
             className={`deal-bubble ${color || ''}`}
             {...props}
         >
-            <div className="fw-bold fsz-12 text-truncate">{deal.title}</div>
-            <div className="fsz-11 mt-1"><i className="fas fa-dollar-sign fsz-10 me-1"></i>{deal.amount?.toLocaleString()}</div>
-            <div className="fsz-10 text-muted mt-1"><i className="fas fa-user fsz-10 me-1"></i>{deal.employee}</div>
-            <div className="fsz-10 text-muted"><i className="fas fa-building fsz-10 me-1"></i>{deal.company}</div>
+            <div className="fw-bold fsz-12 text-truncate" title={deal.title}>{deal.title}</div>
+            <div className="fsz-11 mt-1"><i className="fas fa-dollar-sign fsz-10 me-1"></i>{Number(deal.amount || 0).toLocaleString()}</div>
+            <div className="fsz-10 text-muted mt-1 text-truncate"><i className="fas fa-user fsz-10 me-1"></i>{deal.employee}</div>
+            <div className="fsz-10 text-muted text-truncate"><i className="fas fa-building fsz-10 me-1"></i>{deal.company}</div>
         </div>
     );
 }
@@ -88,13 +118,13 @@ export function QuarterRow({ quarter, deals }) {
             >
                 <i className={`fas fa-chevron-${expanded ? 'down' : 'right'} me-2`}></i>
                 <h6 className="m-0 fw-bold">{quarter.name} <span className="text-muted fw-normal ms-2">({quarter.months[0]} - {quarter.months[2]})</span></h6>
-                <div className="ms-auto fw-bold text-dark">${quarterTotal.toLocaleString()}</div>
+                <div className="ms-auto fw-bold text-dark">${Number(quarterTotal).toLocaleString()}</div>
             </div>
 
             {expanded && (
                 <div className="quarter-body">
-                    {quarter.months.map((month, index) => (
-                        <MonthRow key={month} monthName={month} monthIndex={index} quarterId={quarter.id} deals={deals} />
+                    {quarter.months.map((month) => (
+                        <MonthRow key={month} monthName={month} quarterId={quarter.id} deals={deals} />
                     ))}
                 </div>
             )}
@@ -102,7 +132,7 @@ export function QuarterRow({ quarter, deals }) {
     );
 }
 
-export function MonthRow({ monthName, quarterId, deals }) {
+export function MonthRow({ monthName, deals }) {
     // Filter deals for this month
     const monthDeals = deals.filter(d => getDealMonthName(d) === monthName);
 
@@ -112,13 +142,13 @@ export function MonthRow({ monthName, quarterId, deals }) {
                 <span className="txt"> {monthName} </span>
             </div>
 
-            {STATUS_COLUMNS.map(status => (
+            {STATUS_COLUMNS.map(column => (
                 <DroppableCell
-                    key={status.id}
-                    statusId={status.id}
+                    key={column.id}
+                    statusId={column.id}
                     monthName={monthName}
-                    deals={monthDeals.filter(d => d.status === status.id)}
-                    color={status.color}
+                    deals={monthDeals.filter(d => column.statusIds.includes(String(d.status)))}
+                    color={column.color}
                 />
             ))}
         </div>
@@ -137,11 +167,11 @@ export function DroppableCell({ statusId, monthName, deals, color }) {
             className={`flex-fill ${isOver ? 'bg-light-subtle ring-2 ring-primary' : ''}`}
             style={{ minWidth: '150px' }}
         >
-            {deals.map(deal => (
-                <DealBubble key={deal.id} deal={deal} color={color} />
-            ))}
-            {/* <div className="d-flex flex-column gap-2 w-100 h-100">
-            </div> */}
+            <div className="d-flex flex-column gap-2 p-2 h-100 w-100">
+                {deals.map(deal => (
+                    <DealBubble key={deal.id} deal={deal} color={color} />
+                ))}
+            </div>
         </div>
     );
 }

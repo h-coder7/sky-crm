@@ -9,12 +9,24 @@ import DealsModal from "@/components/dashboard/deals/DealsModal";
 import TrashModal from "@/components/dashboard/deals/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import {
+  useDeals,
+  useAddDeal,
+  useUpdateDeal,
+  useDeleteDeal,
+  useBulkDeleteDeals
+} from "@/hooks/useDeals";
 
 /**
  * 🎯 Client Component for Deals Page
  */
-export default function DealsClient({ initialDeals = [] }) {
-  const [deals, setDeals] = useState(initialDeals);
+export default function DealsClient() {
+  const { data: deals = [], isLoading } = useDeals();
+  const addDeal = useAddDeal();
+  const updateDeal = useUpdateDeal();
+  const deleteDeal = useDeleteDeal();
+  const bulkDeleteDeals = useBulkDeleteDeals();
+
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -41,25 +53,20 @@ export default function DealsClient({ initialDeals = [] }) {
 
   const handleSave = async (data) => {
     if (selectedDeal) {
-      // Update existing
-      setDeals((prev) =>
-        prev.map((deal) =>
-          deal.id === selectedDeal.id ? { ...deal, ...data } : deal
-        )
-      );
-      toast.success("Deal updated successfully!");
+      updateDeal.mutate({ ...selectedDeal, ...data }, {
+        onSuccess: () => {
+          setShowModal(false);
+          setSelectedDeal(null);
+        }
+      });
     } else {
-      // Create new
-      const newDeal = {
-        id: Date.now(),
-        ...data,
-        created_at: new Date().toISOString().split("T")[0],
-      };
-      setDeals((prev) => [newDeal, ...prev]);
-      toast.success("Deal added successfully!");
+      addDeal.mutate(data, {
+        onSuccess: () => {
+          setShowModal(false);
+          setSelectedDeal(null);
+        }
+      });
     }
-    setShowModal(false);
-    setSelectedDeal(null);
   };
 
   const handleEdit = (id) => {
@@ -78,9 +85,12 @@ export default function DealsClient({ initialDeals = [] }) {
       onConfirm: () => {
         const dealToDelete = deals.find((d) => d.id === id);
         if (dealToDelete) {
-          setTrashDeals((prev) => [dealToDelete, ...prev]);
-          setDeals((prev) => prev.filter((d) => d.id !== id));
-          toast.success("Deal moved to trash!");
+          deleteDeal.mutate(id, {
+            onSuccess: () => {
+              setTrashDeals((prev) => [dealToDelete, ...prev]);
+              setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+            }
+          });
         }
       }
     });
@@ -89,9 +99,12 @@ export default function DealsClient({ initialDeals = [] }) {
   const handleRestore = (id) => {
     const dealToRestore = trashDeals.find((d) => d.id === id);
     if (dealToRestore) {
-      setDeals((prev) => [dealToRestore, ...prev]);
-      setTrashDeals((prev) => prev.filter((d) => d.id !== id));
-      toast.success("Deal restored successfully!");
+      addDeal.mutate(dealToRestore, {
+        onSuccess: () => {
+          setTrashDeals((prev) => prev.filter((d) => d.id !== id));
+          toast.success("Deal restored successfully!");
+        }
+      });
     }
   };
 
@@ -109,16 +122,18 @@ export default function DealsClient({ initialDeals = [] }) {
       confirmLabel: "Yes, Delete",
       onConfirm: () => {
         const itemsToDelete = deals.filter(d => selectedIds.includes(d.id));
-        setTrashDeals(prev => [...itemsToDelete, ...prev]);
-        setDeals(prev => prev.filter(d => !selectedIds.includes(d.id)));
-        setSelectedIds([]);
-        toast.success(`${itemsToDelete.length} deals moved to trash!`);
+        bulkDeleteDeals.mutate(selectedIds, {
+          onSuccess: () => {
+            setTrashDeals(prev => [...itemsToDelete, ...prev]);
+            setSelectedIds([]);
+          }
+        });
       }
     });
   };
 
   const handleUpdateDeal = (updatedDeal) => {
-    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+    updateDeal.mutate(updatedDeal);
   };
 
   return (

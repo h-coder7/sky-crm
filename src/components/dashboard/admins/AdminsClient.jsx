@@ -11,8 +11,21 @@ import AdminDetailsOffcanvas from "@/components/dashboard/admins/AdminDetailsOff
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 
+import {
+    useAdmins,
+    useAddAdmin,
+    useUpdateAdmin,
+    useDeleteAdmin,
+    useBulkDeleteAdmins
+} from "@/hooks/useAdmins";
+
 export default function AdminsClient({ initialAdmins = [] }) {
-    const [admins, setAdmins] = useState(initialAdmins);
+    const { data: admins = [], isLoading } = useAdmins();
+    const addAdmin = useAddAdmin();
+    const updateAdmin = useUpdateAdmin();
+    const deleteAdmin = useDeleteAdmin();
+    const bulkDeleteAdmins = useBulkDeleteAdmins();
+
     const [selectedAdmin, setSelectedAdmin] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -43,42 +56,21 @@ export default function AdminsClient({ initialAdmins = [] }) {
     }, [searchParams, pathname, router]);
 
     const handleSave = async (data) => {
-        /*
         if (selectedAdmin) {
-            const res = await api.put(`/admins/${selectedAdmin.id}`, data);
-            setAdmins(prev =>
-                prev.map(admin =>
-                    admin.id === res.data.id ? res.data : admin
-                )
-            );
+            updateAdmin.mutate({ ...selectedAdmin, ...data }, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedAdmin(null);
+                }
+            });
         } else {
-            const res = await api.post("/admins", data);
-            setAdmins(prev => [res.data, ...prev]);
+            addAdmin.mutate(data, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedAdmin(null);
+                }
+            });
         }
-        */
-
-        // TEMP: Local state until API is connected
-        if (selectedAdmin) {
-            setAdmins(prev =>
-                prev.map(admin =>
-                    admin.id === selectedAdmin.id
-                        ? { ...admin, ...data }
-                        : admin
-                )
-            );
-            toast.success("Admin updated successfully!");
-        } else {
-            const newAdmin = {
-                id: Date.now(),
-                ...data,
-                created_at: new Date().toISOString().split("T")[0],
-            };
-            setAdmins(prev => [newAdmin, ...prev]);
-            toast.success("Admin added successfully!");
-        }
-
-        setShowModal(false);
-        setSelectedAdmin(null);
     };
 
     const handleEdit = (id) => {
@@ -95,39 +87,31 @@ export default function AdminsClient({ initialAdmins = [] }) {
             message: "This admin will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: async () => {
-                /*
-                await api.delete(`/admins/${id}`);
-                */
-
-                // TEMP: Local state
                 const adminToDelete = admins.find(a => a.id === id);
-                if (!adminToDelete) return;
-
-                setTrashAdmins(prev => [adminToDelete, ...prev]);
-                setAdmins(prev => prev.filter(a => a.id !== id));
-                toast.success("Admin moved to trash!");
+                if (adminToDelete) {
+                    deleteAdmin.mutate(id, {
+                        onSuccess: () => {
+                            setTrashAdmins(prev => [adminToDelete, ...prev]);
+                        }
+                    });
+                }
             }
         });
     };
 
     const handleRestore = async (id) => {
-        /*
-        await api.patch(`/admins/${id}/restore`);
-        */
-
         const adminToRestore = trashAdmins.find(a => a.id === id);
-        if (!adminToRestore) return;
-
-        setAdmins(prev => [adminToRestore, ...prev]);
-        setTrashAdmins(prev => prev.filter(a => a.id !== id));
-        toast.success("Admin restored successfully!");
+        if (adminToRestore) {
+            addAdmin.mutate(adminToRestore, {
+                onSuccess: () => {
+                    setTrashAdmins(prev => prev.filter(a => a.id !== id));
+                    toast.success("Admin restored successfully!");
+                }
+            });
+        }
     };
 
     const handlePermanentDelete = async (id) => {
-        /*
-        await api.delete(`/admins/${id}/permanent`);
-        */
-
         setTrashAdmins(prev => prev.filter(a => a.id !== id));
         toast.success("Admin permanently deleted!");
     };
@@ -140,20 +124,13 @@ export default function AdminsClient({ initialAdmins = [] }) {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: async () => {
-                /*
-                await api.post("/admins/bulk-delete", { ids: selectedIds });
-                */
-
-                const itemsToDelete = admins.filter(a =>
-                    selectedIds.includes(a.id)
-                );
-
-                setTrashAdmins(prev => [...itemsToDelete, ...prev]);
-                setAdmins(prev =>
-                    prev.filter(a => !selectedIds.includes(a.id))
-                );
-                setSelectedIds([]);
-                toast.success(`${itemsToDelete.length} admins moved to trash!`);
+                const itemsToDelete = admins.filter(a => selectedIds.includes(a.id));
+                bulkDeleteAdmins.mutate(selectedIds, {
+                    onSuccess: () => {
+                        setTrashAdmins(prev => [...itemsToDelete, ...prev]);
+                        setSelectedIds([]);
+                    }
+                });
             }
         });
     };
@@ -244,3 +221,4 @@ export default function AdminsClient({ initialAdmins = [] }) {
         </>
     );
 }
+

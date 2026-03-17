@@ -8,32 +8,44 @@ import TrashModal from "@/components/dashboard/daily-log/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 
+import {
+    useDailyLogs,
+    useAddDailyLog,
+    useUpdateDailyLog,
+    useDeleteDailyLog,
+    useBulkDeleteDailyLogs
+} from "@/hooks/useDailyLogs";
+
 export default function DailyLogClient({ initialDailyLogs = [] }) {
-    const [dailyLogs, setDailyLogs] = useState(initialDailyLogs);
+    const { data: dailyLogs = [], isLoading } = useDailyLogs();
+    const addDailyLog = useAddDailyLog();
+    const updateDailyLog = useUpdateDailyLog();
+    const deleteDailyLog = useDeleteDailyLog();
+    const bulkDeleteDailyLogs = useBulkDeleteDailyLogs();
+
     const [selectedLog, setSelectedLog] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
 
     const [trashLogs, setTrashLogs] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
+
     const handleSave = (data) => {
         if (selectedLog) {
-            setDailyLogs((prev) =>
-                prev.map((log) => (log.id === selectedLog.id ? { ...log, ...data } : log))
-            );
-            toast.success("Daily log updated successfully!");
+            updateDailyLog.mutate({ ...selectedLog, ...data }, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedLog(null);
+                }
+            });
         } else {
-            const newLog = {
-                id: Date.now(),
-                ...data,
-                date: data.date || new Date().toISOString().split("T")[0],
-                created_at: new Date().toISOString().split("T")[0],
-            };
-            setDailyLogs((prev) => [newLog, ...prev]);
-            toast.success("Daily log added successfully!");
+            addDailyLog.mutate(data, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedLog(null);
+                }
+            });
         }
-        setShowModal(false);
-        setSelectedLog(null);
     };
 
     const handleEdit = (id) => {
@@ -52,9 +64,11 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
             onConfirm: () => {
                 const logToDelete = dailyLogs.find((l) => l.id === id);
                 if (logToDelete) {
-                    setTrashLogs((prev) => [logToDelete, ...prev]);
-                    setDailyLogs((prev) => prev.filter((l) => l.id !== id));
-                    toast.success("Log entry moved to trash!");
+                    deleteDailyLog.mutate(id, {
+                        onSuccess: () => {
+                            setTrashLogs((prev) => [logToDelete, ...prev]);
+                        }
+                    });
                 }
             },
         });
@@ -63,9 +77,12 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
     const handleRestore = (id) => {
         const logToRestore = trashLogs.find((l) => l.id === id);
         if (logToRestore) {
-            setDailyLogs((prev) => [logToRestore, ...prev]);
-            setTrashLogs((prev) => prev.filter((l) => l.id !== id));
-            toast.success("Log entry restored successfully!");
+            addDailyLog.mutate(logToRestore, {
+                onSuccess: () => {
+                    setTrashLogs((prev) => prev.filter((l) => l.id !== id));
+                    toast.success("Log entry restored successfully!");
+                }
+            });
         }
     };
 
@@ -82,10 +99,12 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
             confirmLabel: "Yes, Move to Trash",
             onConfirm: () => {
                 const logsToDelete = dailyLogs.filter((l) => selectedIds.includes(l.id));
-                setTrashLogs((prev) => [...logsToDelete, ...prev]);
-                setDailyLogs((prev) => prev.filter((l) => !selectedIds.includes(l.id)));
-                setSelectedIds([]);
-                toast.success(`${logsToDelete.length} logs moved to trash!`);
+                bulkDeleteDailyLogs.mutate(selectedIds, {
+                    onSuccess: () => {
+                        setTrashLogs((prev) => [...logsToDelete, ...prev]);
+                        setSelectedIds([]);
+                    }
+                });
             },
         });
     };

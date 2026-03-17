@@ -9,8 +9,21 @@ import RegionsTrashModal from "@/components/dashboard/regions/RegionsTrashModal"
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 
-export default function RegionsClient({ initialRegions = [] }) {
-    const [regions, setRegions] = useState(initialRegions);
+import {
+    useRegions,
+    useAddRegion,
+    useUpdateRegion,
+    useDeleteRegion,
+    useBulkDeleteRegions
+} from "@/hooks/useRegions";
+
+export default function RegionsClient() {
+    const { data: regions = [], isLoading } = useRegions();
+    const addRegion = useAddRegion();
+    const updateRegion = useUpdateRegion();
+    const deleteRegion = useDeleteRegion();
+    const bulkDeleteRegions = useBulkDeleteRegions();
+
     const [selectedRegion, setSelectedRegion] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
@@ -35,23 +48,20 @@ export default function RegionsClient({ initialRegions = [] }) {
 
     const handleSave = (data) => {
         if (selectedRegion) {
-            setRegions((prev) =>
-                prev.map((region) =>
-                    region.id === selectedRegion.id ? { ...region, ...data } : region
-                )
-            );
-            toast.success("Region updated successfully!");
+            updateRegion.mutate({ ...selectedRegion, ...data }, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedRegion(null);
+                }
+            });
         } else {
-            const newRegion = {
-                id: Date.now(),
-                ...data,
-                created_at: new Date().toISOString().split("T")[0],
-            };
-            setRegions((prev) => [newRegion, ...prev]);
-            toast.success("Region added successfully!");
+            addRegion.mutate(data, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setSelectedRegion(null);
+                }
+            });
         }
-        setShowModal(false);
-        setSelectedRegion(null);
     };
 
     const handleEdit = (id) => {
@@ -70,9 +80,12 @@ export default function RegionsClient({ initialRegions = [] }) {
             onConfirm: () => {
                 const regionToDelete = regions.find((r) => r.id === id);
                 if (regionToDelete) {
-                    setTrashRegions((prev) => [regionToDelete, ...prev]);
-                    setRegions((prev) => prev.filter((r) => r.id !== id));
-                    toast.success("Region moved to trash!");
+                    deleteRegion.mutate(id, {
+                        onSuccess: () => {
+                            setTrashRegions((prev) => [regionToDelete, ...prev]);
+                            setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+                        }
+                    });
                 }
             }
         });
@@ -81,9 +94,12 @@ export default function RegionsClient({ initialRegions = [] }) {
     const handleRestore = (id) => {
         const regionToRestore = trashRegions.find((r) => r.id === id);
         if (regionToRestore) {
-            setRegions((prev) => [regionToRestore, ...prev]);
-            setTrashRegions((prev) => prev.filter((r) => r.id !== id));
-            toast.success("Region restored successfully!");
+            addRegion.mutate(regionToRestore, {
+                onSuccess: () => {
+                    setTrashRegions((prev) => prev.filter((r) => r.id !== id));
+                    toast.success("Region restored successfully!");
+                }
+            });
         }
     };
 
@@ -100,10 +116,12 @@ export default function RegionsClient({ initialRegions = [] }) {
             confirmLabel: "Yes, Delete",
             onConfirm: () => {
                 const itemsToDelete = regions.filter(r => selectedIds.includes(r.id));
-                setTrashRegions(prev => [...itemsToDelete, ...prev]);
-                setRegions(prev => prev.filter(r => !selectedIds.includes(r.id)));
-                setSelectedIds([]);
-                toast.success(`${itemsToDelete.length} regions moved to trash!`);
+                bulkDeleteRegions.mutate(selectedIds, {
+                    onSuccess: () => {
+                        setTrashRegions(prev => [...itemsToDelete, ...prev]);
+                        setSelectedIds([]);
+                    }
+                });
             }
         });
     };

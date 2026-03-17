@@ -9,8 +9,21 @@ import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 
-export default function ProductsClient({ initialProducts = [] }) {
-    const [products, setProducts] = useState(initialProducts);
+import {
+    useProducts,
+    useAddProduct,
+    useUpdateProduct,
+    useDeleteProduct,
+    useBulkDeleteProducts
+} from "@/hooks/useProducts";
+
+export default function ProductsClient() {
+    const { data: products = [], isLoading } = useProducts();
+    const addProduct = useAddProduct();
+    const updateProduct = useUpdateProduct();
+    const deleteProduct = useDeleteProduct();
+    const bulkDeleteProducts = useBulkDeleteProducts();
+
     const [selectedIds, setSelectedIds] = useState([]);
 
     // Modals state
@@ -61,10 +74,12 @@ export default function ProductsClient({ initialProducts = [] }) {
             onConfirm: () => {
                 const productToDelete = products.find((p) => p.id === id);
                 if (productToDelete) {
-                    setTrashProducts((prev) => [productToDelete, ...prev]);
-                    setProducts((prev) => prev.filter((p) => p.id !== id));
-                    setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-                    toast.success("Product moved to trash!");
+                    deleteProduct.mutate(id, {
+                        onSuccess: () => {
+                            setTrashProducts((prev) => [productToDelete, ...prev]);
+                            setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+                        }
+                    });
                 }
             }
         });
@@ -79,36 +94,43 @@ export default function ProductsClient({ initialProducts = [] }) {
             confirmLabel: "Yes, Delete",
             onConfirm: () => {
                 const itemsToDelete = products.filter(p => selectedIds.includes(p.id));
-                setTrashProducts(prev => [...itemsToDelete, ...prev]);
-                setProducts(prev => prev.filter(p => !selectedIds.includes(p.id)));
-                setSelectedIds([]);
-                toast.success(`${itemsToDelete.length} products moved to trash!`);
+                bulkDeleteProducts.mutate(selectedIds, {
+                    onSuccess: () => {
+                        setTrashProducts(prev => [...itemsToDelete, ...prev]);
+                        setSelectedIds([]);
+                    }
+                });
             }
         });
     };
 
     const handleSave = (productData) => {
         if (editingProduct) {
-            setProducts(prev => prev.map(p => p.id === editingProduct.id ? { ...p, ...productData } : p));
-            toast.success("Product updated successfully!");
+            updateProduct.mutate({ ...editingProduct, ...productData }, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    setEditingProduct(null);
+                }
+            });
         } else {
-            const newProduct = {
-                ...productData,
-                id: Math.max(0, ...products.map(p => p.id)) + 1,
-                created_at: new Date().toISOString().split('T')[0]
-            };
-            setProducts(prev => [newProduct, ...prev]);
-            toast.success("Product added successfully!");
+            addProduct.mutate(productData, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    setEditingProduct(null);
+                }
+            });
         }
-        setIsModalOpen(false);
     };
 
     const handleRestore = (id) => {
         const productToRestore = trashProducts.find((p) => p.id === id);
         if (productToRestore) {
-            setProducts((prev) => [productToRestore, ...prev]);
-            setTrashProducts((prev) => prev.filter((p) => p.id !== id));
-            toast.success("Product restored successfully!");
+            addProduct.mutate(productToRestore, {
+                onSuccess: () => {
+                    setTrashProducts((prev) => prev.filter((p) => p.id !== id));
+                    toast.success("Product restored successfully!");
+                }
+            });
         }
     };
 

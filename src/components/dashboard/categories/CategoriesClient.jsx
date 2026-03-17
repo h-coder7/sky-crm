@@ -9,8 +9,21 @@ import TrashModal from "@/components/dashboard/categories/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 
+import {
+    useCategories,
+    useAddCategory,
+    useUpdateCategory,
+    useDeleteCategory,
+    useBulkDeleteCategories
+} from "@/hooks/useCategories";
+
 export default function CategoriesClient({ initialCategories = [] }) {
-    const [categories, setCategories] = useState(initialCategories);
+    const { data: categories = [], isLoading } = useCategories();
+    const addCategory = useAddCategory();
+    const updateCategory = useUpdateCategory();
+    const deleteCategory = useDeleteCategory();
+    const bulkDeleteCategories = useBulkDeleteCategories();
+
     const [selectedIds, setSelectedIds] = useState([]);
 
     // Modals state
@@ -61,10 +74,12 @@ export default function CategoriesClient({ initialCategories = [] }) {
             onConfirm: () => {
                 const categoryToDelete = categories.find((c) => c.id === id);
                 if (categoryToDelete) {
-                    setTrashCategories((prev) => [categoryToDelete, ...prev]);
-                    setCategories((prev) => prev.filter((c) => c.id !== id));
-                    setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-                    toast.success("Category moved to trash!");
+                    deleteCategory.mutate(id, {
+                        onSuccess: () => {
+                            setTrashCategories((prev) => [categoryToDelete, ...prev]);
+                            setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
+                        }
+                    });
                 }
             }
         });
@@ -79,36 +94,43 @@ export default function CategoriesClient({ initialCategories = [] }) {
             confirmLabel: "Yes, Delete",
             onConfirm: () => {
                 const itemsToDelete = categories.filter(c => selectedIds.includes(c.id));
-                setTrashCategories(prev => [...itemsToDelete, ...prev]);
-                setCategories(prev => prev.filter(c => !selectedIds.includes(c.id)));
-                setSelectedIds([]);
-                toast.success(`${itemsToDelete.length} categories moved to trash!`);
+                bulkDeleteCategories.mutate(selectedIds, {
+                    onSuccess: () => {
+                        setTrashCategories(prev => [...itemsToDelete, ...prev]);
+                        setSelectedIds([]);
+                    }
+                });
             }
         });
     };
 
     const handleSave = (categoryData) => {
         if (editingCategory) {
-            setCategories(prev => prev.map(c => c.id === editingCategory.id ? { ...c, ...categoryData } : c));
-            toast.success("Category updated successfully!");
+            updateCategory.mutate({ ...editingCategory, ...categoryData }, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    setEditingCategory(null);
+                }
+            });
         } else {
-            const newCategory = {
-                ...categoryData,
-                id: Math.max(0, ...categories.map(c => c.id)) + 1,
-                created_at: new Date().toISOString().split('T')[0]
-            };
-            setCategories(prev => [newCategory, ...prev]);
-            toast.success("Category added successfully!");
+            addCategory.mutate(categoryData, {
+                onSuccess: () => {
+                    setIsModalOpen(false);
+                    setEditingCategory(null);
+                }
+            });
         }
-        setIsModalOpen(false);
     };
 
     const handleRestore = (id) => {
         const categoryToRestore = trashCategories.find((c) => c.id === id);
         if (categoryToRestore) {
-            setCategories((prev) => [categoryToRestore, ...prev]);
-            setTrashCategories((prev) => prev.filter((c) => c.id !== id));
-            toast.success("Category restored successfully!");
+            addCategory.mutate(categoryToRestore, {
+                onSuccess: () => {
+                    setTrashCategories((prev) => prev.filter((c) => c.id !== id));
+                    toast.success("Category restored successfully!");
+                }
+            });
         }
     };
 
