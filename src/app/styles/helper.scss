@@ -1696,6 +1696,10 @@ a:hover .filter-gray {
 .hover-underline:hover {
   text-decoration: underline !important;
   cursor: pointer;
+  * {
+    text-decoration: underline !important;
+    cursor: pointer;
+  }
 }
 
 .hover-white:hover {

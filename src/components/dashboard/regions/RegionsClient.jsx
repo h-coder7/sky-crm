@@ -11,23 +11,29 @@ import { toast } from "react-hot-toast";
 
 import {
     useRegions,
+    useTrashRegions,
     useAddRegion,
     useUpdateRegion,
     useDeleteRegion,
+    useRestoreRegion,
+    usePermanentDeleteRegion,
     useBulkDeleteRegions
 } from "@/hooks/useRegions";
 
 export default function RegionsClient() {
     const { data: regions = [], isLoading } = useRegions();
-    const addRegion = useAddRegion();
-    const updateRegion = useUpdateRegion();
-    const deleteRegion = useDeleteRegion();
-    const bulkDeleteRegions = useBulkDeleteRegions();
+    const { data: trashRegions = [] } = useTrashRegions();
+
+    const addRegionMutation = useAddRegion();
+    const updateRegionMutation = useUpdateRegion();
+    const deleteRegionMutation = useDeleteRegion();
+    const restoreRegionMutation = useRestoreRegion();
+    const permanentDeleteMutation = usePermanentDeleteRegion();
+    const bulkDeleteMutation = useBulkDeleteRegions();
 
     const [selectedRegion, setSelectedRegion] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
-    const [trashRegions, setTrashRegions] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
 
     const searchParams = useSearchParams();
@@ -46,22 +52,14 @@ export default function RegionsClient() {
         }
     }, [searchParams, pathname, router]);
 
-    const handleSave = (data) => {
+    const handleSave = async (data) => {
         if (selectedRegion) {
-            updateRegion.mutate({ ...selectedRegion, ...data }, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedRegion(null);
-                }
-            });
+            await updateRegionMutation.mutateAsync({ ...selectedRegion, ...data });
         } else {
-            addRegion.mutate(data, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedRegion(null);
-                }
-            });
+            await addRegionMutation.mutateAsync(data);
         }
+        setShowModal(false);
+        setSelectedRegion(null);
     };
 
     const handleEdit = (id) => {
@@ -77,35 +75,18 @@ export default function RegionsClient() {
             title: "Move to Trash?",
             message: "This region will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
-            onConfirm: () => {
-                const regionToDelete = regions.find((r) => r.id === id);
-                if (regionToDelete) {
-                    deleteRegion.mutate(id, {
-                        onSuccess: () => {
-                            setTrashRegions((prev) => [regionToDelete, ...prev]);
-                            setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-                        }
-                    });
-                }
+            onConfirm: async () => {
+                await deleteRegionMutation.mutateAsync(id);
             }
         });
     };
 
-    const handleRestore = (id) => {
-        const regionToRestore = trashRegions.find((r) => r.id === id);
-        if (regionToRestore) {
-            addRegion.mutate(regionToRestore, {
-                onSuccess: () => {
-                    setTrashRegions((prev) => prev.filter((r) => r.id !== id));
-                    toast.success("Region restored successfully!");
-                }
-            });
-        }
+    const handleRestore = async (id) => {
+        await restoreRegionMutation.mutateAsync(id);
     };
 
-    const handlePermanentDelete = (id) => {
-        setTrashRegions((prev) => prev.filter((r) => r.id !== id));
-        toast.success("Region permanently deleted!");
+    const handlePermanentDelete = async (id) => {
+        await permanentDeleteMutation.mutateAsync(id);
     };
 
     const handleBulkDelete = () => {
@@ -114,14 +95,9 @@ export default function RegionsClient() {
             title: "Delete Selected Items?",
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
-            onConfirm: () => {
-                const itemsToDelete = regions.filter(r => selectedIds.includes(r.id));
-                bulkDeleteRegions.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setTrashRegions(prev => [...itemsToDelete, ...prev]);
-                        setSelectedIds([]);
-                    }
-                });
+            onConfirm: async () => {
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             }
         });
     };
@@ -165,13 +141,17 @@ export default function RegionsClient() {
                 </button>
             </PageHeader>
 
-            <RegionsTable
-                data={regions}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-            />
+            {isLoading ? (
+                <div className="text-center py-5 text-muted">Loading regions...</div>
+            ) : (
+                <RegionsTable
+                    data={regions}
+                    selectedIds={selectedIds}
+                    onSelectionChange={setSelectedIds}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                />
+            )}
 
             <RegionModal
                 show={showModal}

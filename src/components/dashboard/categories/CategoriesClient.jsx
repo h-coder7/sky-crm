@@ -11,18 +11,25 @@ import { toast } from "react-hot-toast";
 
 import {
     useCategories,
+    useTrashCategories,
     useAddCategory,
     useUpdateCategory,
     useDeleteCategory,
+    useRestoreCategory,
+    usePermanentDeleteCategory,
     useBulkDeleteCategories
 } from "@/hooks/useCategories";
 
-export default function CategoriesClient({ initialCategories = [] }) {
+export default function CategoriesClient() {
     const { data: categories = [], isLoading } = useCategories();
-    const addCategory = useAddCategory();
-    const updateCategory = useUpdateCategory();
-    const deleteCategory = useDeleteCategory();
-    const bulkDeleteCategories = useBulkDeleteCategories();
+    const { data: trashCategories = [] } = useTrashCategories();
+
+    const addCategoryMutation = useAddCategory();
+    const updateCategoryMutation = useUpdateCategory();
+    const deleteCategoryMutation = useDeleteCategory();
+    const restoreCategoryMutation = useRestoreCategory();
+    const permanentDeleteMutation = usePermanentDeleteCategory();
+    const bulkDeleteMutation = useBulkDeleteCategories();
 
     const [selectedIds, setSelectedIds] = useState([]);
 
@@ -30,9 +37,6 @@ export default function CategoriesClient({ initialCategories = [] }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTrashOpen, setIsTrashOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
-
-    // Trash State
-    const [trashCategories, setTrashCategories] = useState([]);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -71,16 +75,9 @@ export default function CategoriesClient({ initialCategories = [] }) {
             title: "Move to Trash?",
             message: "This category will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
-            onConfirm: () => {
-                const categoryToDelete = categories.find((c) => c.id === id);
-                if (categoryToDelete) {
-                    deleteCategory.mutate(id, {
-                        onSuccess: () => {
-                            setTrashCategories((prev) => [categoryToDelete, ...prev]);
-                            setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-                        }
-                    });
-                }
+            onConfirm: async () => {
+                await deleteCategoryMutation.mutateAsync(id);
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
             }
         });
     };
@@ -92,51 +89,28 @@ export default function CategoriesClient({ initialCategories = [] }) {
             title: "Delete Selected Items?",
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
-            onConfirm: () => {
-                const itemsToDelete = categories.filter(c => selectedIds.includes(c.id));
-                bulkDeleteCategories.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setTrashCategories(prev => [...itemsToDelete, ...prev]);
-                        setSelectedIds([]);
-                    }
-                });
+            onConfirm: async () => {
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             }
         });
     };
 
-    const handleSave = (categoryData) => {
+    const handleSave = async (categoryData) => {
         if (editingCategory) {
-            updateCategory.mutate({ ...editingCategory, ...categoryData }, {
-                onSuccess: () => {
-                    setIsModalOpen(false);
-                    setEditingCategory(null);
-                }
-            });
+            await updateCategoryMutation.mutateAsync({ ...editingCategory, ...categoryData });
         } else {
-            addCategory.mutate(categoryData, {
-                onSuccess: () => {
-                    setIsModalOpen(false);
-                    setEditingCategory(null);
-                }
-            });
+            await addCategoryMutation.mutateAsync(categoryData);
         }
+        setIsModalOpen(false);
     };
 
-    const handleRestore = (id) => {
-        const categoryToRestore = trashCategories.find((c) => c.id === id);
-        if (categoryToRestore) {
-            addCategory.mutate(categoryToRestore, {
-                onSuccess: () => {
-                    setTrashCategories((prev) => prev.filter((c) => c.id !== id));
-                    toast.success("Category restored successfully!");
-                }
-            });
-        }
+    const handleRestore = async (id) => {
+        await restoreCategoryMutation.mutateAsync(id);
     };
 
-    const handlePermanentDelete = (id) => {
-        setTrashCategories((prev) => prev.filter((c) => c.id !== id));
-        toast.success("Category permanently deleted!");
+    const handlePermanentDelete = async (id) => {
+        await permanentDeleteMutation.mutateAsync(id);
     };
 
     /* ======================================================================
@@ -184,13 +158,17 @@ export default function CategoriesClient({ initialCategories = [] }) {
                 </button>
             </PageHeader>
 
-            <CategoriesTable
-                data={categories}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                onEdit={handleEditModal}
-                onDelete={handleDelete}
-            />
+            {isLoading ? (
+                <div className="text-center py-5 text-muted">Loading categories...</div>
+            ) : (
+                <CategoriesTable
+                    data={categories}
+                    selectedIds={selectedIds}
+                    onSelectionChange={setSelectedIds}
+                    onEdit={handleEditModal}
+                    onDelete={handleDelete}
+                />
+            )}
 
             {/* Modals */}
             <CategoryModal

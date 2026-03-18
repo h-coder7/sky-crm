@@ -11,18 +11,25 @@ import { toast } from "react-hot-toast";
 
 import {
     useTarget,
+    useTrashTargets,
     useAddTarget,
     useUpdateTarget,
     useDeleteTarget,
+    useRestoreTarget,
+    usePermanentDeleteTarget,
     useBulkDeleteTargets
 } from "@/hooks/useTarget";
 
 export default function TargetClient() {
     const { data: targets = [], isLoading } = useTarget();
-    const addTarget = useAddTarget();
-    const updateTarget = useUpdateTarget();
-    const deleteTarget = useDeleteTarget();
-    const bulkDeleteTargets = useBulkDeleteTargets();
+    const { data: trashTargets = [] } = useTrashTargets();
+
+    const addTargetMutation = useAddTarget();
+    const updateTargetMutation = useUpdateTarget();
+    const deleteTargetMutation = useDeleteTarget();
+    const restoreTargetMutation = useRestoreTarget();
+    const permanentDeleteMutation = usePermanentDeleteTarget();
+    const bulkDeleteMutation = useBulkDeleteTargets();
 
     const [selectedIds, setSelectedIds] = useState([]);
 
@@ -30,9 +37,6 @@ export default function TargetClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTrashOpen, setIsTrashOpen] = useState(false);
     const [editingTarget, setEditingTarget] = useState(null);
-
-    // Trash State
-    const [trashTargets, setTrashTargets] = useState([]);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -71,16 +75,9 @@ export default function TargetClient() {
             title: "Move to Trash?",
             message: "This target will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
-            onConfirm: () => {
-                const targetToDelete = targets.find((t) => t.id === id);
-                if (targetToDelete) {
-                    deleteTarget.mutate(id, {
-                        onSuccess: () => {
-                            setTrashTargets((prev) => [targetToDelete, ...prev]);
-                            setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-                        }
-                    });
-                }
+            onConfirm: async () => {
+                await deleteTargetMutation.mutateAsync(id);
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
             }
         });
     };
@@ -92,51 +89,28 @@ export default function TargetClient() {
             title: "Delete Selected Items?",
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
-            onConfirm: () => {
-                const itemsToDelete = targets.filter(t => selectedIds.includes(t.id));
-                bulkDeleteTargets.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setTrashTargets(prev => [...itemsToDelete, ...prev]);
-                        setSelectedIds([]);
-                    }
-                });
+            onConfirm: async () => {
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             }
         });
     };
 
-    const handleSave = (targetData) => {
+    const handleSave = async (targetData) => {
         if (editingTarget) {
-            updateTarget.mutate({ ...editingTarget, ...targetData }, {
-                onSuccess: () => {
-                    setIsModalOpen(false);
-                    setEditingTarget(null);
-                }
-            });
+            await updateTargetMutation.mutateAsync({ ...editingTarget, ...targetData });
         } else {
-            addTarget.mutate(targetData, {
-                onSuccess: () => {
-                    setIsModalOpen(false);
-                    setEditingTarget(null);
-                }
-            });
+            await addTargetMutation.mutateAsync(targetData);
         }
+        setIsModalOpen(false);
     };
 
-    const handleRestore = (id) => {
-        const targetToRestore = trashTargets.find((t) => t.id === id);
-        if (targetToRestore) {
-            addTarget.mutate(targetToRestore, {
-                onSuccess: () => {
-                    setTrashTargets((prev) => prev.filter((t) => t.id !== id));
-                    toast.success("Target restored successfully!");
-                }
-            });
-        }
+    const handleRestore = async (id) => {
+        await restoreTargetMutation.mutateAsync(id);
     };
 
-    const handlePermanentDelete = (id) => {
-        setTrashTargets((prev) => prev.filter((t) => t.id !== id));
-        toast.success("Target permanently deleted!");
+    const handlePermanentDelete = async (id) => {
+        await permanentDeleteMutation.mutateAsync(id);
     };
 
     /* ======================================================================
@@ -184,13 +158,17 @@ export default function TargetClient() {
                 </button>
             </PageHeader>
 
-            <TargetTable
-                data={targets}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                onEdit={handleEditModal}
-                onDelete={handleDelete}
-            />
+            {isLoading ? (
+                <div className="text-center py-5 text-muted">Loading targets...</div>
+            ) : (
+                <TargetTable
+                    data={targets}
+                    selectedIds={selectedIds}
+                    onSelectionChange={setSelectedIds}
+                    onEdit={handleEditModal}
+                    onDelete={handleDelete}
+                />
+            )}
 
             {/* Modals */}
             <TargetModal

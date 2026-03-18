@@ -11,18 +11,25 @@ import { toast } from "react-hot-toast";
 
 import {
     useProducts,
+    useTrashProducts,
     useAddProduct,
     useUpdateProduct,
     useDeleteProduct,
+    useRestoreProduct,
+    usePermanentDeleteProduct,
     useBulkDeleteProducts
 } from "@/hooks/useProducts";
 
 export default function ProductsClient() {
     const { data: products = [], isLoading } = useProducts();
-    const addProduct = useAddProduct();
-    const updateProduct = useUpdateProduct();
-    const deleteProduct = useDeleteProduct();
-    const bulkDeleteProducts = useBulkDeleteProducts();
+    const { data: trashProducts = [] } = useTrashProducts();
+
+    const addProductMutation = useAddProduct();
+    const updateProductMutation = useUpdateProduct();
+    const deleteProductMutation = useDeleteProduct();
+    const restoreProductMutation = useRestoreProduct();
+    const permanentDeleteMutation = usePermanentDeleteProduct();
+    const bulkDeleteMutation = useBulkDeleteProducts();
 
     const [selectedIds, setSelectedIds] = useState([]);
 
@@ -30,9 +37,6 @@ export default function ProductsClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTrashOpen, setIsTrashOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
-
-    // Trash State
-    const [trashProducts, setTrashProducts] = useState([]);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -71,16 +75,9 @@ export default function ProductsClient() {
             title: "Move to Trash?",
             message: "This product will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
-            onConfirm: () => {
-                const productToDelete = products.find((p) => p.id === id);
-                if (productToDelete) {
-                    deleteProduct.mutate(id, {
-                        onSuccess: () => {
-                            setTrashProducts((prev) => [productToDelete, ...prev]);
-                            setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-                        }
-                    });
-                }
+            onConfirm: async () => {
+                await deleteProductMutation.mutateAsync(id);
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
             }
         });
     };
@@ -92,51 +89,28 @@ export default function ProductsClient() {
             title: "Delete Selected Items?",
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
-            onConfirm: () => {
-                const itemsToDelete = products.filter(p => selectedIds.includes(p.id));
-                bulkDeleteProducts.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setTrashProducts(prev => [...itemsToDelete, ...prev]);
-                        setSelectedIds([]);
-                    }
-                });
+            onConfirm: async () => {
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             }
         });
     };
 
-    const handleSave = (productData) => {
+    const handleSave = async (productData) => {
         if (editingProduct) {
-            updateProduct.mutate({ ...editingProduct, ...productData }, {
-                onSuccess: () => {
-                    setIsModalOpen(false);
-                    setEditingProduct(null);
-                }
-            });
+            await updateProductMutation.mutateAsync({ ...editingProduct, ...productData });
         } else {
-            addProduct.mutate(productData, {
-                onSuccess: () => {
-                    setIsModalOpen(false);
-                    setEditingProduct(null);
-                }
-            });
+            await addProductMutation.mutateAsync(productData);
         }
+        setIsModalOpen(false);
     };
 
-    const handleRestore = (id) => {
-        const productToRestore = trashProducts.find((p) => p.id === id);
-        if (productToRestore) {
-            addProduct.mutate(productToRestore, {
-                onSuccess: () => {
-                    setTrashProducts((prev) => prev.filter((p) => p.id !== id));
-                    toast.success("Product restored successfully!");
-                }
-            });
-        }
+    const handleRestore = async (id) => {
+        await restoreProductMutation.mutateAsync(id);
     };
 
-    const handlePermanentDelete = (id) => {
-        setTrashProducts((prev) => prev.filter((p) => p.id !== id));
-        toast.success("Product permanently deleted!");
+    const handlePermanentDelete = async (id) => {
+        await permanentDeleteMutation.mutateAsync(id);
     };
 
     /* ======================================================================
@@ -184,13 +158,17 @@ export default function ProductsClient() {
                 </button>
             </PageHeader>
 
-            <ProductsTable
-                data={products}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                onEdit={handleEditModal}
-                onDelete={handleDelete}
-            />
+            {isLoading ? (
+                <div className="text-center py-5 text-muted">Loading products...</div>
+            ) : (
+                <ProductsTable
+                    data={products}
+                    selectedIds={selectedIds}
+                    onSelectionChange={setSelectedIds}
+                    onEdit={handleEditModal}
+                    onDelete={handleDelete}
+                />
+            )}
 
             {/* Modals */}
             <ProductModal

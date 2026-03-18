@@ -9,12 +9,20 @@ import DealsModal from "@/components/dashboard/deals/DealsModal";
 import TrashModal from "@/components/dashboard/deals/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+
+/**
+ * 🎯 Client Component for Deals Page
+ */
 import {
   useDeals,
+  useTrashDeals,
   useAddDeal,
   useUpdateDeal,
   useDeleteDeal,
-  useBulkDeleteDeals
+  useRestoreDeal,
+  usePermanentDeleteDeal,
+  useBulkDeleteDeals,
+  useUpdateDealStatus
 } from "@/hooks/useDeals";
 
 /**
@@ -22,17 +30,20 @@ import {
  */
 export default function DealsClient() {
   const { data: deals = [], isLoading } = useDeals();
-  const addDeal = useAddDeal();
-  const updateDeal = useUpdateDeal();
-  const deleteDeal = useDeleteDeal();
-  const bulkDeleteDeals = useBulkDeleteDeals();
+  const { data: trashDeals = [] } = useTrashDeals();
+
+  const addDealMutation = useAddDeal();
+  const updateDealMutation = useUpdateDeal();
+  const deleteDealMutation = useDeleteDeal();
+  const restoreDealMutation = useRestoreDeal();
+  const permanentDeleteMutation = usePermanentDeleteDeal();
+  const bulkDeleteMutation = useBulkDeleteDeals();
+  const updateStatusMutation = useUpdateDealStatus();
 
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'matrix'
-
-  const [trashDeals, setTrashDeals] = useState([]);
   const [showTrashModal, setShowTrashModal] = useState(false);
 
   const searchParams = useSearchParams();
@@ -53,20 +64,12 @@ export default function DealsClient() {
 
   const handleSave = async (data) => {
     if (selectedDeal) {
-      updateDeal.mutate({ ...selectedDeal, ...data }, {
-        onSuccess: () => {
-          setShowModal(false);
-          setSelectedDeal(null);
-        }
-      });
+      await updateDealMutation.mutateAsync({ ...selectedDeal, ...data });
     } else {
-      addDeal.mutate(data, {
-        onSuccess: () => {
-          setShowModal(false);
-          setSelectedDeal(null);
-        }
-      });
+      await addDealMutation.mutateAsync(data);
     }
+    setShowModal(false);
+    setSelectedDeal(null);
   };
 
   const handleEdit = (id) => {
@@ -82,35 +85,18 @@ export default function DealsClient() {
       title: "Move to Trash?",
       message: "This deal will be moved to the recycle bin.",
       confirmLabel: "Yes, Move it",
-      onConfirm: () => {
-        const dealToDelete = deals.find((d) => d.id === id);
-        if (dealToDelete) {
-          deleteDeal.mutate(id, {
-            onSuccess: () => {
-              setTrashDeals((prev) => [dealToDelete, ...prev]);
-              setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
-            }
-          });
-        }
+      onConfirm: async () => {
+        await deleteDealMutation.mutateAsync(id);
       }
     });
   };
 
-  const handleRestore = (id) => {
-    const dealToRestore = trashDeals.find((d) => d.id === id);
-    if (dealToRestore) {
-      addDeal.mutate(dealToRestore, {
-        onSuccess: () => {
-          setTrashDeals((prev) => prev.filter((d) => d.id !== id));
-          toast.success("Deal restored successfully!");
-        }
-      });
-    }
+  const handleRestore = async (id) => {
+    await restoreDealMutation.mutateAsync(id);
   };
 
-  const handlePermanentDelete = (id) => {
-    setTrashDeals((prev) => prev.filter((d) => d.id !== id));
-    toast.success("Deal permanently deleted!");
+  const handlePermanentDelete = async (id) => {
+    await permanentDeleteMutation.mutateAsync(id);
   };
 
   const handleBulkDelete = () => {
@@ -120,20 +106,15 @@ export default function DealsClient() {
       title: "Delete Selected Items?",
       message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
       confirmLabel: "Yes, Delete",
-      onConfirm: () => {
-        const itemsToDelete = deals.filter(d => selectedIds.includes(d.id));
-        bulkDeleteDeals.mutate(selectedIds, {
-          onSuccess: () => {
-            setTrashDeals(prev => [...itemsToDelete, ...prev]);
-            setSelectedIds([]);
-          }
-        });
+      onConfirm: async () => {
+        await bulkDeleteMutation.mutateAsync(selectedIds);
+        setSelectedIds([]);
       }
     });
   };
 
-  const handleUpdateDeal = (updatedDeal) => {
-    updateDeal.mutate(updatedDeal);
+  const handleUpdateDealStatus = async (updatedDeal) => {
+    await updateStatusMutation.mutateAsync({ id: updatedDeal.id, status: updatedDeal.status });
   };
 
   return (
@@ -191,20 +172,26 @@ export default function DealsClient() {
         </button>
       </PageHeader>
 
-      {viewMode === 'list' ? (
-        <DealsTable
-          data={deals}
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      ) : (
-        <DealsMatrix
-          deals={deals}
-          onUpdateDeal={handleUpdateDeal}
-        />
-      )}
+      <div className="mt-4">
+        {isLoading ? (
+          <div className="text-center py-5 text-muted">Loading deals...</div>
+        ) : (
+          viewMode === 'list' ? (
+            <DealsTable
+              data={deals}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          ) : (
+            <DealsMatrix
+              deals={deals}
+              onUpdateDeal={handleUpdateDealStatus}
+            />
+          )
+        )}
+      </div>
 
       <DealsModal
         show={showModal}

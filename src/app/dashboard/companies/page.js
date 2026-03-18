@@ -42,8 +42,8 @@ const MOCK_COMPANIES = [
 
 export default function CompaniesPage() {
   return (
-    <Suspense fallback={<div>Loading companies...</div>}>
-      <CompaniesClient initialCompanies={MOCK_COMPANIES} />
+    <Suspense fallback={<div className="text-center py-5">Loading companies...</div>}>
+      <CompaniesClient />
     </Suspense>
   );
 }

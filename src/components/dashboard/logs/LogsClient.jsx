@@ -4,26 +4,16 @@ import { useState, useMemo, useEffect } from "react";
 import PageHeader from "@/components/layout/PageHeader";
 import LogItem from "./LogItem";
 
-export default function LogsClient({ initialLogs = [] }) {
-    const [logs, setLogs] = useState(initialLogs);
+import { useLogs, useClearLogs } from "@/hooks/useLogs";
+import { confirmAction } from "@/utils/confirm";
+
+export default function LogsClient() {
+    const { data: logs = [], isLoading } = useLogs();
+    const clearLogsMutation = useClearLogs();
+
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-
-    // TODO: Connect to API
-    /*
-    useEffect(() => {
-        const fetchLogs = async () => {
-            try {
-                const response = await axios.get('/api/logs');
-                setLogs(response.data);
-            } catch (error) {
-                console.error('Error fetching logs:', error);
-            }
-        };
-        fetchLogs();
-    }, []);
-    */
 
     // Filter logs based on search term
     const filteredLogs = useMemo(() => {
@@ -46,6 +36,17 @@ export default function LogsClient({ initialLogs = [] }) {
         const startIndex = (currentPage - 1) * itemsPerPage;
         return filteredLogs.slice(startIndex, startIndex + itemsPerPage);
     }, [filteredLogs, currentPage]);
+
+    const handleClearLogs = () => {
+        confirmAction({
+            title: "Clear All Logs?",
+            message: "This action will permanently delete all activity logs. This cannot be undone.",
+            confirmLabel: "Yes, Clear All",
+            onConfirm: async () => {
+                await clearLogsMutation.mutateAsync();
+            }
+        });
+    };
 
     const handleExportExcel = () => {
         const headers = ["Timestamp", "User", "Action", "Item", "Module"];
@@ -92,9 +93,20 @@ export default function LogsClient({ initialLogs = [] }) {
                             />
                         </div>
                     </div>
+                    
+                    <button
+                        className="alert alert-danger rounded-pill py-2 px-3 fsz-12 border-0 mb-0 d-flex align-items-center me-2"
+                        onClick={handleClearLogs}
+                        disabled={logs.length === 0}
+                    >
+                        <i className="fal fa-trash-alt me-2"></i>
+                        Clear Logs
+                    </button>
+
                     <button
                         className="alert alert-success rounded-pill py-2 px-3 fsz-12 border-0 mb-0 d-flex align-items-center"
                         onClick={handleExportExcel}
+                        disabled={filteredLogs.length === 0}
                     >
                         <i className="fal fa-file-excel me-2"></i>
                         Export Excel
@@ -103,20 +115,24 @@ export default function LogsClient({ initialLogs = [] }) {
             </PageHeader>
 
             <div className="logs-feed mt-4">
-                <div className="row">
-                    {paginatedLogs.length > 0 ? (
-                        paginatedLogs.map(log => (
-                            <LogItem key={log.id} log={log} />
-                        ))
-                    ) : (
-                        <div className="col-12 text-center py-5">
-                            <div className="icon-60 bg-f1 rounded-circle df-center mx-auto mb-3 cr-999">
-                                <i className="fal fa-search fsz-24"></i>
+                {isLoading ? (
+                    <div className="text-center py-5 text-muted">Loading logs...</div>
+                ) : (
+                    <div className="row">
+                        {paginatedLogs.length > 0 ? (
+                            paginatedLogs.map(log => (
+                                <LogItem key={log.id} log={log} />
+                            ))
+                        ) : (
+                            <div className="col-12 text-center py-5">
+                                <div className="icon-60 bg-f1 rounded-circle df-center mx-auto mb-3 cr-999">
+                                    <i className="fal fa-search fsz-24"></i>
+                                </div>
+                                <h6 className="cr-999">No logs found matching your search</h6>
                             </div>
-                            <h6 className="cr-999">No logs found matching your search</h6>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (

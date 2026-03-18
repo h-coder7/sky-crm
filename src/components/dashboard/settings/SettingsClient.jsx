@@ -1,29 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import PageHeader from "@/components/layout/PageHeader";
 import FileUpload from "@/components/shared/FileUpload";
 
-export default function SettingsClient() {
-    const [formData, setFormData] = useState({
-        websiteName: "CMS",
-        keywords: "WR8P1tSli3jz7io7",
-        metaDescription: "6AXT8i5B1OOybOHR",
-        mailDriver: "smtp",
-        mailHost: "skybridgeworld.com",
-        mailPort: "587",
-        mailUsername: "notification.crm@skybridgeworld.com",
-        mailPassword: "",
-        mailEncryption: "tls",
-        mailFromAddress: "info@cms.com",
-        mailFromName: "CMS",
-        websitePhone: "123456789",
-        websiteEmail: "info@cms.com",
-    });
+import { useSettings, useUpdateSettings } from "@/hooks/useSettings";
 
+export default function SettingsClient() {
+    const { data: settings, isLoading } = useSettings();
+    const updateSettingsMutation = useUpdateSettings();
+
+    const [formData, setFormData] = useState(null);
     const [activeTab, setActiveTab] = useState("website");
-    const [videoFiles, setVideoFiles] = useState({});
+
+    // Initialize form data when settings are loaded
+    useEffect(() => {
+        if (settings && !formData) {
+            setFormData(settings);
+        }
+    }, [settings, formData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -31,7 +27,13 @@ export default function SettingsClient() {
     };
 
     const handleVideoChange = (moduleName, files) => {
-        setVideoFiles((prev) => ({ ...prev, [moduleName]: files }));
+        setFormData((prev) => ({
+            ...prev,
+            videoFiles: {
+                ...prev.videoFiles,
+                [moduleName]: files
+            }
+        }));
     };
 
     const modules = [
@@ -46,12 +48,19 @@ export default function SettingsClient() {
         { id: "videos", label: "Intro Videos Configuration", icon: "fal fa-video" },
     ];
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // 🔌 API READY: Integrate your POST request here.
-        console.log("Saving settings:", formData);
-        toast.success("Settings saved successfully!");
+        await updateSettingsMutation.mutateAsync(formData);
     };
+
+    if (isLoading || !formData) {
+        return (
+            <div className="text-center py-5 mt-5">
+                <div className="spinner-border text-primary" role="status"></div>
+                <p className="mt-3 text-muted">Loading settings...</p>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -165,7 +174,7 @@ export default function SettingsClient() {
                                         {modules.map((mod) => (
                                             <div className="col-lg-4" key={mod}>
                                                 <FileUpload
-                                                    files={videoFiles[mod] || []}
+                                                    files={formData.videoFiles[mod] || []}
                                                     onFilesChange={(files) => handleVideoChange(mod, files)}
                                                     maxFiles={1}
                                                     title={`Intro ${mod} Module Video`}

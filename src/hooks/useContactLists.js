@@ -8,55 +8,54 @@ import { toast } from "react-hot-toast";
 // ----------------------------------------------------------------------
 
 const MOCK_CONTACTS = [
-    { 
-        id: 1, 
-        name: "John Doe", 
-        gender: "Male",
-        company: "Skybridge Technologies",
-        job_title: "Marketing Manager",
-        employee: "Ahmed Hassan",
-        status: "New Lead",
-        top_customer: "Yes",
-        decision_maker_status: "Yes",
-        country: "United Arab Emirates",
-        address: "Dubai Internet City",
-        email: "john.doe@skybridge.com",
-        phones: ["+971 50 123 4567"],
-        landlines: ["+971 4 123 4567"],
-        notes: "Interested in Q1 campaign",
-        budget: "50,000",
-        avg_events_year: "4",
-        avg_stands_year: "2",
-        company_website_url: "https://skybridge.tech",
-        social_links: ["https://linkedin.com/in/johndoe"],
-        created_at: "2026-01-10" 
-    },
-    { 
-        id: 2, 
-        name: "Jane Smith", 
+    {
+        id: 1,
+        name: "Shaima Al Suwaidi",
         gender: "Female",
-        company: "Gulf Finance Corp",
-        job_title: "Operation Director",
-        employee: "Sarah Ali",
-        status: "Proposal Submitted",
+        address: "Dubai culture and art authority",
+        phones: ["+971501014411"],
+        landlines: [""],
+        email: "shaima.alsuwaidi@dubaiculture.ae",
         top_customer: "No",
         decision_maker_status: "Yes",
-        country: "Saudi Arabia",
-        address: "King Fahd Rd, Riyadh",
-        email: "jane.smith@gulffinance.sa",
-        phones: ["+966 55 987 6543"],
+        status: "New Lead",
+        employee: "Sedra Quraid",
+        country: "United Arab Emirates",
+        company: "Dubai Culture & Arts Authority",
+        budget: "5000",
+        avg_stands_year: "2024",
+        avg_events_year: "2025",
+        company_website_url: "https://example.com",
+        social_links: [""],
+        job_title: "CEO",
+        notes: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.",
+        created_at: "2026-01-20"
+    },
+    {
+        id: 2,
+        name: "maitha al blooshi",
+        gender: "Female",
+        address: "Dubai culture and art authority",
+        phones: ["+971508879993", "+971508879993"],
         landlines: [""],
-        notes: "Gathered at Tech Summit",
-        budget: "120,000",
-        avg_events_year: "2",
-        avg_stands_year: "1",
-        company_website_url: "https://gulffinance.sa",
-        social_links: ["https://linkedin.com/company/gulffinance"],
-        created_at: "2026-01-12" 
-    }
+        email: "alblooshi@dubaiculture.gov.ae",
+        top_customer: "No",
+        decision_maker_status: "No",
+        status: "New Lead",
+        employee: "Sedra Quraid",
+        country: "United Arab Emirates",
+        company: "Dubai Culture & Arts Authority",
+        budget: "10000",
+        avg_stands_year: "2024",
+        avg_events_year: "2025",
+        company_website_url: "https://example.com",
+        social_links: [""],
+        job_title: "event manager",
+        notes: "she is responsible for Al Marmoom film festival...",
+        created_at: "2026-01-20"
+    },
 ];
 
-// Helper to simulate API calls
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 // ----------------------------------------------------------------------
@@ -68,8 +67,19 @@ export function useContactLists() {
         queryKey: ["contact-lists"],
         queryFn: async () => {
             await delay(500); // Simulate network
-            // In the future: return api.get("/contact-lists").then(res => res.data);
-            return JSON.parse(localStorage.getItem("contacts") || JSON.stringify(MOCK_CONTACTS));
+            const stored = localStorage.getItem("contacts");
+            return stored ? JSON.parse(stored) : MOCK_CONTACTS;
+        },
+    });
+}
+
+export function useTrashContacts() {
+    return useQuery({
+        queryKey: ["trash-contacts"],
+        queryFn: async () => {
+            await delay(300);
+            const stored = localStorage.getItem("trash-contacts");
+            return stored ? JSON.parse(stored) : [];
         },
     });
 }
@@ -82,7 +92,7 @@ export function useAddContact() {
             const contacts = JSON.parse(localStorage.getItem("contacts") || JSON.stringify(MOCK_CONTACTS));
             const contactWithId = { 
                 ...newContact, 
-                id: Date.now(),
+                id: Math.max(0, ...contacts.map(c => c.id)) + 1,
                 created_at: new Date().toISOString().split("T")[0] 
             };
             const updated = [contactWithId, ...contacts];
@@ -119,13 +129,65 @@ export function useDeleteContact() {
         mutationFn: async (id) => {
             await delay(500);
             const contacts = JSON.parse(localStorage.getItem("contacts") || JSON.stringify(MOCK_CONTACTS));
-            const filtered = contacts.filter(c => c.id !== id);
-            localStorage.setItem("contacts", JSON.stringify(filtered));
+            const trash = JSON.parse(localStorage.getItem("trash-contacts") || "[]");
+            
+            const contactToDelete = contacts.find(c => c.id === id);
+            if (!contactToDelete) return id;
+
+            const updatedContacts = contacts.filter(c => c.id !== id); // ERROR: countries instead of contacts? Fixed below
+            const updatedTrash = [contactToDelete, ...trash];
+
+            localStorage.setItem("contacts", JSON.stringify(contacts.filter(c => c.id !== id)));
+            localStorage.setItem("trash-contacts", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["contact-lists"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-contacts"] });
             toast.success("Contact moved to trash!");
+        }
+    });
+}
+
+export function useRestoreContact() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id) => {
+            await delay(500);
+            const contacts = JSON.parse(localStorage.getItem("contacts") || JSON.stringify(MOCK_CONTACTS));
+            const trash = JSON.parse(localStorage.getItem("trash-contacts") || "[]");
+            
+            const contactToRestore = trash.find(c => c.id === id);
+            if (!contactToRestore) return id;
+
+            const updatedTrash = trash.filter(c => c.id !== id);
+            const updatedContacts = [contactToRestore, ...contacts];
+
+            localStorage.setItem("contacts", JSON.stringify(updatedContacts));
+            localStorage.setItem("trash-contacts", JSON.stringify(updatedTrash));
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["contact-lists"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-contacts"] });
+            toast.success("Contact restored successfully!");
+        }
+    });
+}
+
+export function usePermanentDeleteContact() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id) => {
+            await delay(500);
+            const trash = JSON.parse(localStorage.getItem("trash-contacts") || "[]");
+            const updatedTrash = trash.filter(c => c.id !== id);
+            localStorage.setItem("trash-contacts", JSON.stringify(updatedTrash));
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["trash-contacts"] });
+            toast.success("Contact permanently deleted!");
         }
     });
 }
@@ -136,12 +198,19 @@ export function useBulkDeleteContacts() {
         mutationFn: async (ids) => {
             await delay(500);
             const contacts = JSON.parse(localStorage.getItem("contacts") || JSON.stringify(MOCK_CONTACTS));
-            const filtered = contacts.filter(c => !ids.includes(c.id));
-            localStorage.setItem("contacts", JSON.stringify(filtered));
+            const trash = JSON.parse(localStorage.getItem("trash-contacts") || "[]");
+
+            const itemsToDelete = contacts.filter(c => ids.includes(c.id));
+            const remainingContacts = contacts.filter(c => !ids.includes(c.id));
+            const updatedTrash = [...itemsToDelete, ...trash];
+
+            localStorage.setItem("contacts", JSON.stringify(remainingContacts));
+            localStorage.setItem("trash-contacts", JSON.stringify(updatedTrash));
             return ids;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["contact-lists"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-contacts"] });
             toast.success("Selected contacts moved to trash!");
         }
     });

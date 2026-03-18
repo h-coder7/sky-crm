@@ -13,27 +13,28 @@ import SectorDetailsOffcanvas from "@/components/dashboard/sectors/SectorDetails
 
 import {
     useSectors,
+    useTrashSectors,
     useAddSector,
     useUpdateSector,
     useDeleteSector,
+    useRestoreSector,
+    usePermanentDeleteSector,
     useBulkDeleteSectors
 } from "@/hooks/useSectors";
 
 /**
  * 🎯 Client Component for Sectors Page
- * 
- * Handles all interactive logic:
- * - State management (via SectorsContext)
- * - Event handlers
- * - Modals
- * - CRUD operations (ready for API integration)
  */
 export default function SectorsClient() {
     const { data: sectors = [], isLoading } = useSectors();
-    const addSector = useAddSector();
-    const updateSector = useUpdateSector();
-    const deleteSector = useDeleteSector();
-    const bulkDeleteSectors = useBulkDeleteSectors();
+    const { data: trashSectors = [] } = useTrashSectors();
+
+    const addSectorMutation = useAddSector();
+    const updateSectorMutation = useUpdateSector();
+    const deleteSectorMutation = useDeleteSector();
+    const restoreSectorMutation = useRestoreSector();
+    const permanentDeleteMutation = usePermanentDeleteSector();
+    const bulkDeleteMutation = useBulkDeleteSectors();
 
     const [selectedSector, setSelectedSector] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -43,7 +44,6 @@ export default function SectorsClient() {
     const [viewSector, setViewSector] = useState(null);
     const [showOffcanvas, setShowOffcanvas] = useState(false);
 
-    const [trashSectors, setTrashSectors] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
 
     const searchParams = useSearchParams();
@@ -68,20 +68,12 @@ export default function SectorsClient() {
 
     const handleSave = async (data) => {
         if (selectedSector) {
-            updateSector.mutate({ ...selectedSector, ...data }, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedSector(null);
-                }
-            });
+            await updateSectorMutation.mutateAsync({ ...selectedSector, ...data });
         } else {
-            addSector.mutate(data, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedSector(null);
-                }
-            });
+            await addSectorMutation.mutateAsync(data);
         }
+        setShowModal(false);
+        setSelectedSector(null);
     };
 
     const handleEdit = (id) => {
@@ -106,33 +98,18 @@ export default function SectorsClient() {
             message: "This sector will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: async () => {
-                const sectorToDelete = sectors.find((s) => s.id === id);
-                if (sectorToDelete) {
-                    deleteSector.mutate(id, {
-                        onSuccess: () => {
-                            setTrashSectors((prev) => [sectorToDelete, ...prev]);
-                        }
-                    });
-                }
+                await deleteSectorMutation.mutateAsync(id);
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
             }
         });
     };
 
     const handleRestore = async (id) => {
-        const sectorToRestore = trashSectors.find((s) => s.id === id);
-        if (sectorToRestore) {
-            addSector.mutate(sectorToRestore, {
-                onSuccess: () => {
-                    setTrashSectors((prev) => prev.filter((s) => s.id !== id));
-                    toast.success("Sector restored successfully!");
-                }
-            });
-        }
+        await restoreSectorMutation.mutateAsync(id);
     };
 
     const handlePermanentDelete = async (id) => {
-        setTrashSectors((prev) => prev.filter((s) => s.id !== id));
-        toast.success("Sector permanently deleted!");
+        await permanentDeleteMutation.mutateAsync(id);
     };
 
     const handleBulkDelete = () => {
@@ -143,13 +120,8 @@ export default function SectorsClient() {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: async () => {
-                const itemsToDelete = sectors.filter(s => selectedIds.includes(s.id));
-                bulkDeleteSectors.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setTrashSectors(prev => [...itemsToDelete, ...prev]);
-                        setSelectedIds([]);
-                    }
-                });
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             }
         });
     };
@@ -204,14 +176,18 @@ export default function SectorsClient() {
             </PageHeader>
 
             {/* Page Content */}
-            <SectorsTable
-                data={sectors}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onView={handleView}
-            />
+            {isLoading ? (
+                <div className="text-center py-5 text-muted">Loading sectors...</div>
+            ) : (
+                <SectorsTable
+                    data={sectors}
+                    selectedIds={selectedIds}
+                    onSelectionChange={setSelectedIds}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onView={handleView}
+                />
+            )}
 
             {/* Add/Edit Modal */}
             <SectorModal

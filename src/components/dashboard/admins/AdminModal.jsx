@@ -187,7 +187,7 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
     if (!show || !isMounted) return null;
 
     const selectedPermissions = Array.isArray(formData.permissions) ? formData.permissions : [];
-    const isAllPermissionsSelected = selectedPermissions.length === ALL_PERMISSION_KEYS.length;
+    const isAllPermissionsSelected = selectedPermissions.length === PERMISSIONS.length;
 
     return createPortal(
         <>

@@ -12,35 +12,33 @@ import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 import {
     useEmployees,
+    useTrashEmployees,
     useAddEmployee,
     useUpdateEmployee,
     useDeleteEmployee,
+    useRestoreEmployee,
+    usePermanentDeleteEmployee,
     useBulkDeleteEmployees
 } from "@/hooks/useEmployees";
 
 /**
  * 🎯 Client Component for Employees Page
- * 
- * Handles all interactive logic:
- * - State management
- * - Event handlers
- * - Modals
- * - CRUD operations (ready for API integration)
- * 
- * Receives initial data from Server Component via props
  */
-export default function EmployeesClient({ initialEmployees = [] }) {
+export default function EmployeesClient() {
     const { data: employees = [], isLoading } = useEmployees();
-    const addEmployee = useAddEmployee();
-    const updateEmployee = useUpdateEmployee();
-    const deleteEmployee = useDeleteEmployee();
-    const bulkDeleteEmployees = useBulkDeleteEmployees();
+    const { data: trashEmployees = [] } = useTrashEmployees();
+
+    const addEmployeeMutation = useAddEmployee();
+    const updateEmployeeMutation = useUpdateEmployee();
+    const deleteEmployeeMutation = useDeleteEmployee();
+    const restoreEmployeeMutation = useRestoreEmployee();
+    const permanentDeleteMutation = usePermanentDeleteEmployee();
+    const bulkDeleteMutation = useBulkDeleteEmployees();
 
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
 
-    const [trashEmployees, setTrashEmployees] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
 
     const [viewEmployee, setViewEmployee] = useState(null);
@@ -62,28 +60,18 @@ export default function EmployeesClient({ initialEmployees = [] }) {
         }
     }, [searchParams, pathname, router]);
 
-
-
     /* ======================================================================
        CRUD Handlers (Ready for API Integration)
        ====================================================================== */
 
     const handleSave = async (data) => {
         if (selectedEmployee) {
-            updateEmployee.mutate({ ...selectedEmployee, ...data }, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedEmployee(null);
-                }
-            });
+            await updateEmployeeMutation.mutateAsync({ ...selectedEmployee, ...data });
         } else {
-            addEmployee.mutate(data, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedEmployee(null);
-                }
-            });
+            await addEmployeeMutation.mutateAsync(data);
         }
+        setShowModal(false);
+        setSelectedEmployee(null);
     };
 
     /**
@@ -103,33 +91,18 @@ export default function EmployeesClient({ initialEmployees = [] }) {
             message: "This employee will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: async () => {
-                const employeeToDelete = employees.find((e) => e.id === id);
-                if (employeeToDelete) {
-                    deleteEmployee.mutate(id, {
-                        onSuccess: () => {
-                            setTrashEmployees((prev) => [employeeToDelete, ...prev]);
-                        }
-                    });
-                }
+                await deleteEmployeeMutation.mutateAsync(id);
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
             }
         });
     };
 
     const handleRestore = async (id) => {
-        const employeeToRestore = trashEmployees.find((e) => e.id === id);
-        if (employeeToRestore) {
-            addEmployee.mutate(employeeToRestore, {
-                onSuccess: () => {
-                    setTrashEmployees((prev) => prev.filter((e) => e.id !== id));
-                    toast.success("Employee restored successfully!");
-                }
-            });
-        }
+        await restoreEmployeeMutation.mutateAsync(id);
     };
 
     const handlePermanentDelete = async (id) => {
-        setTrashEmployees((prev) => prev.filter((e) => e.id !== id));
-        toast.success("Employee permanently deleted!");
+        await permanentDeleteMutation.mutateAsync(id);
     };
 
     const handleBulkDelete = () => {
@@ -140,13 +113,8 @@ export default function EmployeesClient({ initialEmployees = [] }) {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: async () => {
-                const itemsToDelete = employees.filter(e => selectedIds.includes(e.id));
-                bulkDeleteEmployees.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setTrashEmployees(prev => [...itemsToDelete, ...prev]);
-                        setSelectedIds([]);
-                    }
-                });
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             }
         });
     };
@@ -202,17 +170,21 @@ export default function EmployeesClient({ initialEmployees = [] }) {
 
             {/* Page Content */}
             <div className="mt-4">
-                <EmployeesTable
-                    data={employees}
-                    selectedIds={selectedIds}
-                    onSelectionChange={setSelectedIds}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onView={(emp) => {
-                        setViewEmployee(emp);
-                        setShowOffcanvas(true);
-                    }}
-                />
+                {isLoading ? (
+                    <div className="text-center py-5 text-muted">Loading employees...</div>
+                ) : (
+                    <EmployeesTable
+                        data={employees}
+                        selectedIds={selectedIds}
+                        onSelectionChange={setSelectedIds}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onView={(emp) => {
+                            setViewEmployee(emp);
+                            setShowOffcanvas(true);
+                        }}
+                    />
+                )}
             </div>
 
             {/* Add/Edit Modal */}

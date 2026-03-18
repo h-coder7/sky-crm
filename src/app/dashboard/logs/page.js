@@ -9,7 +9,7 @@ export const metadata = {
 export default function LogsPage() {
     return (
         <div className="">
-            <LogsClient initialLogs={mockLogs} />
+            <LogsClient />
         </div>
     );
 }

@@ -9,43 +9,40 @@ import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 
 import {
-    useDailyLogs,
+    useDailyLog,
+    useTrashDailyLogs,
     useAddDailyLog,
     useUpdateDailyLog,
     useDeleteDailyLog,
+    useRestoreDailyLog,
+    usePermanentDeleteDailyLog,
     useBulkDeleteDailyLogs
-} from "@/hooks/useDailyLogs";
+} from "@/hooks/useDailyLog";
 
-export default function DailyLogClient({ initialDailyLogs = [] }) {
-    const { data: dailyLogs = [], isLoading } = useDailyLogs();
-    const addDailyLog = useAddDailyLog();
-    const updateDailyLog = useUpdateDailyLog();
-    const deleteDailyLog = useDeleteDailyLog();
-    const bulkDeleteDailyLogs = useBulkDeleteDailyLogs();
+export default function DailyLogClient() {
+    const { data: dailyLogs = [], isLoading } = useDailyLog();
+    const { data: trashLogs = [] } = useTrashDailyLogs();
+
+    const addLogMutation = useAddDailyLog();
+    const updateLogMutation = useUpdateDailyLog();
+    const deleteLogMutation = useDeleteDailyLog();
+    const restoreLogMutation = useRestoreDailyLog();
+    const permanentDeleteMutation = usePermanentDeleteDailyLog();
+    const bulkDeleteMutation = useBulkDeleteDailyLogs();
 
     const [selectedLog, setSelectedLog] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
-
-    const [trashLogs, setTrashLogs] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
 
-    const handleSave = (data) => {
+    const handleSave = async (data) => {
         if (selectedLog) {
-            updateDailyLog.mutate({ ...selectedLog, ...data }, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedLog(null);
-                }
-            });
+            await updateLogMutation.mutateAsync({ ...selectedLog, ...data });
         } else {
-            addDailyLog.mutate(data, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedLog(null);
-                }
-            });
+            await addLogMutation.mutateAsync(data);
         }
+        setShowModal(false);
+        setSelectedLog(null);
     };
 
     const handleEdit = (id) => {
@@ -61,34 +58,18 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
             title: "Move to Trash?",
             message: "Are you sure you want to move this log entry to the recycle bin?",
             confirmLabel: "Yes, Move to Trash",
-            onConfirm: () => {
-                const logToDelete = dailyLogs.find((l) => l.id === id);
-                if (logToDelete) {
-                    deleteDailyLog.mutate(id, {
-                        onSuccess: () => {
-                            setTrashLogs((prev) => [logToDelete, ...prev]);
-                        }
-                    });
-                }
+            onConfirm: async () => {
+                await deleteLogMutation.mutateAsync(id);
             },
         });
     };
 
-    const handleRestore = (id) => {
-        const logToRestore = trashLogs.find((l) => l.id === id);
-        if (logToRestore) {
-            addDailyLog.mutate(logToRestore, {
-                onSuccess: () => {
-                    setTrashLogs((prev) => prev.filter((l) => l.id !== id));
-                    toast.success("Log entry restored successfully!");
-                }
-            });
-        }
+    const handleRestore = async (id) => {
+        await restoreLogMutation.mutateAsync(id);
     };
 
-    const handlePermanentDelete = (id) => {
-        setTrashLogs((prev) => prev.filter((l) => l.id !== id));
-        toast.success("Log entry permanently deleted!");
+    const handlePermanentDelete = async (id) => {
+        await permanentDeleteMutation.mutateAsync(id);
     };
 
     const handleBulkDelete = () => {
@@ -97,14 +78,9 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
             title: "Move Selected to Trash?",
             message: `Are you sure you want to move ${selectedIds.length} entries to the recycle bin?`,
             confirmLabel: "Yes, Move to Trash",
-            onConfirm: () => {
-                const logsToDelete = dailyLogs.filter((l) => selectedIds.includes(l.id));
-                bulkDeleteDailyLogs.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setTrashLogs((prev) => [...logsToDelete, ...prev]);
-                        setSelectedIds([]);
-                    }
-                });
+            onConfirm: async () => {
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             },
         });
     };
@@ -149,13 +125,17 @@ export default function DailyLogClient({ initialDailyLogs = [] }) {
             </PageHeader>
 
             <div className="mt-4">
-                <DailyLogTable
-                    data={dailyLogs}
-                    selectedIds={selectedIds}
-                    onSelectionChange={setSelectedIds}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                />
+                {isLoading ? (
+                    <div className="text-center py-5 text-muted">Loading daily logs...</div>
+                ) : (
+                    <DailyLogTable
+                        data={dailyLogs}
+                        selectedIds={selectedIds}
+                        onSelectionChange={setSelectedIds}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                    />
+                )}
             </div>
 
             <DailyLogModal

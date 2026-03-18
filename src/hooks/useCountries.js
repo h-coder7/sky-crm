@@ -8,17 +8,26 @@ import { toast } from "react-hot-toast";
 // ----------------------------------------------------------------------
 
 const MOCK_COUNTRIES = [
-    { id: 1, title: "Saudi Arabia", country_key: "SA", created_at: "2026-01-15" },
-    { id: 2, title: "United Arab Emirates", country_key: "UAE", created_at: "2026-01-15" },
-    { id: 3, title: "Egypt", country_key: "EG", created_at: "2026-01-15" },
-    { id: 4, title: "Qatar", country_key: "QA", created_at: "2026-01-15" },
-    { id: 5, title: "Kuwait", country_key: "KW", created_at: "2026-01-15" },
-    { id: 6, title: "Bahrain", country_key: "BH", created_at: "2026-01-15" },
-    { id: 7, title: "Oman", country_key: "OM", created_at: "2026-01-15" },
-    { id: 8, title: "Jordan", country_key: "JO", created_at: "2026-01-15" },
+    { id: 1, title: "United Arab Emirates", country_key: "971", created_at: "2025-08-31" },
+    { id: 2, title: "saudia arabia", country_key: "966", created_at: "2021-08-07" },
+    { id: 3, title: "Afghanistan", country_key: "93", created_at: "2025-08-31" },
+    { id: 4, title: "Aland Islands", country_key: "358", created_at: "2025-08-31" },
+    { id: 5, title: "Albania", country_key: "355", created_at: "2025-08-31" },
+    { id: 6, title: "Algeria", country_key: "213", created_at: "2025-08-31" },
+    { id: 7, title: "American Samoa", country_key: "1684", created_at: "2025-08-31" },
+    { id: 8, title: "Andorra", country_key: "376", created_at: "2025-08-31" },
+    { id: 9, title: "Angola", country_key: "244", created_at: "2025-08-31" },
+    { id: 10, title: "Anguilla", country_key: "1264", created_at: "2025-08-31" },
+    { id: 11, title: "Antarctica", country_key: "672", created_at: "2025-08-31" },
+    { id: 12, title: "Antigua and Barbuda", country_key: "1268", created_at: "2025-08-31" },
+    { id: 13, title: "Argentina", country_key: "54", created_at: "2025-08-31" },
+    { id: 14, title: "Armenia", country_key: "374", created_at: "2025-08-31" },
+    { id: 15, title: "Aruba", country_key: "297", created_at: "2025-08-31" },
+    { id: 16, title: "Australia", country_key: "61", created_at: "2025-08-31" },
+    { id: 17, title: "Austria", country_key: "43", created_at: "2025-08-31" },
+    { id: 18, title: "Azerbaijan", country_key: "994", created_at: "2025-08-31" },
 ];
 
-// Helper to simulate API calls
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 // ----------------------------------------------------------------------
@@ -30,7 +39,19 @@ export function useCountries() {
         queryKey: ["countries"],
         queryFn: async () => {
             await delay(500); // Simulate network
-            return JSON.parse(localStorage.getItem("countries") || JSON.stringify(MOCK_COUNTRIES));
+            const stored = localStorage.getItem("countries");
+            return stored ? JSON.parse(stored) : MOCK_COUNTRIES;
+        },
+    });
+}
+
+export function useTrashCountries() {
+    return useQuery({
+        queryKey: ["trash-countries"],
+        queryFn: async () => {
+            await delay(300);
+            const stored = localStorage.getItem("trash-countries");
+            return stored ? JSON.parse(stored) : [];
         },
     });
 }
@@ -43,7 +64,7 @@ export function useAddCountry() {
             const countries = JSON.parse(localStorage.getItem("countries") || JSON.stringify(MOCK_COUNTRIES));
             const countryWithId = { 
                 ...newCountry, 
-                id: Date.now(),
+                id: Math.max(0, ...countries.map(c => c.id)) + 1,
                 created_at: new Date().toISOString().split("T")[0] 
             };
             const updated = [countryWithId, ...countries];
@@ -80,13 +101,65 @@ export function useDeleteCountry() {
         mutationFn: async (id) => {
             await delay(500);
             const countries = JSON.parse(localStorage.getItem("countries") || JSON.stringify(MOCK_COUNTRIES));
-            const filtered = countries.filter(c => c.id !== id);
-            localStorage.setItem("countries", JSON.stringify(filtered));
+            const trash = JSON.parse(localStorage.getItem("trash-countries") || "[]");
+            
+            const countryToDelete = countries.find(c => c.id === id);
+            if (!countryToDelete) return id;
+
+            const updatedCountries = countries.filter(c => c.id !== id);
+            const updatedTrash = [countryToDelete, ...trash];
+
+            localStorage.setItem("countries", JSON.stringify(updatedCountries));
+            localStorage.setItem("trash-countries", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["countries"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-countries"] });
             toast.success("Country moved to trash!");
+        }
+    });
+}
+
+export function useRestoreCountry() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id) => {
+            await delay(500);
+            const countries = JSON.parse(localStorage.getItem("countries") || JSON.stringify(MOCK_COUNTRIES));
+            const trash = JSON.parse(localStorage.getItem("trash-countries") || "[]");
+            
+            const countryToRestore = trash.find(c => c.id === id);
+            if (!countryToRestore) return id;
+
+            const updatedTrash = trash.filter(c => c.id !== id);
+            const updatedCountries = [countryToRestore, ...countries];
+
+            localStorage.setItem("countries", JSON.stringify(updatedCountries));
+            localStorage.setItem("trash-countries", JSON.stringify(updatedTrash));
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["countries"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-countries"] });
+            toast.success("Country restored successfully!");
+        }
+    });
+}
+
+export function usePermanentDeleteCountry() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id) => {
+            await delay(500);
+            const trash = JSON.parse(localStorage.getItem("trash-countries") || "[]");
+            const updatedTrash = trash.filter(c => c.id !== id);
+            localStorage.setItem("trash-countries", JSON.stringify(updatedTrash));
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["trash-countries"] });
+            toast.success("Country permanently deleted!");
         }
     });
 }
@@ -97,12 +170,19 @@ export function useBulkDeleteCountries() {
         mutationFn: async (ids) => {
             await delay(500);
             const countries = JSON.parse(localStorage.getItem("countries") || JSON.stringify(MOCK_COUNTRIES));
-            const filtered = countries.filter(c => !ids.includes(c.id));
-            localStorage.setItem("countries", JSON.stringify(filtered));
+            const trash = JSON.parse(localStorage.getItem("trash-countries") || "[]");
+
+            const itemsToDelete = countries.filter(c => ids.includes(c.id));
+            const remainingCountries = countries.filter(c => !ids.includes(c.id));
+            const updatedTrash = [...itemsToDelete, ...trash];
+
+            localStorage.setItem("countries", JSON.stringify(remainingCountries));
+            localStorage.setItem("trash-countries", JSON.stringify(updatedTrash));
             return ids;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["countries"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-countries"] });
             toast.success("Selected countries moved to trash!");
         }
     });

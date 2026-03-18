@@ -37,7 +37,19 @@ export function useSectors() {
         queryKey: ["sectors"],
         queryFn: async () => {
             await delay(500); // Simulate network
-            return JSON.parse(localStorage.getItem("sectors") || JSON.stringify(MOCK_SECTORS));
+            const stored = localStorage.getItem("sectors");
+            return stored ? JSON.parse(stored) : MOCK_SECTORS;
+        },
+    });
+}
+
+export function useTrashSectors() {
+    return useQuery({
+        queryKey: ["trash-sectors"],
+        queryFn: async () => {
+            await delay(300);
+            const stored = localStorage.getItem("trash-sectors");
+            return stored ? JSON.parse(stored) : [];
         },
     });
 }
@@ -50,7 +62,7 @@ export function useAddSector() {
             const sectors = JSON.parse(localStorage.getItem("sectors") || JSON.stringify(MOCK_SECTORS));
             const sectorWithId = { 
                 ...newSector, 
-                id: Date.now(),
+                id: Math.max(0, ...sectors.map(s => s.id)) + 1,
                 created_at: new Date().toISOString().split("T")[0] 
             };
             const updated = [sectorWithId, ...sectors];
@@ -87,13 +99,65 @@ export function useDeleteSector() {
         mutationFn: async (id) => {
             await delay(500);
             const sectors = JSON.parse(localStorage.getItem("sectors") || JSON.stringify(MOCK_SECTORS));
-            const filtered = sectors.filter(s => s.id !== id);
-            localStorage.setItem("sectors", JSON.stringify(filtered));
+            const trash = JSON.parse(localStorage.getItem("trash-sectors") || "[]");
+            
+            const sectorToDelete = sectors.find(s => s.id === id);
+            if (!sectorToDelete) return id;
+
+            const updatedSectors = sectors.filter(s => s.id !== id);
+            const updatedTrash = [sectorToDelete, ...trash];
+
+            localStorage.setItem("sectors", JSON.stringify(updatedSectors));
+            localStorage.setItem("trash-sectors", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["sectors"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-sectors"] });
             toast.success("Sector moved to trash!");
+        }
+    });
+}
+
+export function useRestoreSector() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id) => {
+            await delay(500);
+            const sectors = JSON.parse(localStorage.getItem("sectors") || JSON.stringify(MOCK_SECTORS));
+            const trash = JSON.parse(localStorage.getItem("trash-sectors") || "[]");
+            
+            const sectorToRestore = trash.find(s => s.id === id);
+            if (!sectorToRestore) return id;
+
+            const updatedTrash = trash.filter(s => s.id !== id);
+            const updatedSectors = [sectorToRestore, ...sectors];
+
+            localStorage.setItem("sectors", JSON.stringify(updatedSectors));
+            localStorage.setItem("trash-sectors", JSON.stringify(updatedTrash));
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["sectors"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-sectors"] });
+            toast.success("Sector restored successfully!");
+        }
+    });
+}
+
+export function usePermanentDeleteSector() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id) => {
+            await delay(500);
+            const trash = JSON.parse(localStorage.getItem("trash-sectors") || "[]");
+            const updatedTrash = trash.filter(s => s.id !== id);
+            localStorage.setItem("trash-sectors", JSON.stringify(updatedTrash));
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["trash-sectors"] });
+            toast.success("Sector permanently deleted!");
         }
     });
 }
@@ -104,12 +168,19 @@ export function useBulkDeleteSectors() {
         mutationFn: async (ids) => {
             await delay(500);
             const sectors = JSON.parse(localStorage.getItem("sectors") || JSON.stringify(MOCK_SECTORS));
-            const filtered = sectors.filter(s => !ids.includes(s.id));
-            localStorage.setItem("sectors", JSON.stringify(filtered));
+            const trash = JSON.parse(localStorage.getItem("trash-sectors") || "[]");
+
+            const itemsToDelete = sectors.filter(s => ids.includes(s.id));
+            const remainingSectors = sectors.filter(s => !ids.includes(s.id));
+            const updatedTrash = [...itemsToDelete, ...trash];
+
+            localStorage.setItem("sectors", JSON.stringify(remainingSectors));
+            localStorage.setItem("trash-sectors", JSON.stringify(updatedTrash));
             return ids;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["sectors"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-sectors"] });
             toast.success("Selected sectors moved to trash!");
         }
     });

@@ -11,35 +11,32 @@ import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 import {
     useCountries,
+    useTrashCountries,
     useAddCountry,
     useUpdateCountry,
     useDeleteCountry,
+    useRestoreCountry,
+    usePermanentDeleteCountry,
     useBulkDeleteCountries
 } from "@/hooks/useCountries";
 
 /**
  * 🎯 Client Component for Countries Page
- * 
- * Handles all interactive logic:
- * - State management
- * - Event handlers
- * - Modals
- * - CRUD operations (ready for API integration)
- * 
- * Receives initial data from Server Component via props
  */
-export default function CountriesClient({ initialCountries = [] }) {
+export default function CountriesClient() {
     const { data: countries = [], isLoading } = useCountries();
-    const addCountry = useAddCountry();
-    const updateCountry = useUpdateCountry();
-    const deleteCountry = useDeleteCountry();
-    const bulkDeleteCountries = useBulkDeleteCountries();
+    const { data: trashCountries = [] } = useTrashCountries();
+
+    const addCountryMutation = useAddCountry();
+    const updateCountryMutation = useUpdateCountry();
+    const deleteCountryMutation = useDeleteCountry();
+    const restoreCountryMutation = useRestoreCountry();
+    const permanentDeleteMutation = usePermanentDeleteCountry();
+    const bulkDeleteMutation = useBulkDeleteCountries();
 
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
-
-    const [trashCountries, setTrashCountries] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
 
     const searchParams = useSearchParams();
@@ -58,28 +55,18 @@ export default function CountriesClient({ initialCountries = [] }) {
         }
     }, [searchParams, pathname, router]);
 
-
-
     /* ======================================================================
        CRUD Handlers (Ready for API Integration)
        ====================================================================== */
 
     const handleSave = async (data) => {
         if (selectedCountry) {
-            updateCountry.mutate({ ...selectedCountry, ...data }, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedCountry(null);
-                }
-            });
+            await updateCountryMutation.mutateAsync({ ...selectedCountry, ...data });
         } else {
-            addCountry.mutate(data, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedCountry(null);
-                }
-            });
+            await addCountryMutation.mutateAsync(data);
         }
+        setShowModal(false);
+        setSelectedCountry(null);
     };
 
     /**
@@ -99,33 +86,18 @@ export default function CountriesClient({ initialCountries = [] }) {
             message: "This country will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: async () => {
-                const countryToDelete = countries.find((c) => c.id === id);
-                if (countryToDelete) {
-                    deleteCountry.mutate(id, {
-                        onSuccess: () => {
-                            setTrashCountries((prev) => [countryToDelete, ...prev]);
-                        }
-                    });
-                }
+                await deleteCountryMutation.mutateAsync(id);
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
             }
         });
     };
 
     const handleRestore = async (id) => {
-        const countryToRestore = trashCountries.find((c) => c.id === id);
-        if (countryToRestore) {
-            addCountry.mutate(countryToRestore, {
-                onSuccess: () => {
-                    setTrashCountries((prev) => prev.filter((c) => c.id !== id));
-                    toast.success("Country restored successfully!");
-                }
-            });
-        }
+        await restoreCountryMutation.mutateAsync(id);
     };
 
     const handlePermanentDelete = async (id) => {
-        setTrashCountries((prev) => prev.filter((c) => c.id !== id));
-        toast.success("Country permanently deleted!");
+        await permanentDeleteMutation.mutateAsync(id);
     };
 
     const handleBulkDelete = () => {
@@ -136,13 +108,8 @@ export default function CountriesClient({ initialCountries = [] }) {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: async () => {
-                const itemsToDelete = countries.filter(c => selectedIds.includes(c.id));
-                bulkDeleteCountries.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setTrashCountries(prev => [...itemsToDelete, ...prev]);
-                        setSelectedIds([]);
-                    }
-                });
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             }
         });
     };
@@ -198,13 +165,17 @@ export default function CountriesClient({ initialCountries = [] }) {
 
             {/* Page Content */}
             <div className="mt-4">
-                <CountriesTable
-                    data={countries}
-                    selectedIds={selectedIds}
-                    onSelectionChange={setSelectedIds}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                />
+                {isLoading ? (
+                    <div className="text-center py-5 text-muted">Loading countries...</div>
+                ) : (
+                    <CountriesTable
+                        data={countries}
+                        selectedIds={selectedIds}
+                        onSelectionChange={setSelectedIds}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                    />
+                )}
             </div>
 
             {/* Add/Edit Modal */}

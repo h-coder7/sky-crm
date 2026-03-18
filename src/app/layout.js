@@ -22,7 +22,7 @@ export const metadata = {
   title: "Skybridgecrm",
   description: "Skybridge CRM",
   icons: {
-    icon: "/fav.png",
+    icon: "/crm-skybridge/fav.png",
   },
 };
 

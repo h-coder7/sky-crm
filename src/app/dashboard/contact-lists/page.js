@@ -357,8 +357,8 @@ const MOCK_CONTACTS = [
 
 export default function ContactListsPage() {
   return (
-    <Suspense fallback={<div className="d-none">Loading contacts...</div>}>
-      <ContactListsClient initialContacts={MOCK_CONTACTS} />
+    <Suspense fallback={<div className="text-center py-5">Loading contacts...</div>}>
+      <ContactListsClient />
     </Suspense>
   );
 }

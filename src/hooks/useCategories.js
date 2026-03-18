@@ -8,9 +8,9 @@ import { toast } from "react-hot-toast";
 // ----------------------------------------------------------------------
 
 const MOCK_CATEGORIES = [
-  { id: 1, title: "A", start_price: "500001.00", end_price: "1000000.00", created_at: "2025-10-01" },
-  { id: 2, title: "B", start_price: "100001.00", end_price: "500000.00", created_at: "2025-10-01" },
-  { id: 3, title: "C", start_price: "10000.00", end_price: "100000.00", created_at: "2025-10-01" },
+    { id: 1, title: "A", start_price: "500001.00", end_price: "1000000.00", created_at: "2025-10-01" },
+    { id: 2, title: "B", start_price: "100001.00", end_price: "500000.00", created_at: "2025-10-01" },
+    { id: 3, title: "C", start_price: "10000.00", end_price: "100000.00", created_at: "2025-10-01" },
 ];
 
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
@@ -24,7 +24,19 @@ export function useCategories() {
         queryKey: ["categories"],
         queryFn: async () => {
             await delay(500); // Simulate network
-            return JSON.parse(localStorage.getItem("categories") || JSON.stringify(MOCK_CATEGORIES));
+            const stored = localStorage.getItem("categories");
+            return stored ? JSON.parse(stored) : MOCK_CATEGORIES;
+        },
+    });
+}
+
+export function useTrashCategories() {
+    return useQuery({
+        queryKey: ["trash-categories"],
+        queryFn: async () => {
+            await delay(300);
+            const stored = localStorage.getItem("trash-categories");
+            return stored ? JSON.parse(stored) : [];
         },
     });
 }
@@ -37,7 +49,7 @@ export function useAddCategory() {
             const categories = JSON.parse(localStorage.getItem("categories") || JSON.stringify(MOCK_CATEGORIES));
             const categoryWithId = { 
                 ...newCategory, 
-                id: Date.now(),
+                id: Math.max(0, ...categories.map(c => c.id)) + 1,
                 created_at: new Date().toISOString().split("T")[0] 
             };
             const updated = [categoryWithId, ...categories];
@@ -74,13 +86,65 @@ export function useDeleteCategory() {
         mutationFn: async (id) => {
             await delay(500);
             const categories = JSON.parse(localStorage.getItem("categories") || JSON.stringify(MOCK_CATEGORIES));
-            const filtered = categories.filter(c => c.id !== id);
-            localStorage.setItem("categories", JSON.stringify(filtered));
+            const trash = JSON.parse(localStorage.getItem("trash-categories") || "[]");
+            
+            const categoryToDelete = categories.find(c => c.id === id);
+            if (!categoryToDelete) return id;
+
+            const updatedCategories = categories.filter(c => c.id !== id);
+            const updatedTrash = [categoryToDelete, ...trash];
+
+            localStorage.setItem("categories", JSON.stringify(updatedCategories));
+            localStorage.setItem("trash-categories", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["categories"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-categories"] });
             toast.success("Category moved to trash!");
+        }
+    });
+}
+
+export function useRestoreCategory() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id) => {
+            await delay(500);
+            const categories = JSON.parse(localStorage.getItem("categories") || JSON.stringify(MOCK_CATEGORIES));
+            const trash = JSON.parse(localStorage.getItem("trash-categories") || "[]");
+            
+            const categoryToRestore = trash.find(c => c.id === id);
+            if (!categoryToRestore) return id;
+
+            const updatedTrash = trash.filter(c => c.id !== id);
+            const updatedCategories = [categoryToRestore, ...categories];
+
+            localStorage.setItem("categories", JSON.stringify(updatedCategories));
+            localStorage.setItem("trash-categories", JSON.stringify(updatedTrash));
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["categories"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-categories"] });
+            toast.success("Category restored successfully!");
+        }
+    });
+}
+
+export function usePermanentDeleteCategory() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id) => {
+            await delay(500);
+            const trash = JSON.parse(localStorage.getItem("trash-categories") || "[]");
+            const updatedTrash = trash.filter(c => c.id !== id);
+            localStorage.setItem("trash-categories", JSON.stringify(updatedTrash));
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["trash-categories"] });
+            toast.success("Category permanently deleted!");
         }
     });
 }
@@ -91,12 +155,19 @@ export function useBulkDeleteCategories() {
         mutationFn: async (ids) => {
             await delay(500);
             const categories = JSON.parse(localStorage.getItem("categories") || JSON.stringify(MOCK_CATEGORIES));
-            const filtered = categories.filter(c => !ids.includes(c.id));
-            localStorage.setItem("categories", JSON.stringify(filtered));
+            const trash = JSON.parse(localStorage.getItem("trash-categories") || "[]");
+
+            const itemsToDelete = categories.filter(c => ids.includes(c.id));
+            const remainingCategories = categories.filter(c => !ids.includes(c.id));
+            const updatedTrash = [...itemsToDelete, ...trash];
+
+            localStorage.setItem("categories", JSON.stringify(remainingCategories));
+            localStorage.setItem("trash-categories", JSON.stringify(updatedTrash));
             return ids;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["categories"] });
+            queryClient.invalidateQueries({ queryKey: ["trash-categories"] });
             toast.success("Selected categories moved to trash!");
         }
     });

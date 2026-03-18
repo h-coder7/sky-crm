@@ -11,28 +11,32 @@ import AdminDetailsOffcanvas from "@/components/dashboard/admins/AdminDetailsOff
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 
-import {
-    useAdmins,
-    useAddAdmin,
-    useUpdateAdmin,
-    useDeleteAdmin,
-    useBulkDeleteAdmins
+import { 
+    useAdmins, 
+    useTrashAdmins, 
+    useAddAdmin, 
+    useUpdateAdmin, 
+    useDeleteAdmin, 
+    useRestoreAdmin, 
+    usePermanentDeleteAdmin, 
+    useBulkDeleteAdmins 
 } from "@/hooks/useAdmins";
 
-export default function AdminsClient({ initialAdmins = [] }) {
+export default function AdminsClient() {
     const { data: admins = [], isLoading } = useAdmins();
-    const addAdmin = useAddAdmin();
-    const updateAdmin = useUpdateAdmin();
-    const deleteAdmin = useDeleteAdmin();
-    const bulkDeleteAdmins = useBulkDeleteAdmins();
+    const { data: trashAdmins = [] } = useTrashAdmins();
+
+    const addAdminMutation = useAddAdmin();
+    const updateAdminMutation = useUpdateAdmin();
+    const deleteAdminMutation = useDeleteAdmin();
+    const restoreAdminMutation = useRestoreAdmin();
+    const permanentDeleteMutation = usePermanentDeleteAdmin();
+    const bulkDeleteMutation = useBulkDeleteAdmins();
 
     const [selectedAdmin, setSelectedAdmin] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
-
-    const [trashAdmins, setTrashAdmins] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
-
     const [viewAdmin, setViewAdmin] = useState(null);
     const [showOffcanvas, setShowOffcanvas] = useState(false);
 
@@ -57,20 +61,12 @@ export default function AdminsClient({ initialAdmins = [] }) {
 
     const handleSave = async (data) => {
         if (selectedAdmin) {
-            updateAdmin.mutate({ ...selectedAdmin, ...data }, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedAdmin(null);
-                }
-            });
+            await updateAdminMutation.mutateAsync({ ...selectedAdmin, ...data });
         } else {
-            addAdmin.mutate(data, {
-                onSuccess: () => {
-                    setShowModal(false);
-                    setSelectedAdmin(null);
-                }
-            });
+            await addAdminMutation.mutateAsync(data);
         }
+        setShowModal(false);
+        setSelectedAdmin(null);
     };
 
     const handleEdit = (id) => {
@@ -87,33 +83,17 @@ export default function AdminsClient({ initialAdmins = [] }) {
             message: "This admin will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
             onConfirm: async () => {
-                const adminToDelete = admins.find(a => a.id === id);
-                if (adminToDelete) {
-                    deleteAdmin.mutate(id, {
-                        onSuccess: () => {
-                            setTrashAdmins(prev => [adminToDelete, ...prev]);
-                        }
-                    });
-                }
+                await deleteAdminMutation.mutateAsync(id);
             }
         });
     };
 
     const handleRestore = async (id) => {
-        const adminToRestore = trashAdmins.find(a => a.id === id);
-        if (adminToRestore) {
-            addAdmin.mutate(adminToRestore, {
-                onSuccess: () => {
-                    setTrashAdmins(prev => prev.filter(a => a.id !== id));
-                    toast.success("Admin restored successfully!");
-                }
-            });
-        }
+        await restoreAdminMutation.mutateAsync(id);
     };
 
     const handlePermanentDelete = async (id) => {
-        setTrashAdmins(prev => prev.filter(a => a.id !== id));
-        toast.success("Admin permanently deleted!");
+        await permanentDeleteMutation.mutateAsync(id);
     };
 
     const handleBulkDelete = () => {
@@ -124,13 +104,8 @@ export default function AdminsClient({ initialAdmins = [] }) {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: async () => {
-                const itemsToDelete = admins.filter(a => selectedIds.includes(a.id));
-                bulkDeleteAdmins.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setTrashAdmins(prev => [...itemsToDelete, ...prev]);
-                        setSelectedIds([]);
-                    }
-                });
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             }
         });
     };
@@ -182,17 +157,21 @@ export default function AdminsClient({ initialAdmins = [] }) {
             </PageHeader>
 
             <div className="mt-4">
-                <AdminsTable
-                    data={admins}
-                    selectedIds={selectedIds}
-                    onSelectionChange={setSelectedIds}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onView={(admin) => {
-                        setViewAdmin(admin);
-                        setShowOffcanvas(true);
-                    }}
-                />
+                {isLoading ? (
+                    <div className="text-center py-5 text-muted">Loading admins...</div>
+                ) : (
+                    <AdminsTable
+                        data={admins}
+                        selectedIds={selectedIds}
+                        onSelectionChange={setSelectedIds}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onView={(admin) => {
+                            setViewAdmin(admin);
+                            setShowOffcanvas(true);
+                        }}
+                    />
+                )}
             </div>
 
             <AdminModal
@@ -221,4 +200,3 @@ export default function AdminsClient({ initialAdmins = [] }) {
         </>
     );
 }
-

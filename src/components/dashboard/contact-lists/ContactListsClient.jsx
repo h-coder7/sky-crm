@@ -12,9 +12,12 @@ import { toast } from "react-hot-toast";
 import ContactDetailsOffcanvas from "@/components/dashboard/contact-lists/ContactDetailsOffcanvas";
 import {
     useContactLists,
+    useTrashContacts,
     useAddContact,
     useUpdateContact,
     useDeleteContact,
+    useRestoreContact,
+    usePermanentDeleteContact,
     useBulkDeleteContacts
 } from "@/hooks/useContactLists";
 
@@ -23,19 +26,23 @@ import {
  * 
  * Handles all interactive logic for comprehensive contact management
  */
-export default function ContactListsClient({ initialContacts = [] }) {
+export default function ContactListsClient() {
     // React Query Hooks
     const { data: contacts = [], isLoading } = useContactLists();
+    const { data: trashContacts = [] } = useTrashContacts();
+
     const addMutation = useAddContact();
     const updateMutation = useUpdateContact();
     const deleteMutation = useDeleteContact();
+    const restoreMutation = useRestoreContact();
+    const permanentDeleteMutation = usePermanentDeleteContact();
+    const bulkDeleteMutation = useBulkDeleteContacts();
 
     // Local UI State
     const [selectedContact, setSelectedContact] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
 
-    const [trashContacts, setTrashContacts] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
 
     const [viewContact, setViewContact] = useState(null);
@@ -63,9 +70,9 @@ export default function ContactListsClient({ initialContacts = [] }) {
 
     const handleSave = async (data) => {
         if (selectedContact) {
-            updateMutation.mutate({ ...selectedContact, ...data });
+            await updateMutation.mutateAsync({ ...selectedContact, ...data });
         } else {
-            addMutation.mutate(data);
+            await addMutation.mutateAsync(data);
         }
         setShowModal(false);
         setSelectedContact(null);
@@ -89,29 +96,20 @@ export default function ContactListsClient({ initialContacts = [] }) {
             title: "Move to Trash?",
             message: "This contact will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
-            onConfirm: () => {
-                deleteMutation.mutate(id);
-                // Note: In a real app, you'd probably have a trash mutation too.
-                // For now, we follow the previous logic of local trash state if needed,
-                // but let's prioritize the main contacts list mutation.
+            onConfirm: async () => {
+                await deleteMutation.mutateAsync(id);
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
             }
         });
     };
 
     const handleRestore = async (id) => {
-        const contactToRestore = trashContacts.find((c) => c.id === id);
-        if (contactToRestore) {
-            addMutation.mutate(contactToRestore);
-            setTrashContacts((prev) => prev.filter((c) => c.id !== id));
-        }
+        await restoreMutation.mutateAsync(id);
     };
 
     const handlePermanentDelete = async (id) => {
-        setTrashContacts((prev) => prev.filter((c) => c.id !== id));
-        toast.success("Contact permanently deleted!");
+        await permanentDeleteMutation.mutateAsync(id);
     };
-
-    const bulkDeleteMutation = useBulkDeleteContacts();
 
     const handleBulkDelete = () => {
         if (selectedIds.length === 0) return;
@@ -121,14 +119,8 @@ export default function ContactListsClient({ initialContacts = [] }) {
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
             onConfirm: async () => {
-                const itemsToDelete = contacts.filter(c => selectedIds.includes(c.id));
-                setTrashContacts(prev => [...itemsToDelete, ...prev]);
-
-                bulkDeleteMutation.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setSelectedIds([]);
-                    }
-                });
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             }
         });
     };
@@ -183,14 +175,18 @@ export default function ContactListsClient({ initialContacts = [] }) {
             </PageHeader>
 
             {/* Page Content */}
-            <ContactListsTable
-                data={contacts}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onView={handleView}
-            />
+            {isLoading ? (
+                <div className="text-center py-5 text-muted">Loading contacts...</div>
+            ) : (
+                <ContactListsTable
+                    data={contacts}
+                    selectedIds={selectedIds}
+                    onSelectionChange={setSelectedIds}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onView={handleView}
+                />
+            )}
 
             {/* Add/Edit Modal */}
             <ContactListModal

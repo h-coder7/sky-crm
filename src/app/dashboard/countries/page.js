@@ -30,8 +30,8 @@ const MOCK_COUNTRIES = [
 
 export default function CountriesPage() {
   return (
-    <Suspense fallback={<div className="d-none">Loading countries...</div>}>
-      <CountriesClient initialCountries={MOCK_COUNTRIES} />
+    <Suspense fallback={<div className="text-center py-5">Loading countries...</div>}>
+      <CountriesClient />
     </Suspense>
   );
 }

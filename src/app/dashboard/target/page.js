@@ -10,8 +10,8 @@ const MOCK_TARGETS = [
 
 export default function TargetPage() {
   return (
-    <Suspense fallback={<div className="d-none">Loading targets...</div>}>
-      <TargetClient initialTargets={MOCK_TARGETS} />
+    <Suspense fallback={<div className="text-center py-5">Loading targets...</div>}>
+      <TargetClient />
     </Suspense>
   );
 }

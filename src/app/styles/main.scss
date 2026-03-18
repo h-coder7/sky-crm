@@ -281,7 +281,7 @@ small.text {
     transition: all 200ms linear;
 
     &::after {
-        background: url(/images/top-arrow.png);
+        background: url(/crm-skybridge/images/top-arrow.png);
         background-size: contain;
         background-repeat: no-repeat;
         content: "";
@@ -4342,7 +4342,7 @@ section {
     .deal-bubble {
         // position: relative;
         cursor: grab;
-        // transition: box-shadow 0.2s, transform 0.2s;
+        transition: box-shadow 0.2s, transform 0.2s;
         background-color: #fff; /* Default */
         // height: 100%;
         display: flex;
@@ -4370,7 +4370,7 @@ section {
 .drag-overlay {
     // position: relative;
     cursor: grab;
-    // transition: box-shadow 0.2s, transform 0.2s;
+    transition: box-shadow 0.2s, transform 0.2s;
     background-color: #fff; /* Default */
     // height: 100%;
     display: flex;
@@ -4381,7 +4381,7 @@ section {
     padding: 20px;
     box-shadow: 5px 5px 20px #0001;
     z-index: 30;
-    opacity: 0.1;
+    // opacity: 0.1;
     &:hover {
         box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
         transform: translateY(-2px);

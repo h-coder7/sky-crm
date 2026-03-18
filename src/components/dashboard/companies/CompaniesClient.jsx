@@ -10,25 +10,29 @@ import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
 import {
     useCompanies,
+    useTrashCompanies,
     useAddCompany,
     useUpdateCompany,
     useDeleteCompany,
+    useRestoreCompany,
+    usePermanentDeleteCompany,
     useBulkDeleteCompanies
 } from "@/hooks/useCompanies";
 
-export default function CompaniesClient({ initialCompanies = [] }) {
+export default function CompaniesClient() {
     const { data: companies = [], isLoading } = useCompanies();
-    const addCompany = useAddCompany();
-    const updateCompany = useUpdateCompany();
-    const deleteCompany = useDeleteCompany();
-    const bulkDeleteCompanies = useBulkDeleteCompanies();
+    const { data: trashCompanies = [] } = useTrashCompanies();
+
+    const addCompanyMutation = useAddCompany();
+    const updateCompanyMutation = useUpdateCompany();
+    const deleteCompanyMutation = useDeleteCompany();
+    const restoreCompanyMutation = useRestoreCompany();
+    const permanentDeleteMutation = usePermanentDeleteCompany();
+    const bulkDeleteMutation = useBulkDeleteCompanies();
 
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
-
-    // Trash State
-    const [trashCompanies, setTrashCompanies] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
 
     const searchParams = useSearchParams();
@@ -50,22 +54,14 @@ export default function CompaniesClient({ initialCompanies = [] }) {
     /* ======================================================================
        1. Handlers
        ====================================================================== */
-    const handleSave = (companyData) => {
+    const handleSave = async (companyData) => {
         if (selectedCompany) {
-            updateCompany.mutate({ ...selectedCompany, ...companyData }, {
-                onSuccess: () => {
-                    setIsModalOpen(false);
-                    setSelectedCompany(null);
-                }
-            });
+            await updateCompanyMutation.mutateAsync({ ...selectedCompany, ...companyData });
         } else {
-            addCompany.mutate(companyData, {
-                onSuccess: () => {
-                    setIsModalOpen(false);
-                    setSelectedCompany(null);
-                }
-            });
+            await addCompanyMutation.mutateAsync(companyData);
         }
+        setIsModalOpen(false);
+        setSelectedCompany(null);
     };
 
     const handleEdit = (id) => {
@@ -81,36 +77,20 @@ export default function CompaniesClient({ initialCompanies = [] }) {
             title: "Move to Trash?",
             message: "This company will be moved to the recycle bin.",
             confirmLabel: "Yes, Move it",
-            onConfirm: () => {
-                const companyToDelete = companies.find((c) => c.id === id);
-                if (companyToDelete) {
-                    deleteCompany.mutate(id, {
-                        onSuccess: () => {
-                            setTrashCompanies((prev) => [companyToDelete, ...prev]);
-                        }
-                    });
-                }
+            onConfirm: async () => {
+                await deleteCompanyMutation.mutateAsync(id);
+                setSelectedIds(prev => prev.filter(selectedId => selectedId !== id));
             }
         });
     };
 
-    const handleRestore = (id) => {
-        const companyToRestore = trashCompanies.find((c) => c.id === id);
-        if (companyToRestore) {
-            addCompany.mutate(companyToRestore, {
-                onSuccess: () => {
-                    setTrashCompanies((prev) => prev.filter((c) => c.id !== id));
-                    toast.success("Company restored successfully!");
-                }
-            });
-        }
+    const handleRestore = async (id) => {
+        await restoreCompanyMutation.mutateAsync(id);
     };
 
-    const handlePermanentDelete = (id) => {
-        setTrashCompanies((prev) => prev.filter((c) => c.id !== id));
-        toast.success("Company permanently deleted!");
+    const handlePermanentDelete = async (id) => {
+        await permanentDeleteMutation.mutateAsync(id);
     };
-
 
     const handleBulkDelete = () => {
         if (selectedIds.length === 0) return;
@@ -119,14 +99,9 @@ export default function CompaniesClient({ initialCompanies = [] }) {
             title: "Delete Selected Items?",
             message: `Are you sure you want to move ${selectedIds.length} items to trash?`,
             confirmLabel: "Yes, Delete",
-            onConfirm: () => {
-                const itemsToDelete = companies.filter(c => selectedIds.includes(c.id));
-                bulkDeleteCompanies.mutate(selectedIds, {
-                    onSuccess: () => {
-                        setTrashCompanies(prev => [...itemsToDelete, ...prev]);
-                        setSelectedIds([]);
-                    }
-                });
+            onConfirm: async () => {
+                await bulkDeleteMutation.mutateAsync(selectedIds);
+                setSelectedIds([]);
             }
         });
     };
@@ -179,13 +154,17 @@ export default function CompaniesClient({ initialCompanies = [] }) {
                 </button>
             </PageHeader>
 
-            <CompaniesTable
-                data={companies}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-            />
+            {isLoading ? (
+                <div className="text-center py-5 text-muted">Loading companies...</div>
+            ) : (
+                <CompaniesTable
+                    data={companies}
+                    selectedIds={selectedIds}
+                    onSelectionChange={setSelectedIds}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                />
+            )}
 
             {/* Modals */}
             <CompanyModal

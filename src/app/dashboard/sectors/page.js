@@ -8,7 +8,7 @@ import api from "@/app/api/api"; // 🔌 Import your configured axios instance
 
 export default function SectorsPage() {
   return (
-    <Suspense fallback={<div className="d-none">Loading sectors...</div>}>
+    <Suspense fallback={<div className="text-center py-5">Loading sectors...</div>}>
       <SectorsClient />
     </Suspense>
   );
