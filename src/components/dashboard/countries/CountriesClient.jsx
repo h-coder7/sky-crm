@@ -9,6 +9,7 @@ import CountryModal from "@/components/dashboard/countries/CountryModal";
 import TrashModal from "@/components/dashboard/countries/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import CountryDetailsOffcanvas from "@/components/dashboard/countries/CountryDetailsOffcanvas";
 import {
     useCountries,
     useTrashCountries,
@@ -38,6 +39,10 @@ export default function CountriesClient() {
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
+
+    // Offcanvas State for View Details
+    const [viewCountry, setViewCountry] = useState(null);
+    const [showOffcanvas, setShowOffcanvas] = useState(false);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -79,6 +84,15 @@ export default function CountriesClient() {
             setShowModal(true);
         }
     };
+
+    /**
+     * Open details offcanvas
+     */
+    const handleView = (country) => {
+        setViewCountry(country);
+        setShowOffcanvas(true);
+    };
+
 
     const handleDelete = (id) => {
         confirmAction({
@@ -174,6 +188,7 @@ export default function CountriesClient() {
                         onSelectionChange={setSelectedIds}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onView={handleView}
                     />
                 )}
             </div>
@@ -193,6 +208,16 @@ export default function CountriesClient() {
                 onClose={() => setShowTrashModal(false)}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
+            />
+
+            {/* Details Offcanvas */}
+            <CountryDetailsOffcanvas
+                show={showOffcanvas}
+                country={viewCountry}
+                onClose={() => {
+                    setShowOffcanvas(false);
+                    setViewCountry(null);
+                }}
             />
         </>
     );
