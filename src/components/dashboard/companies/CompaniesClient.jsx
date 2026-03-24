@@ -8,6 +8,7 @@ import CompanyModal from "./CompanyModal";
 import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import CompanyDetailsOffcanvas from "./CompanyDetailsOffcanvas";
 import {
     useCompanies,
     useTrashCompanies,
@@ -33,6 +34,11 @@ export default function CompaniesClient() {
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
+
+    // Offcanvas State for View Details
+    const [viewCompany, setViewCompany] = useState(null);
+    const [showOffcanvas, setShowOffcanvas] = useState(false);
+
     const [showTrashModal, setShowTrashModal] = useState(false);
 
     const searchParams = useSearchParams();
@@ -70,6 +76,14 @@ export default function CompaniesClient() {
             setSelectedCompany(company);
             setIsModalOpen(true);
         }
+    };
+
+    /**
+     * Open details offcanvas
+     */
+    const handleView = (company) => {
+        setViewCompany(company);
+        setShowOffcanvas(true);
     };
 
     const handleDelete = (id) => {
@@ -163,6 +177,7 @@ export default function CompaniesClient() {
                     onSelectionChange={setSelectedIds}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onView={handleView}
                 />
             )}
 
@@ -180,6 +195,16 @@ export default function CompaniesClient() {
                 trashCompanies={trashCompanies}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
+            />
+
+            {/* Details Offcanvas */}
+            <CompanyDetailsOffcanvas
+                show={showOffcanvas}
+                company={viewCompany}
+                onClose={() => {
+                    setShowOffcanvas(false);
+                    setViewCompany(null);
+                }}
             />
         </>
     );

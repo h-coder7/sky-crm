@@ -9,6 +9,7 @@ import DealsModal from "@/components/dashboard/deals/DealsModal";
 import TrashModal from "@/components/dashboard/deals/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import DealDetailsOffcanvas from "@/components/dashboard/deals/DealDetailsOffcanvas";
 
 /**
  * 🎯 Client Component for Deals Page
@@ -44,6 +45,11 @@ export default function DealsClient() {
   const [showModal, setShowModal] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'matrix'
+
+  // Offcanvas State for View Details
+  const [viewDeal, setViewDeal] = useState(null);
+  const [showOffcanvas, setShowOffcanvas] = useState(false);
+
   const [showTrashModal, setShowTrashModal] = useState(false);
 
   const searchParams = useSearchParams();
@@ -78,6 +84,14 @@ export default function DealsClient() {
       setSelectedDeal(deal);
       setShowModal(true);
     }
+  };
+
+  /**
+   * Open details offcanvas
+   */
+  const handleView = (deal) => {
+    setViewDeal(deal);
+    setShowOffcanvas(true);
   };
 
   const handleDelete = (id) => {
@@ -183,6 +197,7 @@ export default function DealsClient() {
               onSelectionChange={setSelectedIds}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onView={handleView}
             />
           ) : (
             <DealsMatrix
@@ -206,6 +221,16 @@ export default function DealsClient() {
         onClose={() => setShowTrashModal(false)}
         onRestore={handleRestore}
         onPermanentDelete={handlePermanentDelete}
+      />
+
+      {/* Details Offcanvas */}
+      <DealDetailsOffcanvas
+        show={showOffcanvas}
+        deal={viewDeal}
+        onClose={() => {
+          setShowOffcanvas(false);
+          setViewDeal(null);
+        }}
       />
     </>
   );

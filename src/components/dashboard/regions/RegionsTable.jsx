@@ -23,7 +23,8 @@ export default function RegionsTable({
     selectedIds = [],
     onSelectionChange,
     onEdit,
-    onDelete
+    onDelete,
+    onView
 }) {
 
     /* ======================================================================
@@ -181,20 +182,18 @@ export default function RegionsTable({
                                 <SortableRow items={visibleColumnOrder}>
                                     {/* Title Column */}
                                     {table.getColumn("title").getIsVisible() && (
-                                        <SortableTh id="title" key="title" disabled className="sticky-col">
-                                            <div className="form-check">
+                                        <SortableTh id="title" key="title" disabled className="position-relative ps-5">
+                                            <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="form-check-input mt-0 cursor-pointer"
                                                     id="select-all-regions"
                                                     type="checkbox"
                                                     checked={table.getIsAllPageRowsSelected()}
                                                     onChange={table.getToggleAllPageRowsSelectedHandler()}
                                                 />
-                                                <label className="form-check-label ms-2" htmlFor="select-all-regions">
-                                                    Title
-                                                </label>
+                                                <label className="form-check-label" htmlFor="select-all-regions"></label>
                                             </div>
-
+                                            <span>Title</span>
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                                     <i className="fat fa-sort fsz-12"></i>
@@ -311,18 +310,24 @@ export default function RegionsTable({
                                         return (
                                             <SortableRow key={row.id} items={visibleColumnOrder}>
                                                 {table.getColumn("title").getIsVisible() && (
-                                                    <td id="title" key="title">
-                                                        <div className="form-check">
+                                                    <td className="position-relative ps-5" id="title" key="title">
+                                                        <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                             <input
-                                                                className="form-check-input"
+                                                                className="form-check-input mt-0 cursor-pointer"
                                                                 type="checkbox"
                                                                 id={`region-${item.id}`}
                                                                 checked={row.getIsSelected()}
                                                                 onChange={row.getToggleSelectedHandler()}
                                                             />
-                                                            <label className="form-check-label ms-2" htmlFor={`region-${item.id}`}>
-                                                                {item.title}
-                                                            </label>
+                                                            <label className="form-check-label" htmlFor={`region-${item.id}`}></label>
+                                                        </div>
+                                                        <div
+                                                            className="hover-underline d-inline-block"
+                                                            onClick={() => onView?.(item)}
+                                                            title="View Details"
+                                                            style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                                                        >
+                                                            {item.title}
                                                         </div>
                                                     </td>
                                                 )}

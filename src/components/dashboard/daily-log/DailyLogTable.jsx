@@ -19,7 +19,8 @@ export default function DailyLogTable({
     selectedIds = [],
     onSelectionChange,
     onEdit,
-    onDelete
+    onDelete,
+    onView
 }) {
     const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
@@ -139,19 +140,18 @@ export default function DailyLogTable({
                             <thead>
                                 <SortableRow items={visibleColumnOrder}>
                                     {table.getColumn("employee").getIsVisible() && (
-                                        <SortableTh id="employee" key="employee" disabled className="sticky-col">
-                                            <div className="form-check">
+                                        <SortableTh id="employee" key="employee" disabled className="position-relative ps-5">
+                                            <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="form-check-input mt-0 cursor-pointer"
                                                     id="select-all-daily-logs"
                                                     type="checkbox"
                                                     checked={table.getIsAllPageRowsSelected()}
                                                     onChange={table.getToggleAllPageRowsSelectedHandler()}
                                                 />
-                                                <label className="form-check-label ms-2" htmlFor="select-all-daily-logs">
-                                                    Employee
-                                                </label>
+                                                <label className="form-check-label" htmlFor="select-all-daily-logs"></label>
                                             </div>
+                                            <span>Employee</span>
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
                                                     <i className="fat fa-sort fsz-12"></i>
@@ -255,18 +255,24 @@ export default function DailyLogTable({
 
                                                     if (colId === 'employee') {
                                                         return (
-                                                            <td key={colId} id={colId} className="sticky-col">
-                                                                <div className="form-check">
+                                                            <td className="position-relative ps-5" key={colId} id={colId}>
+                                                                <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                                     <input
-                                                                        className="form-check-input"
+                                                                        className="form-check-input mt-0 cursor-pointer"
                                                                         type="checkbox"
                                                                         id={`daily-log-${item.id}`}
                                                                         checked={row.getIsSelected()}
                                                                         onChange={row.getToggleSelectedHandler()}
                                                                     />
-                                                                    <label className="form-check-label ms-2 mb-0" htmlFor={`daily-log-${item.id}`}>
-                                                                        {item.employee}
-                                                                    </label>
+                                                                    <label className="form-check-label" htmlFor={`daily-log-${item.id}`}></label>
+                                                                </div>
+                                                                <div
+                                                                    className="hover-underline d-inline-block"
+                                                                    onClick={() => onView?.(item)}
+                                                                    title="View Details"
+                                                                    style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                                                                >
+                                                                    {item.employee}
                                                                 </div>
                                                             </td>
                                                         );

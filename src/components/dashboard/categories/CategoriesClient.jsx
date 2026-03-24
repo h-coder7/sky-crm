@@ -8,6 +8,7 @@ import CategoryModal from "@/components/dashboard/categories/CategoryModal";
 import TrashModal from "@/components/dashboard/categories/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import CategoryDetailsOffcanvas from "./CategoryDetailsOffcanvas";
 
 import {
     useCategories,
@@ -37,6 +38,10 @@ export default function CategoriesClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTrashOpen, setIsTrashOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
+
+    // Offcanvas State for View Details
+    const [viewCategory, setViewCategory] = useState(null);
+    const [showOffcanvas, setShowOffcanvas] = useState(false);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -68,6 +73,14 @@ export default function CategoriesClient() {
             setEditingCategory(category);
             setIsModalOpen(true);
         }
+    };
+
+    /**
+     * Open details offcanvas
+     */
+    const handleView = (category) => {
+        setViewCategory(category);
+        setShowOffcanvas(true);
     };
 
     const handleDelete = (id) => {
@@ -167,6 +180,7 @@ export default function CategoriesClient() {
                     onSelectionChange={setSelectedIds}
                     onEdit={handleEditModal}
                     onDelete={handleDelete}
+                    onView={handleView}
                 />
             )}
 
@@ -184,6 +198,16 @@ export default function CategoriesClient() {
                 trashCategories={trashCategories}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
+            />
+
+            {/* Details Offcanvas */}
+            <CategoryDetailsOffcanvas
+                show={showOffcanvas}
+                category={viewCategory}
+                onClose={() => {
+                    setShowOffcanvas(false);
+                    setViewCategory(null);
+                }}
             />
         </>
     );

@@ -19,7 +19,8 @@ export default function ProductsTable({
     selectedIds = [],
     onSelectionChange,
     onEdit,
-    onDelete
+    onDelete,
+    onView
 }) {
 
     /* ======================================================================
@@ -188,19 +189,18 @@ export default function ProductsTable({
                                 <SortableRow items={visibleColumnOrder}>
                                     {/* Title Column */}
                                     {table.getColumn("title").getIsVisible() && (
-                                        <SortableTh id="title" key="title" disabled className="sticky-col">
-                                            <div className="form-check">
+                                        <SortableTh id="title" key="title" disabled className="position-relative ps-5">
+                                            <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="form-check-input mt-0 cursor-pointer"
                                                     id="select-all-products"
                                                     type="checkbox"
                                                     checked={table.getIsAllPageRowsSelected()}
                                                     onChange={table.getToggleAllPageRowsSelectedHandler()}
                                                 />
-                                                <label className="form-check-label ms-2" htmlFor="select-all-products">
-                                                    Title
-                                                </label>
+                                                <label className="form-check-label" htmlFor="select-all-products"></label>
                                             </div>
+                                            <span>Title</span>
 
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
@@ -305,21 +305,24 @@ export default function ProductsTable({
 
                                                     if (colId === 'title') {
                                                         return (
-                                                            <td key={colId} id={colId} className="sticky-col">
-                                                                <div className="form-check">
+                                                            <td className="position-relative ps-5" key={colId} id={colId}>
+                                                                <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                                     <input
-                                                                        className="form-check-input"
+                                                                        className="form-check-input mt-0 cursor-pointer"
                                                                         type="checkbox"
                                                                         id={`product-${item.id}`}
                                                                         checked={row.getIsSelected()}
                                                                         onChange={row.getToggleSelectedHandler()}
                                                                     />
-                                                                    <label
-                                                                        className="form-check-label ms-2 mb-0"
-                                                                        htmlFor={`product-${item.id}`}
-                                                                    >
-                                                                        {item.title}
-                                                                    </label>
+                                                                    <label className="form-check-label" htmlFor={`product-${item.id}`}></label>
+                                                                </div>
+                                                                <div
+                                                                    className="hover-underline d-inline-block"
+                                                                    onClick={() => onView?.(item)}
+                                                                    title="View Details"
+                                                                    style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                                                                >
+                                                                    {item.title}
                                                                 </div>
                                                             </td>
                                                         );

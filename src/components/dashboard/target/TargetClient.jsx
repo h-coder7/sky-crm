@@ -8,6 +8,7 @@ import TargetModal from "./TargetModal";
 import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import TargetDetailsOffcanvas from "./TargetDetailsOffcanvas";
 
 import {
     useTarget,
@@ -37,6 +38,10 @@ export default function TargetClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTrashOpen, setIsTrashOpen] = useState(false);
     const [editingTarget, setEditingTarget] = useState(null);
+
+    // Offcanvas State for View Details
+    const [viewTarget, setViewTarget] = useState(null);
+    const [showOffcanvas, setShowOffcanvas] = useState(false);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -68,6 +73,14 @@ export default function TargetClient() {
             setEditingTarget(target);
             setIsModalOpen(true);
         }
+    };
+
+    /**
+     * Open details offcanvas
+     */
+    const handleView = (target) => {
+        setViewTarget(target);
+        setShowOffcanvas(true);
     };
 
     const handleDelete = (id) => {
@@ -167,6 +180,7 @@ export default function TargetClient() {
                     onSelectionChange={setSelectedIds}
                     onEdit={handleEditModal}
                     onDelete={handleDelete}
+                    onView={handleView}
                 />
             )}
 
@@ -184,6 +198,16 @@ export default function TargetClient() {
                 trashTargets={trashTargets}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
+            />
+
+            {/* Details Offcanvas */}
+            <TargetDetailsOffcanvas
+                show={showOffcanvas}
+                target={viewTarget}
+                onClose={() => {
+                    setShowOffcanvas(false);
+                    setViewTarget(null);
+                }}
             />
         </>
     );

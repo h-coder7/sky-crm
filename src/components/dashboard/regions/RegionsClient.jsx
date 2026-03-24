@@ -8,6 +8,7 @@ import RegionModal from "@/components/dashboard/regions/RegionModal";
 import RegionsTrashModal from "@/components/dashboard/regions/RegionsTrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import RegionDetailsOffcanvas from "./RegionDetailsOffcanvas";
 
 import {
     useRegions,
@@ -35,6 +36,10 @@ export default function RegionsClient() {
     const [showModal, setShowModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
+
+    // Offcanvas State for View Details
+    const [viewRegion, setViewRegion] = useState(null);
+    const [showOffcanvas, setShowOffcanvas] = useState(false);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -68,6 +73,14 @@ export default function RegionsClient() {
             setSelectedRegion(region);
             setShowModal(true);
         }
+    };
+
+    /**
+     * Open details offcanvas
+     */
+    const handleView = (region) => {
+        setViewRegion(region);
+        setShowOffcanvas(true);
     };
 
     const handleDelete = (id) => {
@@ -150,6 +163,7 @@ export default function RegionsClient() {
                     onSelectionChange={setSelectedIds}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onView={handleView}
                 />
             )}
 
@@ -166,6 +180,16 @@ export default function RegionsClient() {
                 onClose={() => setShowTrashModal(false)}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
+            />
+
+            {/* Details Offcanvas */}
+            <RegionDetailsOffcanvas
+                show={showOffcanvas}
+                region={viewRegion}
+                onClose={() => {
+                    setShowOffcanvas(false);
+                    setViewRegion(null);
+                }}
             />
         </>
     );

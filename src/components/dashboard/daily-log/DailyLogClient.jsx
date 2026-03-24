@@ -7,6 +7,7 @@ import DailyLogModal from "@/components/dashboard/daily-log/DailyLogModal";
 import TrashModal from "@/components/dashboard/daily-log/TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import DailyLogDetailsOffcanvas from "./DailyLogDetailsOffcanvas";
 
 import {
     useDailyLog,
@@ -35,6 +36,10 @@ export default function DailyLogClient() {
     const [selectedIds, setSelectedIds] = useState([]);
     const [showTrashModal, setShowTrashModal] = useState(false);
 
+    // Offcanvas State for View Details
+    const [viewLog, setViewLog] = useState(null);
+    const [showOffcanvas, setShowOffcanvas] = useState(false);
+
     const handleSave = async (data) => {
         if (selectedLog) {
             await updateLogMutation.mutateAsync({ ...selectedLog, ...data });
@@ -51,6 +56,14 @@ export default function DailyLogClient() {
             setSelectedLog(log);
             setShowModal(true);
         }
+    };
+
+    /**
+     * Open details offcanvas
+     */
+    const handleView = (log) => {
+        setViewLog(log);
+        setShowOffcanvas(true);
     };
 
     const handleDelete = (id) => {
@@ -134,6 +147,7 @@ export default function DailyLogClient() {
                         onSelectionChange={setSelectedIds}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onView={handleView}
                     />
                 )}
             </div>
@@ -151,6 +165,16 @@ export default function DailyLogClient() {
                 onClose={() => setShowTrashModal(false)}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
+            />
+
+            {/* Details Offcanvas */}
+            <DailyLogDetailsOffcanvas
+                show={showOffcanvas}
+                log={viewLog}
+                onClose={() => {
+                    setShowOffcanvas(false);
+                    setViewLog(null);
+                }}
             />
         </>
     );

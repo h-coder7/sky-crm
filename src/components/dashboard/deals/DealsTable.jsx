@@ -38,7 +38,8 @@ export default function DealsTable({
     selectedIds = [],
     onSelectionChange,
     onEdit,
-    onDelete
+    onDelete,
+    onView
 }) {
     const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
@@ -210,19 +211,18 @@ export default function DealsTable({
                                 <SortableRow items={visibleColumnOrder}>
                                     {/* Title Column */}
                                     {table.getColumn("title").getIsVisible() && (
-                                        <SortableTh id="title" key="title" disabled className="sticky-col">
-                                            <div className="form-check">
+                                        <SortableTh id="title" key="title" disabled className="position-relative ps-5">
+                                            <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                 <input
-                                                    className="form-check-input"
+                                                    className="form-check-input mt-0 cursor-pointer"
                                                     id="select-all-deals"
                                                     type="checkbox"
                                                     checked={table.getIsAllPageRowsSelected()}
                                                     onChange={table.getToggleAllPageRowsSelectedHandler()}
                                                 />
-                                                <label className="form-check-label ms-2" htmlFor="select-all-deals">
-                                                    Title
-                                                </label>
+                                                <label className="form-check-label" htmlFor="select-all-deals"></label>
                                             </div>
+                                            <span>Title</span>
 
                                             <div className="dropdown ms-auto" onClick={(e) => e.stopPropagation()}>
                                                 <button className="btn bg-transparent border-0 p-0" data-bs-toggle="dropdown">
@@ -536,18 +536,24 @@ export default function DealsTable({
                                         return (
                                             <SortableRow key={row.id} items={visibleColumnOrder}>
                                                 {table.getColumn("title").getIsVisible() && (
-                                                    <td id="title" key="title" className="sticky-col">
-                                                        <div className="form-check">
+                                                    <td className="position-relative ps-5" id="title" key="title">
+                                                        <div className="form-check position-absolute top-50 start-0 translate-middle ms-4">
                                                             <input
-                                                                className="form-check-input"
+                                                                className="form-check-input mt-0 cursor-pointer"
                                                                 type="checkbox"
                                                                 id={`deal-${item.id}`}
                                                                 checked={row.getIsSelected()}
                                                                 onChange={row.getToggleSelectedHandler()}
                                                             />
-                                                            <label className="form-check-label ms-2 d-flex align-items-center mb-0" htmlFor={`deal-${item.id}`}>
-                                                                {item.title}
-                                                            </label>
+                                                            <label className="form-check-label" htmlFor={`deal-${item.id}`}></label>
+                                                        </div>
+                                                        <div
+                                                            className="hover-underline"
+                                                            onClick={() => onView?.(item)}
+                                                            title="View Details"
+                                                            style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                                                        >
+                                                            <span>{item.title}</span>
                                                         </div>
                                                     </td>
                                                 )}

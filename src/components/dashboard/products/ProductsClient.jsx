@@ -8,6 +8,7 @@ import ProductModal from "./ProductModal";
 import TrashModal from "./TrashModal";
 import { confirmAction } from "@/utils/confirm";
 import { toast } from "react-hot-toast";
+import ProductDetailsOffcanvas from "./ProductDetailsOffcanvas";
 
 import {
     useProducts,
@@ -37,6 +38,10 @@ export default function ProductsClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isTrashOpen, setIsTrashOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
+
+    // Offcanvas State for View Details
+    const [viewProduct, setViewProduct] = useState(null);
+    const [showOffcanvas, setShowOffcanvas] = useState(false);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -68,6 +73,14 @@ export default function ProductsClient() {
             setEditingProduct(product);
             setIsModalOpen(true);
         }
+    };
+
+    /**
+     * Open details offcanvas
+     */
+    const handleView = (product) => {
+        setViewProduct(product);
+        setShowOffcanvas(true);
     };
 
     const handleDelete = (id) => {
@@ -167,6 +180,7 @@ export default function ProductsClient() {
                     onSelectionChange={setSelectedIds}
                     onEdit={handleEditModal}
                     onDelete={handleDelete}
+                    onView={handleView}
                 />
             )}
 
@@ -184,6 +198,16 @@ export default function ProductsClient() {
                 trashProducts={trashProducts}
                 onRestore={handleRestore}
                 onPermanentDelete={handlePermanentDelete}
+            />
+
+            {/* Details Offcanvas */}
+            <ProductDetailsOffcanvas
+                show={showOffcanvas}
+                product={viewProduct}
+                onClose={() => {
+                    setShowOffcanvas(false);
+                    setViewProduct(null);
+                }}
             />
         </>
     );
