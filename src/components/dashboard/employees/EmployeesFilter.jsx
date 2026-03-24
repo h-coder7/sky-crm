@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Select from "react-select";
 
+import { useSectors } from "@/hooks/useSectors";
+
 const ROLE_OPTIONS = [
-    { value: "", label: "Role" },
     { value: "Head Department", label: "Head Department" },
     { value: "Senior Business Development Manager", label: "Senior Business Development Manager" },
     { value: "Business Development Manager", label: "Business Development Manager" },
@@ -13,6 +14,7 @@ const ROLE_OPTIONS = [
 ];
 
 export default function EmployeesFilter({ table, dateRangeValue, onOpenModal, onReset, columnOrder = [] }) {
+    const { data: sectors = [] } = useSectors();
     const [nameSearch, setNameSearch] = useState("");
     const [emailSearch, setEmailSearch] = useState("");
     const [phoneSearch, setPhoneSearch] = useState("");
@@ -40,7 +42,8 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal, on
         table.getColumn("role")?.setFilterValue(val || undefined);
     };
 
-    const handleSectorChange = (val) => {
+    const handleSectorChange = (selectedOption) => {
+        const val = selectedOption?.value || "";
         setSectorSearch(val);
         table.getColumn("sector")?.setFilterValue(val || undefined);
     };
@@ -93,18 +96,23 @@ export default function EmployeesFilter({ table, dateRangeValue, onOpenModal, on
                     classNamePrefix="react-select"
                     value={ROLE_OPTIONS.find(opt => opt.value === roleSearch)}
                     onChange={handleRoleChange}
-                    isSearchable={false}
+                    isSearchable={true}
+                    isClearable={true}
                     placeholder="Role"
                 />
             </td>
         ),
         sector: (
             <td key="sector">
-                <input
-                    className="form-control"
+                <Select
+                    instanceId="employee-sector-filter"
+                    options={sectors.map(s => ({ value: s.title, label: s.title }))}
+                    classNamePrefix="react-select"
+                    value={sectorSearch ? { value: sectorSearch, label: sectorSearch } : null}
+                    onChange={handleSectorChange}
+                    isSearchable={true}
+                    isClearable={true}
                     placeholder="Sector"
-                    value={sectorSearch}
-                    onChange={(e) => handleSectorChange(e.target.value)}
                 />
             </td>
         ),

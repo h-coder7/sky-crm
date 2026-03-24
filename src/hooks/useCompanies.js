@@ -51,6 +51,10 @@ export function useCompanies() {
     return useQuery({
         queryKey: ["companies"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/companies");
+            // return res.json();
+
             await delay(500); // Simulate network
             const stored = localStorage.getItem("companies");
             return stored ? JSON.parse(stored) : MOCK_COMPANIES;
@@ -73,6 +77,14 @@ export function useAddCompany() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newCompany) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/companies", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newCompany)
+            // });
+            // return res.json();
+
             await delay(500);
             const companies = JSON.parse(localStorage.getItem("companies") || JSON.stringify(MOCK_COMPANIES));
             const companyWithId = { 
@@ -95,6 +107,14 @@ export function useUpdateCompany() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedCompany) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/companies/${updatedCompany.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedCompany)
+            // });
+            // return res.json();
+
             await delay(500);
             const companies = JSON.parse(localStorage.getItem("companies") || JSON.stringify(MOCK_COMPANIES));
             const updated = companies.map(c => c.id === updatedCompany.id ? updatedCompany : c);

@@ -321,7 +321,7 @@ export default function CountriesTable({
                                                             <label className="form-check-label" htmlFor={`country-${item.id}`}></label>
                                                         </div>
                                                         <div
-                                                            className="hover-underline fw-600"
+                                                            className="hover-underline"
                                                             onClick={() => onView?.(item)}
                                                             title="View Details"
                                                             style={{ cursor: "pointer", transition: "all 0.3s ease" }}

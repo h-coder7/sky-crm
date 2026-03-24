@@ -23,6 +23,10 @@ export function useCategories() {
     return useQuery({
         queryKey: ["categories"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/categories");
+            // return res.json();
+
             await delay(500); // Simulate network
             const stored = localStorage.getItem("categories");
             return stored ? JSON.parse(stored) : MOCK_CATEGORIES;
@@ -45,6 +49,14 @@ export function useAddCategory() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newCategory) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/categories", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newCategory)
+            // });
+            // return res.json();
+
             await delay(500);
             const categories = JSON.parse(localStorage.getItem("categories") || JSON.stringify(MOCK_CATEGORIES));
             const categoryWithId = { 
@@ -67,6 +79,14 @@ export function useUpdateCategory() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedCategory) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/categories/${updatedCategory.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedCategory)
+            // });
+            // return res.json();
+
             await delay(500);
             const categories = JSON.parse(localStorage.getItem("categories") || JSON.stringify(MOCK_CATEGORIES));
             const updated = categories.map(c => c.id === updatedCategory.id ? updatedCategory : c);

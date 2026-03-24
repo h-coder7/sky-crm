@@ -23,6 +23,10 @@ export function useProducts() {
     return useQuery({
         queryKey: ["products"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/products");
+            // return res.json();
+
             await delay(500); // Simulate network
             const stored = localStorage.getItem("products");
             return stored ? JSON.parse(stored) : MOCK_PRODUCTS;
@@ -45,6 +49,14 @@ export function useAddProduct() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newProduct) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/products", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newProduct)
+            // });
+            // return res.json();
+
             await delay(500);
             const products = JSON.parse(localStorage.getItem("products") || JSON.stringify(MOCK_PRODUCTS));
             const productWithId = { 
@@ -67,6 +79,14 @@ export function useUpdateProduct() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedProduct) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/products/${updatedProduct.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedProduct)
+            // });
+            // return res.json();
+
             await delay(500);
             const products = JSON.parse(localStorage.getItem("products") || JSON.stringify(MOCK_PRODUCTS));
             const updated = products.map(p => p.id === updatedProduct.id ? updatedProduct : p);

@@ -36,6 +36,10 @@ export function useSectors() {
     return useQuery({
         queryKey: ["sectors"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/sectors");
+            // return res.json();
+
             await delay(500); // Simulate network
             const stored = localStorage.getItem("sectors_v2");
             return stored ? JSON.parse(stored) : MOCK_SECTORS;
@@ -58,6 +62,14 @@ export function useAddSector() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newSector) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/sectors", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newSector)
+            // });
+            // return res.json();
+
             await delay(500);
             const sectors = JSON.parse(localStorage.getItem("sectors_v2") || JSON.stringify(MOCK_SECTORS));
             const sectorWithId = { 
@@ -80,6 +92,14 @@ export function useUpdateSector() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedSector) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/sectors/${updatedSector.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedSector)
+            // });
+            // return res.json();
+
             await delay(500);
             const sectors = JSON.parse(localStorage.getItem("sectors_v2") || JSON.stringify(MOCK_SECTORS));
             const updated = sectors.map(s => s.id === updatedSector.id ? updatedSector : s);

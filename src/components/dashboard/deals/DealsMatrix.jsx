@@ -119,7 +119,7 @@ export default function DealsMatrix({ deals, onUpdateDeal }) {
                     ))}
                 </div>
             </div>
-            <DragOverlay>
+            <DragOverlay dropAnimation={null}>
                 {activeId ? (
                     (() => {
                         const activeDeal = deals.find(d => d.id === activeId);

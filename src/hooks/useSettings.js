@@ -34,6 +34,10 @@ export function useSettings() {
     return useQuery({
         queryKey: ["settings"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/settings");
+            // return res.json();
+
             await delay(500); // Simulate network
             const stored = localStorage.getItem("app-settings");
             return stored ? JSON.parse(stored) : DEFAULT_SETTINGS;
@@ -45,6 +49,14 @@ export function useUpdateSettings() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newSettings) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/settings", {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newSettings)
+            // });
+            // return res.json();
+
             await delay(500);
             localStorage.setItem("app-settings", JSON.stringify(newSettings));
             return newSettings;

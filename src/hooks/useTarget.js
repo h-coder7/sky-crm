@@ -23,6 +23,10 @@ export function useTarget() {
     return useQuery({
         queryKey: ["targets"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/targets");
+            // return res.json();
+
             await delay(500); // Simulate network
             const stored = localStorage.getItem("targets");
             return stored ? JSON.parse(stored) : MOCK_TARGETS;
@@ -45,6 +49,14 @@ export function useAddTarget() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newTarget) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/targets", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newTarget)
+            // });
+            // return res.json();
+
             await delay(500);
             const targets = JSON.parse(localStorage.getItem("targets") || JSON.stringify(MOCK_TARGETS));
             const targetWithId = { 
@@ -67,6 +79,14 @@ export function useUpdateTarget() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedTarget) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/targets/${updatedTarget.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedTarget)
+            // });
+            // return res.json();
+
             await delay(500);
             const targets = JSON.parse(localStorage.getItem("targets") || JSON.stringify(MOCK_TARGETS));
             const updated = targets.map(t => t.id === updatedTarget.id ? updatedTarget : t);

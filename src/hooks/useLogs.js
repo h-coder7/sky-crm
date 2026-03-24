@@ -36,6 +36,10 @@ export function useLogs() {
     return useQuery({
         queryKey: ["logs"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/logs");
+            // return res.json();
+
             await delay(500); // Simulate network
             const stored = localStorage.getItem("activity-logs");
             return stored ? JSON.parse(stored) : MOCK_LOGS;
@@ -47,6 +51,14 @@ export function useAddLog() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newLog) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/logs", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newLog)
+            // });
+            // return res.json();
+
             await delay(100);
             const logs = JSON.parse(localStorage.getItem("activity-logs") || JSON.stringify(MOCK_LOGS));
             const logWithId = { 

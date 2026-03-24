@@ -10,27 +10,35 @@ import { toast } from "react-hot-toast";
 const MOCK_ADMINS = [
     { 
       id: 1, 
-      name: "John Doe", 
-      email: "john@example.com", 
-      phone: "+1234567890", 
+      name: "Abdelrahman El Hamshari", 
+      email: "a.elhamshari@skybridgeworld.com", 
+      phone: "502258992", 
       role: "Super Admin", 
-      created_at: "2025-01-15",
+      created_at: "2025-11-04",
     },
     { 
       id: 2, 
-      name: "Jane Smith", 
-      email: "jane@example.com", 
-      phone: "+1987654321", 
-      role: "Admin", 
-      created_at: "2025-02-20",
+      name: "Abdelhay TaqyElDeen", 
+      email: "a.taqyeldeen@skybridgeworld.com", 
+      phone: "545759505", 
+      role: "Super Admin", 
+      created_at: "2025-11-04",
     },
     { 
       id: 3, 
-      name: "Mike Johnson", 
-      email: "mike@example.com", 
-      phone: "+1122334455", 
-      role: "Sub Admin", 
-      created_at: "2025-03-10",
+      name: "Web", 
+      email: "admin@admin.com", 
+      phone: "544444444", 
+      role: "Admin", 
+      created_at: "2025-08-12",
+    },
+    { 
+      id: 4, 
+      name: "Super Admin", 
+      email: "super@admin.com", 
+      phone: "9655585448", 
+      role: "Super Admin", 
+      created_at: "2025-08-12",
     },
 ];
 
@@ -44,8 +52,12 @@ export function useAdmins() {
     return useQuery({
         queryKey: ["admins"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/admins");
+            // return res.json();
+
             await delay(500); // Simulate network
-            const stored = localStorage.getItem("admins");
+            const stored = localStorage.getItem("admins_v2");
             return stored ? JSON.parse(stored) : MOCK_ADMINS;
         },
     });
@@ -56,7 +68,7 @@ export function useTrashAdmins() {
         queryKey: ["trash-admins"],
         queryFn: async () => {
             await delay(300);
-            const stored = localStorage.getItem("trash-admins");
+            const stored = localStorage.getItem("trash-admins_v2");
             return stored ? JSON.parse(stored) : [];
         },
     });
@@ -66,15 +78,23 @@ export function useAddAdmin() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newAdmin) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/admins", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newAdmin)
+            // });
+            // return res.json();
+
             await delay(500);
-            const admins = JSON.parse(localStorage.getItem("admins") || JSON.stringify(MOCK_ADMINS));
+            const admins = JSON.parse(localStorage.getItem("admins_v2") || JSON.stringify(MOCK_ADMINS));
             const adminWithId = { 
                 ...newAdmin, 
                 id: Date.now(),
                 created_at: new Date().toISOString().split("T")[0] 
             };
             const updated = [adminWithId, ...admins];
-            localStorage.setItem("admins", JSON.stringify(updated));
+            localStorage.setItem("admins_v2", JSON.stringify(updated));
             return adminWithId;
         },
         onSuccess: () => {
@@ -88,10 +108,18 @@ export function useUpdateAdmin() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedAdmin) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/admins/${updatedAdmin.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedAdmin)
+            // });
+            // return res.json();
+
             await delay(500);
-            const admins = JSON.parse(localStorage.getItem("admins") || JSON.stringify(MOCK_ADMINS));
+            const admins = JSON.parse(localStorage.getItem("admins_v2") || JSON.stringify(MOCK_ADMINS));
             const updated = admins.map(a => a.id === updatedAdmin.id ? updatedAdmin : a);
-            localStorage.setItem("admins", JSON.stringify(updated));
+            localStorage.setItem("admins_v2", JSON.stringify(updated));
             return updatedAdmin;
         },
         onSuccess: () => {
@@ -106,8 +134,8 @@ export function useDeleteAdmin() {
     return useMutation({
         mutationFn: async (id) => {
             await delay(500);
-            const admins = JSON.parse(localStorage.getItem("admins") || JSON.stringify(MOCK_ADMINS));
-            const trash = JSON.parse(localStorage.getItem("trash-admins") || "[]");
+            const admins = JSON.parse(localStorage.getItem("admins_v2") || JSON.stringify(MOCK_ADMINS));
+            const trash = JSON.parse(localStorage.getItem("trash-admins_v2") || "[]");
             
             const adminToDelete = admins.find(a => a.id === id);
             if (!adminToDelete) return id;
@@ -115,8 +143,8 @@ export function useDeleteAdmin() {
             const updatedAdmins = admins.filter(a => a.id !== id);
             const updatedTrash = [adminToDelete, ...trash];
 
-            localStorage.setItem("admins", JSON.stringify(updatedAdmins));
-            localStorage.setItem("trash-admins", JSON.stringify(updatedTrash));
+            localStorage.setItem("admins_v2", JSON.stringify(updatedAdmins));
+            localStorage.setItem("trash-admins_v2", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
@@ -132,8 +160,8 @@ export function useRestoreAdmin() {
     return useMutation({
         mutationFn: async (id) => {
             await delay(500);
-            const admins = JSON.parse(localStorage.getItem("admins") || JSON.stringify(MOCK_ADMINS));
-            const trash = JSON.parse(localStorage.getItem("trash-admins") || "[]");
+            const admins = JSON.parse(localStorage.getItem("admins_v2") || JSON.stringify(MOCK_ADMINS));
+            const trash = JSON.parse(localStorage.getItem("trash-admins_v2") || "[]");
             
             const adminToRestore = trash.find(a => a.id === id);
             if (!adminToRestore) return id;
@@ -141,8 +169,8 @@ export function useRestoreAdmin() {
             const updatedTrash = trash.filter(a => a.id !== id);
             const updatedAdmins = [adminToRestore, ...admins];
 
-            localStorage.setItem("admins", JSON.stringify(updatedAdmins));
-            localStorage.setItem("trash-admins", JSON.stringify(updatedTrash));
+            localStorage.setItem("admins_v2", JSON.stringify(updatedAdmins));
+            localStorage.setItem("trash-admins_v2", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
@@ -158,9 +186,9 @@ export function usePermanentDeleteAdmin() {
     return useMutation({
         mutationFn: async (id) => {
             await delay(500);
-            const trash = JSON.parse(localStorage.getItem("trash-admins") || "[]");
+            const trash = JSON.parse(localStorage.getItem("trash-admins_v2") || "[]");
             const updatedTrash = trash.filter(a => a.id !== id);
-            localStorage.setItem("trash-admins", JSON.stringify(updatedTrash));
+            localStorage.setItem("trash-admins_v2", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
@@ -175,15 +203,15 @@ export function useBulkDeleteAdmins() {
     return useMutation({
         mutationFn: async (ids) => {
             await delay(500);
-            const admins = JSON.parse(localStorage.getItem("admins") || JSON.stringify(MOCK_ADMINS));
-            const trash = JSON.parse(localStorage.getItem("trash-admins") || "[]");
+            const admins = JSON.parse(localStorage.getItem("admins_v2") || JSON.stringify(MOCK_ADMINS));
+            const trash = JSON.parse(localStorage.getItem("trash-admins_v2") || "[]");
 
             const itemsToDelete = admins.filter(a => ids.includes(a.id));
             const remainingAdmins = admins.filter(a => !ids.includes(a.id));
             const updatedTrash = [...itemsToDelete, ...trash];
 
-            localStorage.setItem("admins", JSON.stringify(remainingAdmins));
-            localStorage.setItem("trash-admins", JSON.stringify(updatedTrash));
+            localStorage.setItem("admins_v2", JSON.stringify(remainingAdmins));
+            localStorage.setItem("trash-admins_v2", JSON.stringify(updatedTrash));
             return ids;
         },
         onSuccess: () => {

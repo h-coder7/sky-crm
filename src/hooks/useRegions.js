@@ -10,21 +10,21 @@ import { toast } from "react-hot-toast";
 const MOCK_REGIONS = [
     {
         id: 1,
-        title: "Middle East",
+        title: "Abu Dhabi",
         country: "United Arab Emirates",
-        created_at: "2026-01-20"
+        created_at: "2025-12-22"
     },
     {
         id: 2,
-        title: "Europe",
-        country: "Germany",
-        created_at: "2026-01-21"
+        title: "test",
+        country: "Albania",
+        created_at: "2025-12-20"
     },
     {
         id: 3,
-        title: "Asia",
-        country: "Singapore",
-        created_at: "2026-01-22"
+        title: "Dubai",
+        country: "United Arab Emirates",
+        created_at: "2025-12-16"
     }
 ];
 
@@ -38,8 +38,12 @@ export function useRegions() {
     return useQuery({
         queryKey: ["regions"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/regions");
+            // return res.json();
+
             await delay(500); // Simulate network
-            const stored = localStorage.getItem("regions");
+            const stored = localStorage.getItem("regions_v2");
             return stored ? JSON.parse(stored) : MOCK_REGIONS;
         },
     });
@@ -50,7 +54,7 @@ export function useTrashRegions() {
         queryKey: ["trash-regions"],
         queryFn: async () => {
             await delay(300);
-            const stored = localStorage.getItem("trash-regions");
+            const stored = localStorage.getItem("trash-regions_v2");
             return stored ? JSON.parse(stored) : [];
         },
     });
@@ -60,15 +64,23 @@ export function useAddRegion() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newRegion) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/regions", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newRegion)
+            // });
+            // return res.json();
+
             await delay(500);
-            const regions = JSON.parse(localStorage.getItem("regions") || JSON.stringify(MOCK_REGIONS));
+            const regions = JSON.parse(localStorage.getItem("regions_v2") || JSON.stringify(MOCK_REGIONS));
             const regionWithId = { 
                 ...newRegion, 
                 id: Math.max(0, ...regions.map(r => r.id)) + 1,
                 created_at: new Date().toISOString().split("T")[0] 
             };
             const updated = [regionWithId, ...regions];
-            localStorage.setItem("regions", JSON.stringify(updated));
+            localStorage.setItem("regions_v2", JSON.stringify(updated));
             return regionWithId;
         },
         onSuccess: () => {
@@ -82,10 +94,18 @@ export function useUpdateRegion() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedRegion) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/regions/${updatedRegion.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedRegion)
+            // });
+            // return res.json();
+
             await delay(500);
-            const regions = JSON.parse(localStorage.getItem("regions") || JSON.stringify(MOCK_REGIONS));
+            const regions = JSON.parse(localStorage.getItem("regions_v2") || JSON.stringify(MOCK_REGIONS));
             const updated = regions.map(r => r.id === updatedRegion.id ? updatedRegion : r);
-            localStorage.setItem("regions", JSON.stringify(updated));
+            localStorage.setItem("regions_v2", JSON.stringify(updated));
             return updatedRegion;
         },
         onSuccess: () => {
@@ -100,8 +120,8 @@ export function useDeleteRegion() {
     return useMutation({
         mutationFn: async (id) => {
             await delay(500);
-            const regions = JSON.parse(localStorage.getItem("regions") || JSON.stringify(MOCK_REGIONS));
-            const trash = JSON.parse(localStorage.getItem("trash-regions") || "[]");
+            const regions = JSON.parse(localStorage.getItem("regions_v2") || JSON.stringify(MOCK_REGIONS));
+            const trash = JSON.parse(localStorage.getItem("trash-regions_v2") || "[]");
             
             const regionToDelete = regions.find(r => r.id === id);
             if (!regionToDelete) return id;
@@ -109,8 +129,8 @@ export function useDeleteRegion() {
             const updatedRegions = regions.filter(r => r.id !== id);
             const updatedTrash = [regionToDelete, ...trash];
 
-            localStorage.setItem("regions", JSON.stringify(updatedRegions));
-            localStorage.setItem("trash-regions", JSON.stringify(updatedTrash));
+            localStorage.setItem("regions_v2", JSON.stringify(updatedRegions));
+            localStorage.setItem("trash-regions_v2", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
@@ -126,8 +146,8 @@ export function useRestoreRegion() {
     return useMutation({
         mutationFn: async (id) => {
             await delay(500);
-            const regions = JSON.parse(localStorage.getItem("regions") || JSON.stringify(MOCK_REGIONS));
-            const trash = JSON.parse(localStorage.getItem("trash-regions") || "[]");
+            const regions = JSON.parse(localStorage.getItem("regions_v2") || JSON.stringify(MOCK_REGIONS));
+            const trash = JSON.parse(localStorage.getItem("trash-regions_v2") || "[]");
             
             const regionToRestore = trash.find(r => r.id === id);
             if (!regionToRestore) return id;
@@ -135,8 +155,8 @@ export function useRestoreRegion() {
             const updatedTrash = trash.filter(r => r.id !== id);
             const updatedRegions = [regionToRestore, ...regions];
 
-            localStorage.setItem("regions", JSON.stringify(updatedRegions));
-            localStorage.setItem("trash-regions", JSON.stringify(updatedTrash));
+            localStorage.setItem("regions_v2", JSON.stringify(updatedRegions));
+            localStorage.setItem("trash-regions_v2", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
@@ -152,9 +172,9 @@ export function usePermanentDeleteRegion() {
     return useMutation({
         mutationFn: async (id) => {
             await delay(500);
-            const trash = JSON.parse(localStorage.getItem("trash-regions") || "[]");
+            const trash = JSON.parse(localStorage.getItem("trash-regions_v2") || "[]");
             const updatedTrash = trash.filter(c => c.id !== id);
-            localStorage.setItem("trash-regions", JSON.stringify(updatedTrash));
+            localStorage.setItem("trash-regions_v2", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
@@ -169,15 +189,15 @@ export function useBulkDeleteRegions() {
     return useMutation({
         mutationFn: async (ids) => {
             await delay(500);
-            const regions = JSON.parse(localStorage.getItem("regions") || JSON.stringify(MOCK_REGIONS));
-            const trash = JSON.parse(localStorage.getItem("trash-regions") || "[]");
+            const regions = JSON.parse(localStorage.getItem("regions_v2") || JSON.stringify(MOCK_REGIONS));
+            const trash = JSON.parse(localStorage.getItem("trash-regions_v2") || "[]");
 
             const itemsToDelete = regions.filter(r => ids.includes(r.id));
             const remainingRegions = regions.filter(r => !ids.includes(r.id));
             const updatedTrash = [...itemsToDelete, ...trash];
 
-            localStorage.setItem("regions", JSON.stringify(remainingRegions));
-            localStorage.setItem("trash-regions", JSON.stringify(updatedTrash));
+            localStorage.setItem("regions_v2", JSON.stringify(remainingRegions));
+            localStorage.setItem("trash-regions_v2", JSON.stringify(updatedTrash));
             return ids;
         },
         onSuccess: () => {

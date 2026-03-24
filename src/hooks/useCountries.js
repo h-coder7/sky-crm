@@ -38,6 +38,10 @@ export function useCountries() {
     return useQuery({
         queryKey: ["countries"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/countries");
+            // return res.json();
+
             await delay(500); // Simulate network
             const stored = localStorage.getItem("countries");
             return stored ? JSON.parse(stored) : MOCK_COUNTRIES;
@@ -60,6 +64,14 @@ export function useAddCountry() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newCountry) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/countries", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newCountry)
+            // });
+            // return res.json();
+
             await delay(500);
             const countries = JSON.parse(localStorage.getItem("countries") || JSON.stringify(MOCK_COUNTRIES));
             const countryWithId = { 
@@ -82,6 +94,14 @@ export function useUpdateCountry() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedCountry) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/countries/${updatedCountry.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedCountry)
+            // });
+            // return res.json();
+
             await delay(500);
             const countries = JSON.parse(localStorage.getItem("countries") || JSON.stringify(MOCK_COUNTRIES));
             const updated = countries.map(c => c.id === updatedCountry.id ? updatedCountry : c);

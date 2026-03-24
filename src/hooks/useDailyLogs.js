@@ -50,6 +50,10 @@ export function useDailyLogs() {
     return useQuery({
         queryKey: ["daily-logs"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/daily-logs");
+            // return res.json();
+
             await delay(500); // Simulate network
             return JSON.parse(localStorage.getItem("daily-logs") || JSON.stringify(MOCK_DAILY_LOGS));
         },
@@ -60,6 +64,14 @@ export function useAddDailyLog() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newLog) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/daily-logs", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newLog)
+            // });
+            // return res.json();
+
             await delay(500);
             const logs = JSON.parse(localStorage.getItem("daily-logs") || JSON.stringify(MOCK_DAILY_LOGS));
             const logWithId = { 
@@ -83,6 +95,14 @@ export function useUpdateDailyLog() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedLog) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/daily-logs/${updatedLog.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedLog)
+            // });
+            // return res.json();
+
             await delay(500);
             const logs = JSON.parse(localStorage.getItem("daily-logs") || JSON.stringify(MOCK_DAILY_LOGS));
             const updated = logs.map(l => l.id === updatedLog.id ? updatedLog : l);

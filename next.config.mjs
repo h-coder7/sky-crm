@@ -4,7 +4,7 @@ const nextConfig = {
   output: "export",
   basePath: "/crm-skybridge",
   assetPrefix: "/crm-skybridge",
-  trailingSlash: false,
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },

@@ -120,6 +120,12 @@ export function useEmployees() {
     return useQuery({
         queryKey: ["employees"],
         queryFn: async () => {
+            // ---------------------------------------------------------
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/employees");
+            // return res.json();
+            // ---------------------------------------------------------
+
             await delay(500); // Simulate network
             const stored = localStorage.getItem("employees_v3");
             return stored ? JSON.parse(stored) : MOCK_EMPLOYEES;
@@ -142,6 +148,16 @@ export function useAddEmployee() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newEmployee) => {
+            // ---------------------------------------------------------
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/employees", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newEmployee)
+            // });
+            // return res.json();
+            // ---------------------------------------------------------
+
             await delay(500);
             const employees = JSON.parse(localStorage.getItem("employees_v3") || JSON.stringify(MOCK_EMPLOYEES));
             const employeeWithId = { 
@@ -164,6 +180,16 @@ export function useUpdateEmployee() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedEmployee) => {
+            // ---------------------------------------------------------
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/employees/${updatedEmployee.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedEmployee)
+            // });
+            // return res.json();
+            // ---------------------------------------------------------
+
             await delay(500);
             const employees = JSON.parse(localStorage.getItem("employees_v3") || JSON.stringify(MOCK_EMPLOYEES));
             const updated = employees.map(e => e.id === updatedEmployee.id ? updatedEmployee : e);
@@ -181,6 +207,12 @@ export function useDeleteEmployee() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (id) => {
+            // ---------------------------------------------------------
+            // 🚀 When Laravel API is ready:
+            // await fetch(`https://your-laravel-api.com/api/employees/${id}`, { method: "DELETE" });
+            // return id;
+            // ---------------------------------------------------------
+
             await delay(500);
             const employees = JSON.parse(localStorage.getItem("employees_v3") || JSON.stringify(MOCK_EMPLOYEES));
             const trash = JSON.parse(localStorage.getItem("trash-employees-v3") || "[]");

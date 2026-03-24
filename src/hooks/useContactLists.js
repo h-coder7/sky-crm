@@ -66,6 +66,10 @@ export function useContactLists() {
     return useQuery({
         queryKey: ["contact-lists"],
         queryFn: async () => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/contact-lists");
+            // return res.json();
+
             await delay(500); // Simulate network
             const stored = localStorage.getItem("contacts");
             return stored ? JSON.parse(stored) : MOCK_CONTACTS;
@@ -88,6 +92,14 @@ export function useAddContact() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (newContact) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch("https://your-laravel-api.com/api/contact-lists", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(newContact)
+            // });
+            // return res.json();
+
             await delay(500);
             const contacts = JSON.parse(localStorage.getItem("contacts") || JSON.stringify(MOCK_CONTACTS));
             const contactWithId = { 
@@ -110,6 +122,14 @@ export function useUpdateContact() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (updatedContact) => {
+            // 🚀 When Laravel API is ready:
+            // const res = await fetch(`https://your-laravel-api.com/api/contact-lists/${updatedContact.id}`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(updatedContact)
+            // });
+            // return res.json();
+
             await delay(500);
             const contacts = JSON.parse(localStorage.getItem("contacts") || JSON.stringify(MOCK_CONTACTS));
             const updated = contacts.map(c => c.id === updatedContact.id ? updatedContact : c);

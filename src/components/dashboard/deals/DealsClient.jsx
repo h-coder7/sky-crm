@@ -128,7 +128,11 @@ export default function DealsClient() {
   };
 
   const handleUpdateDealStatus = async (updatedDeal) => {
-    await updateStatusMutation.mutateAsync({ id: updatedDeal.id, status: updatedDeal.status });
+    await updateStatusMutation.mutateAsync({ 
+      id: updatedDeal.id, 
+      status: updatedDeal.status,
+      month: updatedDeal.month
+    });
   };
 
   return (
