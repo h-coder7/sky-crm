@@ -109,7 +109,7 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
                                 <div className="detail-item">
                                     <label className="text-muted fsz-12 text-uppercase d-block mb-2">Position / Role</label>
                                     <div className="fsz-13">
-                                        <i className="fal fa-user-shield me-2 text-primary"></i>
+                                        <i className="fal fa-user-shield me-2"></i>
                                         <span className="fw-500">
                                             {employee.role || "N/A"}
                                         </span>
@@ -119,7 +119,7 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
                                 <div className="detail-item">
                                     <label className="text-muted fsz-12 text-uppercase d-block mb-2">Email Address</label>
                                     <div className="fsz-13">
-                                        <i className="fal fa-envelope me-2 text-primary"></i>
+                                        <i className="fal fa-envelope me-2"></i>
                                         {employee.email || "N/A"}
                                     </div>
                                 </div>
@@ -127,7 +127,7 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
                                 <div className="detail-item">
                                     <label className="text-muted fsz-12 text-uppercase d-block mb-2">Phone Number</label>
                                     <div className="fsz-13">
-                                        <i className="fal fa-phone me-2 text-primary"></i>
+                                        <i className="fal fa-phone me-2"></i>
                                         {employee.phone || "N/A"}
                                     </div>
                                 </div>
@@ -135,7 +135,7 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
                                 <div className="detail-item">
                                     <label className="text-muted fsz-12 text-uppercase d-block mb-2">Joined On</label>
                                     <div className="fsz-13">
-                                        <i className="fal fa-calendar-alt me-2 text-primary"></i>
+                                        <i className="fal fa-calendar-alt me-2"></i>
                                         {employee.created_at || "N/A"}
                                     </div>
                                 </div>
@@ -144,7 +144,7 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
                             {/* Sectors Section */}
                             <div className="sectors-details mb-4">
                                 <h6 className="fsz-13 mb-3 pb-2 border-bottom fw-600">
-                                    <i className="fal fa-th-large me-2 text-primary"></i>
+                                    <i className="fal fa-th-large me-2"></i>
                                     Assigned Sectors
                                 </h6>
                                 <div className="d-flex flex-wrap gap-2">
@@ -165,7 +165,7 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
                             {/* Permissions Section */}
                             <div className="permissions-details">
                                 <h6 className="fsz-13 mb-3 pb-2 border-bottom fw-600">
-                                    <i className="fal fa-lock-alt me-2 text-primary"></i>
+                                    <i className="fal fa-lock-alt me-2"></i>
                                     Module Permissions
                                 </h6>
 

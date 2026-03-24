@@ -69,38 +69,51 @@ export default function CategoryModal({ show, onClose, onSave, category = null }
             <form onSubmit={handleSubmit}>
               <div className="modal-body">
                 <div className="row g-3">
-                  <div className="col-md-12">
-                    <label className="form-label">Title</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="title"
-                      value={formData.title}
-                      onChange={handleChange}
-                      required
-                    />
+                  {/* Category Identity */}
+                  <div className="col-12 mb-4">
+                    <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Category Identity</h6>
+                    <div className="row g-3">
+                      <div className="col-md-12">
+                        <label className="form-label text-muted fsz-12">Title *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="title"
+                          value={formData.title}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="col-md-6">
-                    <label className="form-label">Start Price</label>
-                    <input
-                      type="text" // Using text to allow custom formatting input if user desires, or number
-                      className="form-control"
-                      name="start_price"
-                      value={formData.start_price}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label">End Price</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="end_price"
-                      value={formData.end_price}
-                      onChange={handleChange}
-                      required
-                    />
+
+                  {/* Budget / Pricing */}
+                  <div className="col-12 mb-2">
+                    <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Budget / Pricing</h6>
+                    <div className="row g-3">
+                      <div className="col-md-6">
+                        <label className="form-label text-muted fsz-12">Start Price *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="start_price"
+                          value={formData.start_price}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label className="form-label text-muted fsz-12">End Price *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="end_price"
+                          value={formData.end_price}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

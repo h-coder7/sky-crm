@@ -39,7 +39,7 @@ export default function RegionDetailsOffcanvas({ show, region, onClose }) {
                   <i className="fas fa-map-marker-alt fa-2x text-muted"></i>
                 </div>
                 <h6 className="fsz-18 mb-1">{region.title}</h6>
-                <span className="badge bg-primary-soft text-primary border border-primary-soft fsz-11 text-uppercase">{region.country}</span>
+                <span className="badge bg-primary-soft border border-primary-soft fsz-11 text-uppercase">{region.country}</span>
               </div>
 
               <div className="details-list mb-4">
@@ -58,8 +58,8 @@ export default function RegionDetailsOffcanvas({ show, region, onClose }) {
                   </div>
                 </div>
                 <div className="detail-item mb-3">
-                   <label className="text-muted fsz-11 text-uppercase d-block mb-1">System ID</label>
-                   <div className="fsz-12 text-muted text-break">{region.id}</div>
+                  <label className="text-muted fsz-11 text-uppercase d-block mb-1">System ID</label>
+                  <div className="fsz-12 text-muted text-break">{region.id}</div>
                 </div>
               </div>
             </div>

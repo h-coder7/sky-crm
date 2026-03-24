@@ -62,19 +62,25 @@ export default function ProductModal({ show, onClose, onSave, product = null }) 
             </div>
             <form onSubmit={handleSubmit}>
               <div className="modal-body">
-                <div className="mb-3">
-                  <label htmlFor="title" className="form-label">
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    required
-                  />
+                <div className="row g-3">
+                  {/* Product Identity */}
+                  <div className="col-12 mb-2">
+                    <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Product Identity</h6>
+                    <div className="row g-3">
+                      <div className="col-12">
+                        <label htmlFor="title" className="form-label text-muted fsz-12">Title *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="title"
+                          name="title"
+                          value={formData.title}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="modal-footer">

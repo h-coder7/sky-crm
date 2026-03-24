@@ -56,7 +56,7 @@ export default function SettingsClient() {
     if (isLoading || !formData) {
         return (
             <div className="text-center py-5 mt-5">
-                <div className="spinner-border text-primary" role="status"></div>
+                <div className="spinner-border" role="status"></div>
                 <p className="mt-3 text-muted">Loading settings...</p>
             </div>
         );

@@ -65,33 +65,37 @@ export default function CountryModal({ show, onClose, onSave, country = null }) 
             </div>
             <form onSubmit={handleSubmit}>
               <div className="modal-body">
-                <div className="mb-3">
-                  <label htmlFor="title" className="form-label">
-                    Country Name
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="country_key" className="form-label">
-                    Country Key
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="country_key"
-                    name="country_key"
-                    value={formData.country_key}
-                    onChange={handleChange}
-                    required
-                  />
+                <div className="row g-3">
+                  {/* Country Identity */}
+                  <div className="col-12 mb-2">
+                    <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Country Identity</h6>
+                    <div className="row g-3">
+                      <div className="col-md-6">
+                        <label htmlFor="title" className="form-label text-muted fsz-12">Country Name *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="title"
+                          name="title"
+                          value={formData.title}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                      <div className="col-md-6">
+                        <label htmlFor="country_key" className="form-label text-muted fsz-12">Country Key *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="country_key"
+                          name="country_key"
+                          value={formData.country_key}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="modal-footer">

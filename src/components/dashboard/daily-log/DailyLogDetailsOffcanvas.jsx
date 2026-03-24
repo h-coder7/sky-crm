@@ -39,7 +39,7 @@ export default function DailyLogDetailsOffcanvas({ show, log, onClose }) {
                   <i className="fas fa-clipboard-list fa-2x text-muted"></i>
                 </div>
                 <h6 className="fsz-18 mb-1">{log.employee}</h6>
-                <span className="badge bg-primary-soft text-primary border border-primary-soft fsz-11 text-uppercase">{log.type}</span>
+                <span className="badge bg-primary-soft border border-primary-soft fsz-11 text-uppercase">{log.type}</span>
               </div>
 
               <div className="details-list mb-4">
@@ -99,13 +99,13 @@ export default function DailyLogDetailsOffcanvas({ show, log, onClose }) {
 
                   <div className="col-md-6 pt-3 border-top bg-light p-3 rounded-start">
                     <div className="detail-item">
-                      <label className="text-muted fsz-11 text-uppercase d-block mb-1 text-primary">Next Action</label>
+                      <label className="text-muted fsz-11 text-uppercase d-block mb-1">Next Action</label>
                       <div className="fsz-14 fw-600">{log.next_action}</div>
                     </div>
                   </div>
                   <div className="col-md-6 pt-3 border-top bg-light p-3 rounded-end">
                     <div className="detail-item">
-                      <label className="text-muted fsz-11 text-uppercase d-block mb-1 text-primary">Next Contact</label>
+                      <label className="text-muted fsz-11 text-uppercase d-block mb-1">Next Contact</label>
                       <div className="fsz-14 fw-600">{log.next_contact}</div>
                     </div>
                   </div>

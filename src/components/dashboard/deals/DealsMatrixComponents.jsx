@@ -10,7 +10,7 @@ import { useState } from "react";
 // Export STATUS_COLUMNS so it can be used in DealsMatrix
 // Map status IDs to Column Groups
 export const STATUS_COLUMNS = [
-    { id: "1", ids: ["1", "2", "3", "4", "5", "6"], name: "Briefing Phase", color: "bg-primary-subtle text-primary" },
+    { id: "1", ids: ["1", "2", "3", "4", "5", "6"], name: "Briefing Phase", color: "bg-primary-subtle" },
     { id: "7", ids: ["7", "8", "9"], name: "Proposal Phase", color: "bg-info-subtle text-info" },
     { id: "10", ids: ["10"], name: "Quotation", color: "bg-warning-subtle text-warning" },
     { id: "11", ids: ["11"], name: "Confirmed", color: "bg-success-subtle text-success" },

@@ -50,7 +50,7 @@ export default function TargetDetailsOffcanvas({ show, target, onClose }) {
                       <div className="fsz-14 fw-500">{target.employee}</div>
                     </div>
                   </div>
-                  
+
                   <div className="col-12 pt-2 border-top">
                     <div className="detail-item">
                       <label className="text-muted fsz-11 text-uppercase d-block mb-1">Product</label>
@@ -75,7 +75,7 @@ export default function TargetDetailsOffcanvas({ show, target, onClose }) {
                   <div className="col-12 pt-2 border-top">
                     <div className="detail-item">
                       <label className="text-muted fsz-11 text-uppercase d-block mb-1">Target Values</label>
-                      <div className="fsz-16 fw-600 text-primary">{target.values}</div>
+                      <div className="fsz-16 fw-600">{target.values}</div>
                     </div>
                   </div>
 
@@ -88,7 +88,7 @@ export default function TargetDetailsOffcanvas({ show, target, onClose }) {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="col-12">
                     <div className="detail-item">
                       <label className="text-muted fsz-11 text-uppercase d-block mb-1">System ID</label>

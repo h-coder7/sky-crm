@@ -179,7 +179,7 @@ export default function ContactDetailsOffcanvas({ show, contact, onClose }) {
                                         <div className="fsz-13">
                                             <i className="fal fa-browser me-2 text-muted"></i>
                                             {contact.company_website_url ? (
-                                                <a href={contact.company_website_url} target="_blank" rel="noopener noreferrer" className="text-decoration-none text-primary">
+                                                <a href={contact.company_website_url} target="_blank" rel="noopener noreferrer" className="text-decoration-none">
                                                     {contact.company_website_url}
                                                 </a>
                                             ) : "N/A"}
@@ -209,7 +209,7 @@ export default function ContactDetailsOffcanvas({ show, contact, onClose }) {
                         </div>
                     ) : (
                         <div className="text-center py-5 text-muted">
-                            <i className="fal fa-spinner fa-spin fa-2x mb-3 text-primary"></i>
+                            <i className="fal fa-spinner fa-spin fa-2x mb-3"></i>
                             <p className="fsz-12">Fetching contact records...</p>
                         </div>
                     )}

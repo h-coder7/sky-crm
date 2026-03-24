@@ -54,7 +54,7 @@ export default function DealDetailsOffcanvas({ show, deal, onClose }) {
                                 <div className="detail-item w-100 mb-2">
                                     <label className="text-muted fsz-11 text-uppercase d-block mb-1">Title</label>
                                     <div className="fsz-14 fw-600">
-                                        <i className="fal fa-tag me-2 text-primary"></i>
+                                        <i className="fal fa-tag me-2"></i>
                                         {deal.title}
                                     </div>
                                 </div>
@@ -159,7 +159,7 @@ export default function DealDetailsOffcanvas({ show, deal, onClose }) {
                                         {deal.description || "No description provided."}
                                     </div>
                                 </div>
-                                
+
                                 <div className="detail-item w-100">
                                     <label className="text-muted fsz-11 text-uppercase d-block mb-1">Created On</label>
                                     <div className="fsz-13">

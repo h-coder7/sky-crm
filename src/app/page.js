@@ -21,7 +21,7 @@ export default function Home() {
     return (
         <div className="vh-100 d-flex align-items-center justify-content-center bg-light">
             <div className="text-center">
-                <div className="spinner-border text-primary mb-3" role="status">
+                <div className="spinner-border mb-3" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
                 <h5 className="text-muted">Redirecting...</h5>

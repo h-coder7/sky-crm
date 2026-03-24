@@ -109,7 +109,7 @@ export default function FileUpload({
                 }}
             >
                 <input {...getInputProps()} />
-                <div className={`icon-35 rounded-circle d-flex align-items-center justify-content-center mb-1 ${isDragActive ? 'bg-primary text-white' : 'bg-white text-primary shadow-sm'}`}>
+                <div className={`icon-35 rounded-circle d-flex align-items-center justify-content-center mb-1 ${isDragActive ? 'bg-primary text-white' : 'bg-white shadow-sm'}`}>
                     <i className={`fal ${isDragActive ? 'fa-box-open' : 'fa-cloud-upload'} fsz-16`}></i>
                 </div>
                 <p className="fsz-10 text-muted mb-0 text-center">
@@ -126,7 +126,7 @@ export default function FileUpload({
                             className="position-relative p-2 rounded-3 border bg-white d-flex align-items-center gap-3 cursor-pointer hover-bg-light"
                             onClick={() => handleFileClick(file)}
                         >
-                            <div className="icon-40 rounded-3 overflow-hidden bg-light flex-shrink-0 border d-flex align-items-center justify-content-center text-primary">
+                            <div className="icon-40 rounded-3 overflow-hidden bg-light flex-shrink-0 border d-flex align-items-center justify-content-center">
                                 {isImageFile(file) ? (
                                     <img
                                         src={file.preview}
