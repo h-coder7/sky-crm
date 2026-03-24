@@ -6,6 +6,7 @@ import Select from "react-select";
 import FileUpload from "../../shared/FileUpload";
 import { useEmployees } from "@/hooks/useEmployees";
 import { useCountries } from "@/hooks/useCountries";
+import { useCompanies } from "@/hooks/useCompanies";
 
 const GENDER_OPTIONS = [
     { value: "Male", label: "Male" },
@@ -45,6 +46,7 @@ const PHOTO_ACCEPT_TYPES = {
 export default function ContactListModal({ show, onClose, onSave, contact = null }) {
     const { data: contextEmployees = [] } = useEmployees();
     const { data: contextCountries = [] } = useCountries();
+    const { data: contextCompanies = [] } = useCompanies();
     const [isMounted, setIsMounted] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -178,6 +180,11 @@ export default function ContactListModal({ show, onClose, onSave, contact = null
         label: c.title
     }));
 
+    const companyOptions = contextCompanies.map(comp => ({
+        value: comp.title,
+        label: comp.title
+    }));
+
     return createPortal(
         <>
             <div
@@ -234,7 +241,16 @@ export default function ContactListModal({ show, onClose, onSave, contact = null
                                             </div>
                                             <div className="col-lg-6 mb-3">
                                                 <label htmlFor="company" className="form-label">Company</label>
-                                                <input type="text" className="form-control" id="company" name="company" value={formData.company} onChange={handleChange} />
+                                                <Select
+                                                  instanceId="contact-company-select"
+                                                  options={companyOptions}
+                                                  className="react-select-container"
+                                                  classNamePrefix="react-select"
+                                                  placeholder="Select Company..."
+                                                  value={companyOptions.find(o => o.value === formData.company)}
+                                                  onChange={(o) => setFormData(p => ({ ...p, company: o ? o.value : "" }))}
+                                                  isClearable
+                                                />
                                             </div>
                                             <div className="col-lg-6 mb-3">
                                                 <label htmlFor="job_title" className="form-label">Job Title</label>

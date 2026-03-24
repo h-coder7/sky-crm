@@ -62,9 +62,18 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
         return acc;
     }, {});
 
-    // Resolve sector titles
-    const employeeSectorIds = employee?.sectors || [];
-    const employeeSectors = allSectors.filter(s => employeeSectorIds.includes(s.id));
+    // Resolve sectors (handle both string from mock and ID array from API/future)
+    let employeeSectors = [];
+    if (typeof employee?.sector === "string" && employee.sector.trim() !== "") {
+        // Handle comma-separated string from mock data
+        employeeSectors = employee.sector.split(",").map(part => ({
+            id: part.trim(),
+            title: part.trim()
+        }));
+    } else if (Array.isArray(employee?.sectors)) {
+        // Handle ID array (existing logic)
+        employeeSectors = allSectors.filter(s => employee.sectors.includes(s.id));
+    }
 
     return (
         <>

@@ -2,14 +2,31 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import Select from "react-select";
+import { useEmployees } from "@/hooks/useEmployees";
+import { useProducts } from "@/hooks/useProducts";
+
+const LENGTH_OPTIONS = [
+    { value: "Select All Year", label: "Select All Year" },
+    { value: "First Quarter", label: "First Quarter" },
+    { value: "Second Quarter", label: "Second Quarter" },
+    { value: "Third Quarter", label: "Third Quarter" },
+    { value: "Fourth Quarter", label: "Fourth Quarter" },
+];
 
 export default function TargetModal({ show, onClose, onSave, target = null }) {
+    const { data: employees = [] } = useEmployees();
+    const { data: products = [] } = useProducts();
+
+    const employeeOptions = employees.map(e => ({ value: e.name, label: e.name }));
+    const productOptions = products.map(p => ({ value: p.title, label: p.title }));
+
     const [isMounted, setIsMounted] = useState(false);
     const [formData, setFormData] = useState({
         employee: "",
-        product: "",
+        product: [], // Now an array for multi-select
         year: "",
-        length: "",
+        length: [], // Now an array for multiple selection
         values: "",
     });
 
@@ -22,16 +39,16 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
             setFormData({
                 employee: target.employee || "",
                 year: target.year || "",
-                product: target.product || "",
-                length: target.length || "",
+                product: target.product ? target.product.split(", ") : [],
+                length: target.length ? target.length.split(", ") : [],
                 values: target.values || "",
             });
         } else {
             setFormData({
                 employee: "",
                 year: "",
-                product: "",
-                length: "",
+                product: [],
+                length: [],
                 values: "",
             });
         }
@@ -42,9 +59,41 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleLengthToggle = (val) => {
+        setFormData((prev) => {
+            let newList = [...prev.length];
+            const quarters = LENGTH_OPTIONS.filter(o => o.value !== "Select All Year").map(o => o.value);
+
+            if (val === "Select All Year") {
+                const isAllSelected = quarters.every(q => newList.includes(q));
+                if (isAllSelected) {
+                    newList = [];
+                } else {
+                    newList = LENGTH_OPTIONS.map(o => o.value);
+                }
+            } else {
+                if (newList.includes(val)) {
+                    newList = newList.filter(i => i !== val && i !== "Select All Year");
+                } else {
+                    newList.push(val);
+                    const isAllQuartersSelected = quarters.every(q => newList.includes(q));
+                    if (isAllQuartersSelected) {
+                        newList.push("Select All Year");
+                    }
+                }
+            }
+            return { ...prev, length: newList };
+        });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+        const submissionData = {
+            ...formData,
+            product: formData.product.join(", "),
+            length: formData.length.join(", ")
+        };
+        onSave(submissionData);
     };
 
     if (!show || !isMounted) return null;
@@ -79,29 +128,20 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
                                     <div className="col-12 mb-4">
                                         <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Target Details</h6>
                                         <div className="row">
-                                            <div className="col-md-4">
+                                            <div className="col-md-6">
                                                 <label className="form-label">Employee</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    name="employee"
-                                                    value={formData.employee}
-                                                    onChange={handleChange}
-                                                    required
+                                                <Select
+                                                    instanceId="target-employee-select"
+                                                    options={employeeOptions}
+                                                    className="react-select-container"
+                                                    classNamePrefix="react-select"
+                                                    placeholder="Select Employee..."
+                                                    isClearable
+                                                    value={employeeOptions.find(o => o.value === formData.employee) || null}
+                                                    onChange={(o) => setFormData(p => ({ ...p, employee: o ? o.value : "" }))}
                                                 />
                                             </div>
-                                            <div className="col-md-4">
-                                                <label className="form-label">Product</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    name="product"
-                                                    value={formData.product}
-                                                    onChange={handleChange}
-                                                    required
-                                                />
-                                            </div>
-                                            <div className="col-md-4">
+                                            <div className="col-md-6">
                                                 <label className="form-label">Year</label>
                                                 <input
                                                     type="number"
@@ -112,6 +152,23 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
                                                     required
                                                 />
                                             </div>
+                                            <div className="col-md-12 mt-3">
+                                                <label className="form-label">Product</label>
+                                                <Select
+                                                    instanceId="target-product-select"
+                                                    options={productOptions}
+                                                    isMulti
+                                                    className="react-select-container"
+                                                    classNamePrefix="react-select"
+                                                    placeholder="Select Products..."
+                                                    isClearable
+                                                    value={productOptions.filter(o => formData.product.includes(o.value))}
+                                                    onChange={(opts) => setFormData(p => ({ 
+                                                        ...p, 
+                                                        product: opts ? opts.map(o => o.value) : [] 
+                                                    }))}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 
@@ -119,16 +176,27 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
                                     <div className="col-12 mb-4">
                                         <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Target Duration</h6>
                                         <div className="row">
-                                            <div className="col-md-4">
+                                            <div className="col-12">
                                                 <label className="form-label">Length</label>
-                                                <input
-                                                    type="number"
-                                                    className="form-control"
-                                                    name="length"
-                                                    value={formData.length}
-                                                    onChange={handleChange}
-                                                    required
-                                                />
+                                                <div className="d-flex flex-wrap gap-3 p-3 rounded-3 bg-white">
+                                                    {LENGTH_OPTIONS.map((opt) => (
+                                                        <div key={opt.value} className="form-check">
+                                                            <input
+                                                                className="form-check-input custom-check"
+                                                                type="checkbox"
+                                                                id={`check-${opt.value.replace(/\s+/g, "-")}`}
+                                                                checked={formData.length.includes(opt.value)}
+                                                                onChange={() => handleLengthToggle(opt.value)}
+                                                            />
+                                                            <label
+                                                                className="form-check-label fsz-12 fw-500 cursor-pointer"
+                                                                htmlFor={`check-${opt.value.replace(/\s+/g, "-")}`}
+                                                            >
+                                                                {opt.label}
+                                                            </label>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -137,7 +205,7 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
                                     <div className="col-12 mb-4">
                                         <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Target Metric</h6>
                                         <div className="row">
-                                            <div className="col-md-4">
+                                            <div className="col-md-12">
                                                 <label className="form-label">Values</label>
                                                 <input
                                                     type="number"

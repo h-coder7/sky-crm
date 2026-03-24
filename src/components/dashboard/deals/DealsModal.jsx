@@ -6,6 +6,7 @@ import Select from "react-select";
 import FileUpload from "../../shared/FileUpload";
 import { useCompanies } from "@/hooks/useCompanies";
 import { useContactLists } from "@/hooks/useContactLists";
+import { useEmployees } from "@/hooks/useEmployees";
 
 const STATUS_OPTIONS = [
   { value: "1", label: "Brief Submitted" },
@@ -43,6 +44,9 @@ export default function DealsModal({ show, onClose, onSave, deal = null }) {
 
   const { data: contacts = [] } = useContactLists();
   const CONTACT_LIST_OPTIONS = contacts.map((c) => ({ value: c.name, label: c.name }));
+
+  const { data: employees = [] } = useEmployees();
+  const EMPLOYEE_OPTIONS = employees.map((e) => ({ value: e.name, label: e.name }));
 
   const [isMounted, setIsMounted] = useState(false);
   const [formData, setFormData] = useState({
@@ -217,13 +221,19 @@ export default function DealsModal({ show, onClose, onSave, deal = null }) {
                       </div>
                       <div className="col-lg-6 mb-3">
                         <label className="form-label">Employee</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="employee"
-                          value={formData.employee}
-                          onChange={handleChange}
-                          required
+                        <Select
+                          instanceId="deal-employee-select"
+                          options={EMPLOYEE_OPTIONS}
+                          className="react-select-container"
+                          classNamePrefix="react-select"
+                          placeholder="Select Employee..."
+                          isClearable
+                          value={EMPLOYEE_OPTIONS.find(
+                            (o) => o.value === formData.employee
+                          ) || null}
+                          onChange={(o) =>
+                            setFormData((p) => ({ ...p, employee: o ? o.value : "" }))
+                          }
                         />
                       </div>
                     </div>

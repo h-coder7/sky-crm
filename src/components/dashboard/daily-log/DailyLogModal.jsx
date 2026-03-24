@@ -3,8 +3,16 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Select from "react-select";
+import { useEmployees } from "@/hooks/useEmployees";
+import { useContactLists } from "@/hooks/useContactLists";
 
 export default function DailyLogModal({ show, onClose, onSave, log = null }) {
+    const { data: employees = [] } = useEmployees();
+    const { data: contacts = [] } = useContactLists();
+
+    const employeeOptions = employees.map(e => ({ value: e.name, label: e.name }));
+    const contactOptions = contacts.map(c => ({ value: c.name, label: c.name }));
+
     const [isMounted, setIsMounted] = useState(false);
     const [formData, setFormData] = useState({
         employee: "",
@@ -126,11 +134,27 @@ export default function DailyLogModal({ show, onClose, onSave, log = null }) {
                                         <div className="row">
                                             <div className="col-md-6 mb-3">
                                                 <label className="form-label text-muted fsz-12">Employee</label>
-                                                <input type="text" className="form-control" name="employee" value={formData.employee} onChange={handleChange} required />
+                                                <Select
+                                                    instanceId="daily-log-employee-select"
+                                                    options={employeeOptions}
+                                                    value={employeeOptions.find(opt => opt.value === formData.employee)}
+                                                    onChange={(val) => handleSelectChange("employee", val)}
+                                                    placeholder="Select Employee"
+                                                    classNamePrefix="react-select"
+                                                    required
+                                                />
                                             </div>
                                             <div className="col-md-6 mb-3">
                                                 <label className="form-label text-muted fsz-12">Contact List</label>
-                                                <input type="text" className="form-control" name="contact_list" value={formData.contact_list} onChange={handleChange} required />
+                                                <Select
+                                                    instanceId="daily-log-contact-select"
+                                                    options={contactOptions}
+                                                    value={contactOptions.find(opt => opt.value === formData.contact_list)}
+                                                    onChange={(val) => handleSelectChange("contact_list", val)}
+                                                    placeholder="Select Contact"
+                                                    classNamePrefix="react-select"
+                                                    required
+                                                />
                                             </div>
                                             <div className="col-md-6 mb-3">
                                                 <label className="form-label text-muted fsz-12">Job Title</label>
