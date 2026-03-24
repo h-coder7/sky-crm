@@ -8,21 +8,21 @@ import { toast } from "react-hot-toast";
 // ----------------------------------------------------------------------
 
 const MOCK_SECTORS = [
-    { id: 1, title: "Manufacturing", description: "Description", created_at: "2026-01-15" },
-    { id: 2, title: "Banking, Insurance & FinTech", description: "Description", created_at: "2026-01-15" },
-    { id: 3, title: "Telecomm, Media & Entertainment", description: "Description", created_at: "2026-01-15" },
-    { id: 4, title: "Beauty, Cosmetics & BeautyTech", description: "Description", created_at: "2026-01-15" },
-    { id: 5, title: "Defense & Security", description: "Description", created_at: "2026-01-15" },
-    { id: 6, title: "FMCGs, F&B, Foodtech & Aggregators", description: "Description", created_at: "2026-01-15" },
-    { id: 7, title: "Aviation, Hospitality & TravelTech", description: "Description", created_at: "2026-01-15" },
-    { id: 8, title: "Real estate & Proptech", description: "Description", created_at: "2026-01-15" },
-    { id: 9, title: "Luxury, Fashion & RetailTech", description: "Description", created_at: "2026-01-15" },
-    { id: 10, title: "Renewable Energy, Oil & Gas", description: "Description", created_at: "2026-01-15" },
-    { id: 11, title: "Business Services, Auditing & Consultancy", description: "Description", created_at: "2026-01-15" },
-    { id: 12, title: "Government", description: "Description", created_at: "2026-01-15" },
-    { id: 13, title: "Automotive & Autotech", description: "Description", created_at: "2026-01-15" },
-    { id: 14, title: "Tech & Cybersecurity", description: "Description", created_at: "2026-01-15" },
-    { id: 15, title: "Pharmaceutical, Medical & MedTech", description: "Description", created_at: "2026-01-15" },
+    { id: 1, title: "Manufacturing", description: "Industrial production and manufacturing processes.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 2, title: "Banking, Insurance & FinTech", description: "Financial services, banking, and financial technology.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 3, title: "Telecomm, Media & Entertainment", description: "Telecommunications and media production.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 4, title: "Beauty, Cosmetics & BeautyTech", description: "Cosmetic products and beauty-related technology.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 5, title: "Defense & Security", description: "National defense and security services.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 6, title: "FMCGs, F&B, Foodtech & Aggregators", description: "Fast-moving consumer goods and food services.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 7, title: "Aviation, Hospitality & TravelTech", description: "Air travel, hospitality, and travel technology.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 8, title: "Real estate & Proptech", description: "Property management and real estate technology.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 9, title: "Luxury, Fashion & RetailTech", description: "High-end fashion and retail technology solutions.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 10, title: "Renewable Energy, Oil & Gas", description: "Energy production from various sources.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 11, title: "Business Services, Auditing & Consultancy", description: "Professional business and consulting services.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 12, title: "Government", description: "Public administration and government services.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 13, title: "Automotive & Autotech", description: "Vehicle manufacturing and automotive technology.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 14, title: "Tech & Cybersecurity", description: "Information technology and security solutions.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
+    { id: 15, title: "Pharmaceutical, Medical & MedTech", description: "Healthcare, medicines, and medical equipment.", created_at: "2026-01-15", from_date: "2026-01-15", to_date: "2026-01-15" },
 ];
 
 // Helper to simulate API calls
@@ -37,7 +37,7 @@ export function useSectors() {
         queryKey: ["sectors"],
         queryFn: async () => {
             await delay(500); // Simulate network
-            const stored = localStorage.getItem("sectors");
+            const stored = localStorage.getItem("sectors_v2");
             return stored ? JSON.parse(stored) : MOCK_SECTORS;
         },
     });
@@ -48,7 +48,7 @@ export function useTrashSectors() {
         queryKey: ["trash-sectors"],
         queryFn: async () => {
             await delay(300);
-            const stored = localStorage.getItem("trash-sectors");
+            const stored = localStorage.getItem("trash-sectors-v2");
             return stored ? JSON.parse(stored) : [];
         },
     });
@@ -59,14 +59,14 @@ export function useAddSector() {
     return useMutation({
         mutationFn: async (newSector) => {
             await delay(500);
-            const sectors = JSON.parse(localStorage.getItem("sectors") || JSON.stringify(MOCK_SECTORS));
+            const sectors = JSON.parse(localStorage.getItem("sectors_v2") || JSON.stringify(MOCK_SECTORS));
             const sectorWithId = { 
                 ...newSector, 
                 id: Math.max(0, ...sectors.map(s => s.id)) + 1,
                 created_at: new Date().toISOString().split("T")[0] 
             };
             const updated = [sectorWithId, ...sectors];
-            localStorage.setItem("sectors", JSON.stringify(updated));
+            localStorage.setItem("sectors_v2", JSON.stringify(updated));
             return sectorWithId;
         },
         onSuccess: () => {
@@ -81,9 +81,9 @@ export function useUpdateSector() {
     return useMutation({
         mutationFn: async (updatedSector) => {
             await delay(500);
-            const sectors = JSON.parse(localStorage.getItem("sectors") || JSON.stringify(MOCK_SECTORS));
+            const sectors = JSON.parse(localStorage.getItem("sectors_v2") || JSON.stringify(MOCK_SECTORS));
             const updated = sectors.map(s => s.id === updatedSector.id ? updatedSector : s);
-            localStorage.setItem("sectors", JSON.stringify(updated));
+            localStorage.setItem("sectors_v2", JSON.stringify(updated));
             return updatedSector;
         },
         onSuccess: () => {
@@ -98,8 +98,8 @@ export function useDeleteSector() {
     return useMutation({
         mutationFn: async (id) => {
             await delay(500);
-            const sectors = JSON.parse(localStorage.getItem("sectors") || JSON.stringify(MOCK_SECTORS));
-            const trash = JSON.parse(localStorage.getItem("trash-sectors") || "[]");
+            const sectors = JSON.parse(localStorage.getItem("sectors_v2") || JSON.stringify(MOCK_SECTORS));
+            const trash = JSON.parse(localStorage.getItem("trash-sectors-v2") || "[]");
             
             const sectorToDelete = sectors.find(s => s.id === id);
             if (!sectorToDelete) return id;
@@ -107,8 +107,8 @@ export function useDeleteSector() {
             const updatedSectors = sectors.filter(s => s.id !== id);
             const updatedTrash = [sectorToDelete, ...trash];
 
-            localStorage.setItem("sectors", JSON.stringify(updatedSectors));
-            localStorage.setItem("trash-sectors", JSON.stringify(updatedTrash));
+            localStorage.setItem("sectors_v2", JSON.stringify(updatedSectors));
+            localStorage.setItem("trash-sectors-v2", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
@@ -124,8 +124,8 @@ export function useRestoreSector() {
     return useMutation({
         mutationFn: async (id) => {
             await delay(500);
-            const sectors = JSON.parse(localStorage.getItem("sectors") || JSON.stringify(MOCK_SECTORS));
-            const trash = JSON.parse(localStorage.getItem("trash-sectors") || "[]");
+            const sectors = JSON.parse(localStorage.getItem("sectors_v2") || JSON.stringify(MOCK_SECTORS));
+            const trash = JSON.parse(localStorage.getItem("trash-sectors-v2") || "[]");
             
             const sectorToRestore = trash.find(s => s.id === id);
             if (!sectorToRestore) return id;
@@ -133,8 +133,8 @@ export function useRestoreSector() {
             const updatedTrash = trash.filter(s => s.id !== id);
             const updatedSectors = [sectorToRestore, ...sectors];
 
-            localStorage.setItem("sectors", JSON.stringify(updatedSectors));
-            localStorage.setItem("trash-sectors", JSON.stringify(updatedTrash));
+            localStorage.setItem("sectors_v2", JSON.stringify(updatedSectors));
+            localStorage.setItem("trash-sectors-v2", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
@@ -150,9 +150,9 @@ export function usePermanentDeleteSector() {
     return useMutation({
         mutationFn: async (id) => {
             await delay(500);
-            const trash = JSON.parse(localStorage.getItem("trash-sectors") || "[]");
+            const trash = JSON.parse(localStorage.getItem("trash-sectors-v2") || "[]");
             const updatedTrash = trash.filter(s => s.id !== id);
-            localStorage.setItem("trash-sectors", JSON.stringify(updatedTrash));
+            localStorage.setItem("trash-sectors-v2", JSON.stringify(updatedTrash));
             return id;
         },
         onSuccess: () => {
@@ -167,15 +167,15 @@ export function useBulkDeleteSectors() {
     return useMutation({
         mutationFn: async (ids) => {
             await delay(500);
-            const sectors = JSON.parse(localStorage.getItem("sectors") || JSON.stringify(MOCK_SECTORS));
-            const trash = JSON.parse(localStorage.getItem("trash-sectors") || "[]");
+            const sectors = JSON.parse(localStorage.getItem("sectors_v2") || JSON.stringify(MOCK_SECTORS));
+            const trash = JSON.parse(localStorage.getItem("trash-sectors-v2") || "[]");
 
             const itemsToDelete = sectors.filter(s => ids.includes(s.id));
             const remainingSectors = sectors.filter(s => !ids.includes(s.id));
             const updatedTrash = [...itemsToDelete, ...trash];
 
-            localStorage.setItem("sectors", JSON.stringify(remainingSectors));
-            localStorage.setItem("trash-sectors", JSON.stringify(updatedTrash));
+            localStorage.setItem("sectors_v2", JSON.stringify(remainingSectors));
+            localStorage.setItem("trash-sectors-v2", JSON.stringify(updatedTrash));
             return ids;
         },
         onSuccess: () => {

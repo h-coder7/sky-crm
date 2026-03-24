@@ -74,61 +74,81 @@ export default function TargetModal({ show, onClose, onSave, target = null }) {
                         </div>
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body">
-                                <div className="row g-3">
-                                    <div className="col-md-4">
-                                        <label className="form-label">Employee</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            name="employee"
-                                            value={formData.employee}
-                                            onChange={handleChange}
-                                            required
-                                        />
+                                <div className="row">
+                                    {/* --- Group 1: Target Details --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Target Details</h6>
+                                        <div className="row">
+                                            <div className="col-md-4">
+                                                <label className="form-label">Employee</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    name="employee"
+                                                    value={formData.employee}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="col-md-4">
+                                                <label className="form-label">Product</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    name="product"
+                                                    value={formData.product}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="col-md-4">
+                                                <label className="form-label">Year</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    name="year"
+                                                    value={formData.year}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="col-md-4">
-                                        <label className="form-label">Product</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            name="product"
-                                            value={formData.product}
-                                            onChange={handleChange}
-                                            required
-                                        />
+
+                                    {/* --- Group 2: Target Duration --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Target Duration</h6>
+                                        <div className="row">
+                                            <div className="col-md-4">
+                                                <label className="form-label">Length</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    name="length"
+                                                    value={formData.length}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="col-md-4">
-                                        <label className="form-label">Year</label>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            name="year"
-                                            value={formData.year}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="col-md-4">
-                                        <label className="form-label">Length</label>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            name="length"
-                                            value={formData.length}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="col-md-4">
-                                        <label className="form-label">Values</label>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            name="values"
-                                            value={formData.values}
-                                            onChange={handleChange}
-                                            required
-                                        />
+
+                                    {/* --- Group 3: Target Metric --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Target Metric</h6>
+                                        <div className="row">
+                                            <div className="col-md-4">
+                                                <label className="form-label">Values</label>
+                                                <input
+                                                    type="number"
+                                                    className="form-control"
+                                                    name="values"
+                                                    value={formData.values}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -3,12 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Select from "react-select";
-import FileUpload from "../../shared/FileUpload";
 import { useSectors } from "@/hooks/useSectors";
-
-const PHOTO_ACCEPT_TYPES = {
-    'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp']
-};
 
 const ROLE_OPTIONS = [
     { value: "Head Department", label: "Head Department" },
@@ -69,7 +64,6 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
         confirmPassword: "",
         sectors: [],
         permissions: [],
-        attachments: [],
     });
 
     const [passwordError, setPasswordError] = useState("");
@@ -85,7 +79,6 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                 confirmPassword: "",
                 sectors: Array.isArray(employee.sectors) ? employee.sectors : [],
                 permissions: Array.isArray(employee.permissions) ? employee.permissions : [],
-                attachments: employee.image ? [{ preview: employee.image, type: 'image/jpeg', name: 'Employee Image' }] : [],
             });
         } else {
             setFormData({
@@ -97,7 +90,6 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                 confirmPassword: "",
                 sectors: [],
                 permissions: [],
-                attachments: [],
             });
         }
         setPasswordError("");
@@ -122,10 +114,6 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
     const handleSectorChange = (selectedOptions) => {
         const selectedSectors = selectedOptions ? selectedOptions.map(option => option.value) : [];
         setFormData((prev) => ({ ...prev, sectors: selectedSectors }));
-    };
-
-    const handleFilesChange = (newFiles) => {
-        setFormData((prev) => ({ ...prev, attachments: newFiles }));
     };
 
     const handleSelectAllSectors = (e) => {
@@ -174,13 +162,7 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
             return;
         }
 
-        const { confirmPassword, attachments, ...submissionData } = formData;
-
-        if (attachments && attachments.length > 0) {
-            submissionData.image = attachments[0].preview;
-        } else {
-            submissionData.image = "";
-        }
+        const { confirmPassword, ...submissionData } = formData;
 
         onSave(submissionData);
     };
@@ -222,141 +204,148 @@ export default function EmployeeModal({ show, onClose, onSave, employee = null }
                         <form onSubmit={handleSubmit}>
                             <div className="modal-body">
                                 <div className="row">
-                                    <div className="col-lg-12 mb-4">
-                                        <FileUpload
-                                            files={formData.attachments}
-                                            onFilesChange={handleFilesChange}
-                                            maxFiles={1}
-                                            accept={PHOTO_ACCEPT_TYPES}
-                                            title="Profile Image"
-                                            hint="Drop image here or click to upload"
-                                        />
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="name" className="form-label">Name</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="name"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="phone" className="form-label">Phone</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="phone"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="email" className="form-label">Email</label>
-                                            <input
-                                                type="email"
-                                                className="form-control"
-                                                id="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="role" className="form-label">Role</label>
-                                            <Select
-                                                instanceId="employee-role-select"
-                                                options={ROLE_OPTIONS}
-                                                value={ROLE_OPTIONS.find(opt => opt.value === formData.role)}
-                                                onChange={handleRoleChange}
-                                                placeholder="Select Role"
-                                                classNamePrefix="react-select"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="password" className="form-label">
-                                                {employee ? "New Password (Optional)" : "Password"}
-                                            </label>
-                                            <input
-                                                type="password"
-                                                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
-                                                id="password"
-                                                name="password"
-                                                value={formData.password}
-                                                onChange={handleChange}
-                                                required={!employee}
-                                            />
-                                            {passwordError && <div className="invalid-feedback">{passwordError}</div>}
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-                                            <input
-                                                type="password"
-                                                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
-                                                id="confirmPassword"
-                                                name="confirmPassword"
-                                                value={formData.confirmPassword}
-                                                onChange={handleChange}
-                                                required={!employee && formData.password}
-                                            />
-                                        </div>
-                                    </div>
-
-
-                                    {/* Sectors Select */}
-                                    <div className="col-lg-12">
-                                        <div className="form-group mb-3">
-                                            <div className="d-flex align-items-center justify-content-between mb-2">
-                                                <label className="form-label mb-0">Sectors</label>
-                                                <div className="form-check m-0">
+                                    {/* --- Group 1: Identity --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Identity</h6>
+                                        <div className="row">
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="name" className="form-label">Name</label>
                                                     <input
-                                                        className="form-check-input"
-                                                        type="checkbox"
-                                                        id="selectAllSectors"
-                                                        checked={isAllSectorsSelected}
-                                                        onChange={handleSelectAllSectors}
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="name"
+                                                        name="name"
+                                                        value={formData.name}
+                                                        onChange={handleChange}
+                                                        required
                                                     />
-                                                    <label className="form-check-label fsz-12" htmlFor="selectAllSectors">
-                                                        Select All
-                                                    </label>
                                                 </div>
                                             </div>
-
-                                            <Select
-                                                instanceId="employee-sector-select"
-                                                isMulti
-                                                options={SECTOR_OPTIONS}
-                                                className="react-select-container"
-                                                classNamePrefix="react-select"
-                                                placeholder="Select Sectors..."
-                                                value={SECTOR_OPTIONS.filter(option => selectedSectors.includes(option.value))}
-                                                onChange={handleSectorChange}
-                                            />
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="phone" className="form-label">Phone</label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="phone"
+                                                        name="phone"
+                                                        value={formData.phone}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Detailed Permissions Section */}
-                                    <div className="col-lg-12">
-                                        <div className="permissions-container mt-3 border rounded-3 p-3 bg-light">
+                                    {/* --- Group 2: Account Settings --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Account Settings</h6>
+                                        <div className="row">
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="email" className="form-label">Email</label>
+                                                    <input
+                                                        type="email"
+                                                        className="form-control"
+                                                        id="email"
+                                                        name="email"
+                                                        value={formData.email}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="role" className="form-label">Role</label>
+                                                    <Select
+                                                        instanceId="employee-role-select"
+                                                        options={ROLE_OPTIONS}
+                                                        value={ROLE_OPTIONS.find(opt => opt.value === formData.role)}
+                                                        onChange={handleRoleChange}
+                                                        placeholder="Select Role"
+                                                        classNamePrefix="react-select"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="password" className="form-label">
+                                                        {employee ? "New Password (Optional)" : "Password"}
+                                                    </label>
+                                                    <input
+                                                        type="password"
+                                                        className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+                                                        id="password"
+                                                        name="password"
+                                                        value={formData.password}
+                                                        onChange={handleChange}
+                                                        required={!employee}
+                                                    />
+                                                    {passwordError && <div className="invalid-feedback">{passwordError}</div>}
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                                                    <input
+                                                        type="password"
+                                                        className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+                                                        id="confirmPassword"
+                                                        name="confirmPassword"
+                                                        value={formData.confirmPassword}
+                                                        onChange={handleChange}
+                                                        required={!employee && formData.password}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* --- Group 3: Assignment --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Assignment</h6>
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group mb-3">
+                                                    <div className="d-flex align-items-center justify-content-between mb-2">
+                                                        <label className="form-label mb-0">Sectors</label>
+                                                        <div className="form-check m-0">
+                                                            <input
+                                                                className="form-check-input"
+                                                                type="checkbox"
+                                                                id="selectAllSectors"
+                                                                checked={isAllSectorsSelected}
+                                                                onChange={handleSelectAllSectors}
+                                                            />
+                                                            <label className="form-check-label fsz-12" htmlFor="selectAllSectors">
+                                                                Select All
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <Select
+                                                        instanceId="employee-sector-select"
+                                                        isMulti
+                                                        options={SECTOR_OPTIONS}
+                                                        className="react-select-container"
+                                                        classNamePrefix="react-select"
+                                                        placeholder="Select Sectors..."
+                                                        value={SECTOR_OPTIONS.filter(option => selectedSectors.includes(option.value))}
+                                                        onChange={handleSectorChange}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* --- Group 4: Permissions --- */}
+                                    <div className="col-lg-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Permissions</h6>
+                                        <div className="permissions-container border rounded-3 p-3 bg-light">
                                             <div className="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
                                                 <h6 className="mb-0 fsz-16">Modules Permissions</h6>
                                                 <div className="form-check m-0">

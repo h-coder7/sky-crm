@@ -216,115 +216,130 @@ export default function AdminModal({ show, onClose, onSave, admin = null }) {
                             <div className="modal-body">
                                 <div className="row">
 
-                                    <div className="col-lg-12">
-                                        <div className="form-group mb-3">
-                                            <FileUpload
-                                                files={formData.attachments}
-                                                onFilesChange={handleFilesChange}
-                                                maxFiles={MAX_UPLOAD_FILES}
-                                                accept={PHOTO_ACCEPT_TYPES}
-                                                title="Photo"
-                                                hint="Image (Max 1)"
-                                            />
+                                    {/* --- Group 1: Identity --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Identity</h6>
+                                        <div className="row">
+                                            <div className="col-lg-12">
+                                                <div className="form-group mb-3">
+                                                    <FileUpload
+                                                        files={formData.attachments}
+                                                        onFilesChange={handleFilesChange}
+                                                        maxFiles={MAX_UPLOAD_FILES}
+                                                        accept={PHOTO_ACCEPT_TYPES}
+                                                        title="Photo"
+                                                        hint="Image (Max 1)"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="name" className="form-label">Name</label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="name"
+                                                        name="name"
+                                                        value={formData.name}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="phone" className="form-label">Phone</label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        id="phone"
+                                                        name="phone"
+                                                        value={formData.phone}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="name" className="form-label">Name</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="name"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
+                                    {/* --- Group 2: Account Settings --- */}
+                                    <div className="col-12 mb-4">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Account Settings</h6>
+                                        <div className="row">
 
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="role" className="form-label">Role</label>
-                                            <Select
-                                                name="role"
-                                                options={ROLE_OPTIONS}
-                                                className="react-select-container"
-                                                classNamePrefix="react-select"
-                                                value={ROLE_OPTIONS.find(option => option.value === formData.role)}
-                                                onChange={(option) => setFormData(prev => ({ ...prev, role: option.value }))}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="email" className="form-label">Email</label>
+                                                    <input
+                                                        type="email"
+                                                        className="form-control"
+                                                        id="email"
+                                                        name="email"
+                                                        value={formData.email}
+                                                        onChange={handleChange}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
 
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="email" className="form-label">Email</label>
-                                            <input
-                                                type="email"
-                                                className="form-control"
-                                                id="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="role" className="form-label">Role</label>
+                                                    <Select
+                                                        name="role"
+                                                        options={ROLE_OPTIONS}
+                                                        className="react-select-container"
+                                                        classNamePrefix="react-select"
+                                                        value={ROLE_OPTIONS.find(option => option.value === formData.role)}
+                                                        onChange={(option) => setFormData(prev => ({ ...prev, role: option.value }))}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
 
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="phone" className="form-label">Phone</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="phone"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="password" className="form-label">
+                                                        {admin ? "New Password (Optional)" : "Password"}
+                                                    </label>
+                                                    <input
+                                                        type="password"
+                                                        className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+                                                        id="password"
+                                                        name="password"
+                                                        value={formData.password}
+                                                        onChange={handleChange}
+                                                        required={!admin}
+                                                    />
+                                                    {passwordError && <div className="invalid-feedback">{passwordError}</div>}
+                                                </div>
+                                            </div>
 
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="password" className="form-label">
-                                                {admin ? "New Password (Optional)" : "Password"}
-                                            </label>
-                                            <input
-                                                type="password"
-                                                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
-                                                id="password"
-                                                name="password"
-                                                value={formData.password}
-                                                onChange={handleChange}
-                                                required={!admin}
-                                            />
-                                            {passwordError && <div className="invalid-feedback">{passwordError}</div>}
-                                        </div>
-                                    </div>
+                                            <div className="col-lg-6">
+                                                <div className="form-group mb-3">
+                                                    <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                                                    <input
+                                                        type="password"
+                                                        className={`form-control ${passwordError ? 'is-invalid' : ''}`}
+                                                        id="confirmPassword"
+                                                        name="confirmPassword"
+                                                        value={formData.confirmPassword}
+                                                        onChange={handleChange}
+                                                        required={!admin && formData.password}
+                                                    />
+                                                </div>
+                                            </div>
 
-                                    <div className="col-lg-6">
-                                        <div className="form-group mb-3">
-                                            <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-                                            <input
-                                                type="password"
-                                                className={`form-control ${passwordError ? 'is-invalid' : ''}`}
-                                                id="confirmPassword"
-                                                name="confirmPassword"
-                                                value={formData.confirmPassword}
-                                                onChange={handleChange}
-                                                required={!admin && formData.password}
-                                            />
                                         </div>
                                     </div>
 
                                     {/* Detailed Permissions Section */}
                                     <div className="col-lg-12">
-                                        <div className="permissions-container mt-3 border rounded-3 p-3 bg-light">
+                                        <h6 className="fsz-11 text-uppercase fw-600 text-muted mb-3 border-bottom pb-2">Permissions</h6>
+                                        <div className="permissions-container border rounded-3 p-3 bg-light">
                                             <div className="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
                                                 <h6 className="mb-0 fsz-16">Modules Permissions</h6>
                                                 <div className="form-check m-0">

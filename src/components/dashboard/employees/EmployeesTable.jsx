@@ -290,13 +290,6 @@ export default function EmployeesTable({ data = [], selectedIds = [], onSelectio
                                                             title="View Details"
                                                             style={{ cursor: "pointer", transition: "all 0.3s ease" }}
                                                         >
-                                                            <div className="icon-40 p-1 rounded-circle border p-1 me-3 overflow-hidden bg-light shadow-sm">
-                                                                <img
-                                                                    src={item.image || "/crm-skybridge/images/fav.png"}
-                                                                    alt={item.name}
-                                                                    className="img-contain h-100 w-100"
-                                                                />
-                                                            </div>
                                                             <span>{item.name}</span>
                                                         </div>
                                                     </td>

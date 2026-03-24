@@ -91,13 +91,6 @@ export default function EmployeeDetailsOffcanvas({ show, employee, onClose }) {
                         <div className="employee-details">
                             <div className="details-list mb-4 d-flex flex-wrap gap-2">
                                 <div className="detail-item d-flex align-items-center w-100 mb-2">
-                                    <div className="icon-50 p-1 rounded-circle border bg-white me-3 overflow-hidden shadow-sm">
-                                        <img
-                                            src={employee.image || "/crm-skybridge/images/fav.png"}
-                                            alt={employee.name}
-                                            className="img-contain h-100 w-100 rounded-circle"
-                                        />
-                                    </div>
                                     <div>
                                         <label className="text-muted fsz-11 text-uppercase d-block mb-0">Profile</label>
                                         <div className="fsz-14 fw-600 ">{employee.name}</div>
