@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { confirmAction } from "@/utils/confirm";
+import { publicPath } from "@/utils/publicPath";
 
 export default function SideMenu() {
     const pathname = usePathname();
@@ -39,7 +40,7 @@ export default function SideMenu() {
                 <div className="logo-wrapper">
                     <Link href="/" className="logo position-relative d-block" style={{ width: '40px', height: '40px' }}>
                         <Image
-                            src="/crm-skybridge/images/sky-logo.png"
+                            src={publicPath("/images/sky-logo.png")}
                             alt="Logo"
                             fill
                             className="img-contain"
@@ -198,7 +199,7 @@ export default function SideMenu() {
                 <div className="user-wrapper">
                     <div className="avatar position-relative" style={{ width: '40px', height: '40px' }}>
                         <Image
-                            src="/crm-skybridge/images/av2.png"
+                            src={publicPath("/images/av2.png")}
                             alt="User Avatar"
                             fill
                             className="object-fit-cover rounded-circle"

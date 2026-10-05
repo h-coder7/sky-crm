@@ -281,7 +281,7 @@ small.text {
     transition: all 200ms linear;
 
     &::after {
-        background: url(/crm-skybridge/images/top-arrow.png);
+        background: url(../../../public/images/top-arrow.png);
         background-size: contain;
         background-repeat: no-repeat;
         content: "";

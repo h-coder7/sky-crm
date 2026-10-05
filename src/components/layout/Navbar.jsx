@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { confirmAction } from "@/utils/confirm";
+import { publicPath } from "@/utils/publicPath";
 
 export default function TitleWrapper() {
     const [user, setUser] = useState({ name: "Super Admin", email: "admin@skybridge.com" });
@@ -123,7 +124,7 @@ export default function TitleWrapper() {
                     <div className="dropdown profile-wrapper ms-2">
                         <div className="avatar dropdown-toggle after-none" data-bs-toggle="dropdown">
                             <div className="icon-40 p-10 rounded-circle bg-grad1 position-relative">
-                                <Image src="/crm-skybridge/images/sky-logo.png" alt="" fill className="img-contain" />
+                                <Image src={publicPath("/images/sky-logo.png")} alt="" fill className="img-contain" />
                             </div>
                         </div>
                         <ul className="dropdown-menu dropdown-menu-end mt-2 border-0 shadow-sm overflow-hidden">

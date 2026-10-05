@@ -10,6 +10,7 @@ import "react-date-range/dist/theme/default.css";
 
 import "./globals.scss";
 import { Toaster } from "react-hot-toast";
+import { publicPath } from "@/utils/publicPath";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -22,7 +23,7 @@ export const metadata = {
   title: "Skybridgecrm",
   description: "Skybridge CRM",
   icons: {
-    icon: "/crm-skybridge/fav.png",
+    icon: publicPath("/fav.png"),
   },
 };
 

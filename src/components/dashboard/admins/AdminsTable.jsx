@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 
 // Shared Reusable Table Components (Modular DnD)
+import { publicPath } from "@/utils/publicPath";
 import TableColumnDnd from "../../../components/shared/table/TableColumnDnd";
 import SortableRow from "../../../components/shared/table/SortableRow";
 import SortableTh from "../../../components/shared/table/SortableTh";
@@ -356,7 +357,7 @@ export default function AdminsTable({
                                                         >
                                                             <div className="icon-40 p-1 rounded-circle border p-1 me-3 overflow-hidden bg-light">
                                                                 <img
-                                                                    src={admin.image || "/crm-skybridge/images/fav.png"}
+                                                                    src={admin.image || publicPath("/images/fav.png")}
                                                                     alt={admin.name}
                                                                     className="img-contain h-100 w-100"
                                                                 />

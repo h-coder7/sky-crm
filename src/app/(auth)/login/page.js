@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { publicPath } from "@/utils/publicPath";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -77,7 +78,7 @@ export default function LoginPage() {
                                     <div className="z-1 text-center">
                                         <div className="logo icon-100 mx-auto mb-4 position-relative" style={{ width: '100px', height: '100px' }}>
                                             <Image
-                                                src="/crm-skybridge/images/sky-logo.png"
+                                                src={publicPath("/images/sky-logo.png")}
                                                 alt="Logo"
                                                 fill
                                                 className="img-contain"
@@ -92,7 +93,7 @@ export default function LoginPage() {
                                 <div className="col-md-6 bg-white p-5">
                                     <div className="text-center mb-5 d-md-none position-relative mx-auto" style={{ width: '80px', height: '80px' }}>
                                         <Image
-                                            src="/crm-skybridge/images/sky-logo.png"
+                                            src={publicPath("/images/sky-logo.png")}
                                             alt="Logo"
                                             fill
                                             className="object-fit-contain"

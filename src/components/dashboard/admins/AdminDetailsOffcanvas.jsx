@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { publicPath } from "@/utils/publicPath";
 
 const MODULE_PERMISSIONS = {
     "Admins": [
@@ -96,7 +97,7 @@ export default function AdminDetailsOffcanvas({ show, admin, onClose }) {
                                 <div className="detail-item d-flex align-items-center">
                                     <div className="icon-50 p-1 rounded-circle border bg-white me-3 overflow-hidden">
                                         <img
-                                            src={admin.image || "/crm-skybridge/images/fav.png"}
+                                            src={admin.image || publicPath("/images/fav.png")}
                                             alt={admin.name}
                                             className="img-contain h-100 w-100 rounded-circle"
                                         />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { publicPath } from "@/utils/publicPath";
 
 export default function ContactDetailsOffcanvas({ show, contact, onClose }) {
     const [isMounted, setIsMounted] = useState(false);
@@ -39,7 +40,7 @@ export default function ContactDetailsOffcanvas({ show, contact, onClose }) {
                                 <div className="detail-item d-flex align-items-center w-100">
                                     <div className="icon-50 p-1 rounded-circle border bg-white me-3 overflow-hidden">
                                         <img
-                                            src={contact.image || "/crm-skybridge/images/fav.png"}
+                                            src={contact.image || publicPath("/images/fav.png")}
                                             alt={contact.name}
                                             className="img-contain h-100 w-100 rounded-circle"
                                         />

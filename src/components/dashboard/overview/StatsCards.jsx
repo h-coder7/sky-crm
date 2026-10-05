@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { publicPath } from "@/utils/publicPath";
 import { useState, useEffect } from "react";
 // import axios from "axios"; // 🔜 Uncomment when API is ready
 
@@ -11,7 +12,7 @@ export default function StatisticsSection() {
             value: "14 Days",
             percent: "-12%",
             trend: "Faster than last month",
-            icon: "/crm-skybridge/images/icons/st1.svg",
+            icon: publicPath("/images/icons/st1.svg"),
             trendColor: "success"
         },
         {
@@ -19,7 +20,7 @@ export default function StatisticsSection() {
             value: "$1,250,500.00",
             percent: "+15.5%",
             trend: "Growing pipeline",
-            icon: "/crm-skybridge/images/icons/st2.svg",
+            icon: publicPath("/images/icons/st2.svg"),
             trendColor: "success"
         },
         {
@@ -27,7 +28,7 @@ export default function StatisticsSection() {
             value: "Phone call",
             percent: "45%",
             trend: "Highest conversion",
-            icon: "/crm-skybridge/images/icons/st5.svg",
+            icon: publicPath("/images/icons/st5.svg"),
             trendColor: "info"
         }
     ]);
